@@ -1,0 +1,1780 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>专业星图 - 大学专业职业前景全景查询</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-deep: #0a0e1a;
+            --bg-card: rgba(15, 23, 42, 0.8);
+            --accent-gold: #fbbf24;
+            --accent-cyan: #22d3ee;
+            --accent-purple: #a855f7;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background: var(--bg-deep);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle var(--duration) ease-in-out infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: var(--opacity); transform: scale(1); }
+            50% { opacity: 0.2; transform: scale(0.8); }
+        }
+
+        .nebula {
+            position: fixed;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.3;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .nebula-1 {
+            top: -200px;
+            right: -200px;
+            background: radial-gradient(circle, #6366f1, transparent);
+        }
+
+        .nebula-2 {
+            bottom: -200px;
+            left: -200px;
+            background: radial-gradient(circle, #a855f7, transparent);
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        header {
+            padding: 2rem 0;
+            text-align: center;
+        }
+
+        .logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-gold), var(--accent-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.1em;
+        }
+
+        .tagline {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            font-weight: 300;
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 280px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 0.875rem 1rem 0.875rem 3rem;
+            background: var(--bg-card);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 0.75rem;
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: var(--accent-cyan);
+            box-shadow: 0 0 20px rgba(34, 211, 238, 0.2);
+        }
+
+        .search-box svg {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+
+        .toggle-group {
+            display: flex;
+            background: var(--bg-card);
+            border-radius: 0.75rem;
+            padding: 0.25rem;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+        }
+
+        .toggle-btn {
+            padding: 0.625rem 1.25rem;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-btn.active {
+            background: linear-gradient(135deg, var(--accent-gold), #f59e0b);
+            color: var(--bg-deep);
+        }
+
+        .filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            background: var(--bg-card);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 2rem;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn:hover {
+            border-color: var(--accent-cyan);
+            color: var(--text-primary);
+        }
+
+        .filter-btn.active {
+            background: var(--accent-cyan);
+            border-color: var(--accent-cyan);
+            color: var(--bg-deep);
+        }
+
+        .sort-group {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .sort-btn {
+            padding: 0.5rem 1rem;
+            background: transparent;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .sort-btn:hover, .sort-btn.active {
+            border-color: var(--accent-purple);
+            color: var(--accent-purple);
+        }
+
+        .stats-bar {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            padding: 1rem 1.5rem;
+            background: var(--bg-card);
+            border-radius: 1rem;
+            border: 1px solid rgba(148, 163, 184, 0.1);
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .stat-icon {
+            width: 2.5rem;
+            height: 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--accent-gold), var(--accent-cyan));
+            border-radius: 0.75rem;
+            font-size: 1.25rem;
+        }
+
+        .stat-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stat-value {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            border-radius: 1.25rem;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-gold), var(--accent-cyan));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(34, 211, 238, 0.3);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 30px rgba(34, 211, 238, 0.1);
+        }
+
+        .card:hover::before {
+            opacity: 1;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .card-category {
+            padding: 0.25rem 0.75rem;
+            background: rgba(168, 85, 247, 0.2);
+            border-radius: 2rem;
+            font-size: 0.75rem;
+            color: var(--accent-purple);
+            font-weight: 500;
+        }
+
+        .card-trend {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.375rem;
+        }
+
+        .trend-up {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+        }
+
+        .trend-stable {
+            background: rgba(251, 191, 36, 0.2);
+            color: var(--accent-gold);
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .card-subtitle {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .card-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .card-stat {
+            text-align: center;
+            padding: 0.75rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 0.75rem;
+        }
+
+        .card-stat-value {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: var(--accent-gold);
+        }
+
+        .card-stat-label {
+            font-size: 0.625rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .card-careers {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.375rem;
+        }
+
+        .career-tag {
+            padding: 0.25rem 0.625rem;
+            background: rgba(34, 211, 238, 0.1);
+            border: 1px solid rgba(34, 211, 238, 0.2);
+            border-radius: 2rem;
+            font-size: 0.75rem;
+            color: var(--accent-cyan);
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            overflow-y: auto;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 1.5rem;
+            max-width: 900px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .modal-header {
+            position: sticky;
+            top: 0;
+            background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .modal-close {
+            width: 2.5rem;
+            height: 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(148, 163, 184, 0.1);
+            border: none;
+            border-radius: 0.5rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .modal-close:hover {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .section {
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--accent-gold);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 2rem;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 0.375rem;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(180deg, var(--accent-gold), var(--accent-cyan), var(--accent-purple));
+        }
+
+        .timeline-item {
+            position: relative;
+            padding-bottom: 1.5rem;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -2rem;
+            top: 0.25rem;
+            width: 0.875rem;
+            height: 0.875rem;
+            background: var(--accent-gold);
+            border-radius: 50%;
+            border: 2px solid var(--bg-deep);
+        }
+
+        .timeline-year {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.75rem;
+            color: var(--accent-cyan);
+            margin-bottom: 0.25rem;
+        }
+
+        .timeline-job {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .timeline-desc {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .chart-container {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 1rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .industry-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 0.75rem;
+        }
+
+        .industry-item {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 0.75rem;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .industry-name {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.25rem;
+        }
+
+        .industry-percent {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: var(--accent-cyan);
+        }
+
+        .forecast-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .forecast-card {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 1rem;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .forecast-score {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .forecast-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .forecast-text {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .tab-btn {
+            padding: 0.5rem 1rem;
+            background: rgba(148, 163, 184, 0.1);
+            border: none;
+            border-radius: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn.active {
+            background: var(--accent-gold);
+            color: var(--bg-deep);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-secondary);
+        }
+
+        .no-results-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        @media (max-width: 768px) {
+            .logo {
+                font-size: 1.75rem;
+            }
+
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .toggle-group {
+                justify-content: center;
+            }
+
+            .stats-bar {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .forecast-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal {
+                margin: 1rem;
+                max-height: calc(100vh - 2rem);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="stars" id="stars"></div>
+    <div class="nebula nebula-1"></div>
+    <div class="nebula nebula-2"></div>
+
+    <div class="container">
+        <header>
+            <h1 class="logo">✦ 专业星图 ✦</h1>
+            <p class="tagline">探索职业宇宙，发现你的无限可能</p>
+        </header>
+
+        <div class="controls">
+            <div class="search-box">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <circle cx="11" cy="11" r="8"/>
+                    <path d="M21 21l-4.35-4.35"/>
+                </svg>
+                <input type="text" id="searchInput" placeholder="搜索专业名称、关键词...">
+            </div>
+            <div class="toggle-group">
+                <button class="toggle-btn active" data-mode="cn">🇨🇳 国内</button>
+                <button class="toggle-btn" data-mode="intl">🌍 海外</button>
+            </div>
+        </div>
+
+        <div class="stats-bar" id="statsBar">
+            <div class="stat-item">
+                <div class="stat-icon">📚</div>
+                <div class="stat-info">
+                    <span class="stat-value" id="majorCount">16</span>
+                    <span class="stat-label">个专业</span>
+                </div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-icon">💼</div>
+                <div class="stat-info">
+                    <span class="stat-value" id="careerCount">120+</span>
+                    <span class="stat-label">种职业</span>
+                </div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-icon">🏭</div>
+                <div class="stat-info">
+                    <span class="stat-value">8</span>
+                    <span class="stat-label">大行业</span>
+                </div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-icon">📈</div>
+                <div class="stat-info">
+                    <span class="stat-value" id="avgGrowth">280%</span>
+                    <span class="stat-label">平均薪资涨幅</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="filters" id="filters">
+            <button class="filter-btn active" data-category="all">全部</button>
+            <button class="filter-btn" data-category="computer">计算机</button>
+            <button class="filter-btn" data-category="business">商科</button>
+            <button class="filter-btn" data-category="engineering">工学</button>
+            <button class="filter-btn" data-category="science">理学</button>
+            <button class="filter-btn" data-category="medical">医学</button>
+            <button class="filter-btn" data-category="law">法学</button>
+            <button class="filter-btn" data-category="media">传媒</button>
+            <button class="filter-btn" data-category="education">教育</button>
+            <button class="filter-btn" data-category="agriculture">农学</button>
+        </div>
+
+        <div class="sort-group">
+            <button class="sort-btn active" data-sort="default">默认排序</button>
+            <button class="sort-btn" data-sort="salary">起薪高低</button>
+            <button class="sort-btn" data-sort="growth">薪资涨幅</button>
+        </div>
+
+        <div class="grid" id="majorGrid"></div>
+
+        <div class="no-results" id="noResults" style="display: none;">
+            <div class="no-results-icon">🔭</div>
+            <p>未找到匹配的专业，试试其他关键词</p>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal" id="modal">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">专业名称</h2>
+                <button class="modal-close" id="modalClose">✕</button>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
+    </div>
+
+    <script>
+        const majorsData = [
+            {
+                id: 1,
+                name: "计算机科学与技术",
+                category: "computer",
+                categoryName: "计算机",
+                subtitle: "探索数字世界的核心科技",
+                trend: "up",
+                cn: {
+                    salary: { y1: 12, y5: 28, y10: 55, y20: 90, y40: 150 },
+                    salaryLabel: "万元/年",
+                    industries: [
+                        { name: "互联网/电商", percent: 35 },
+                        { name: "软件开发", percent: 25 },
+                        { name: "金融科技", percent: 15 },
+                        { name: "人工智能", percent: 12 },
+                        { name: "政府/事业单位", percent: 8 },
+                        { name: "教育科技", percent: 5 }
+                    ],
+                    forecast: {
+                        score: 9.5,
+                        trend: "持续增长",
+                        outlook: "AI驱动行业高速发展，人才缺口持续扩大，薪资增速领先全行业。建议关注AI、大数据、云计算等细分方向。"
+                    },
+                    careers: ["软件开发工程师", "算法工程师", "数据科学家", "架构师", "技术经理"]
+                },
+                intl: {
+                    salary: { y1: 75, y5: 120, y10: 180, y20: 250, y40: 350 },
+                    salaryLabel: "千美元/年",
+                    industries: [
+                        { name: "Big Tech", percent: 40 },
+                        { name: "Finance", percent: 20 },
+                        { name: "Consulting", percent: 15 },
+                        { name: "Healthcare Tech", percent: 12 },
+                        { name: "Government", percent: 8 },
+                        { name: "Startup", percent: 5 }
+                    ],
+                    forecast: {
+                        score: 9.8,
+                        trend: "Surging",
+                        outlook: "AI revolution driving unprecedented demand. CS grads command premium salaries globally. Focus on ML, cloud, and security."
+                    },
+                    careers: ["Software Engineer", "ML Engineer", "Data Scientist", "Product Manager", "CTO"]
+                }
+            },
+            {
+                id: 2,
+                name: "人工智能",
+                category: "computer",
+                categoryName: "计算机",
+                subtitle: "塑造未来智能时代",
+                trend: "up",
+                cn: {
+                    salary: { y1: 18, y5: 40, y10: 80, y20: 150, y40: 250 },
+                    salaryLabel: "万元/年",
+                    industries: [
+                        { name: "AI/机器学习", percent: 40 },
+                        { name: "互联网大厂", percent: 25 },
+                        { name: "自动驾驶", percent: 15 },
+                        { name: "医疗AI", percent: 10 },
+                        { name: "金融科技", percent: 10 }
+                    ],
+                    forecast: {
+                        score: 9.8,
+                        trend: "爆发增长",
+                        outlook: "ChatGPT引爆AI浪潮，国内大模型竞争激烈。算法人才年薪百万难求，但门槛持续提高。建议夯实数学基础，关注垂直领域应用。"
+                    },
+                    careers: ["算法研究员", "AI工程师", "产品经理", "数据标注专家", "AI架构师"]
+                },
+                intl: {
+                    salary: { y1: 100, y5: 160, y10: 220, y20: 320, y40: 450 },
+                    salaryLabel: "千美元/年",
+                    industries: [
+                        { name: "AI/ML Labs", percent: 45 },
+                        { name: "Big Tech", percent: 30 },
+                        { name: "Autonomous Vehicles", percent: 12 },
+                        { name: "Healthcare AI", percent: 8 },
+                        { name: "Research", percent: 5 }
+                    ],
+                    forecast: {
+                        score: 9.9,
+                        trend: "Explosive",
+                        outlook: "Generative AI driving historic demand. Top researchers command astronomical salaries. PhD preferred for research roles."
+                    },
+                    careers: ["Research Scientist", "ML Engineer", "AI Product Manager", "Prompt Engineer", "AI Architect"]
+                }
+            },
+            {
+                id: 3,
+                name: "金融学",
+                category: "business",
+                categoryName: "商科",
+                subtitle: "资本市场的核心驱动力",
+                trend: "stable",
+                cn: {
+                    salary: { y1: 10, y5: 22, y10: 45, y20: 80, y40: 150 },
+                    salaryLabel: "万元/年",
+                    industries: [
+                        { name: "银行/证券", percent: 35 },
+                        { name: "投资/基金", percent: 25 },
+                        { name: "咨询", percent: 15 },
+                        { name: "互联网金融", percent: 12 },
+                        { name: "企业财务", percent: 8 },
+                        { name: "监管机构", percent: 5 }
+                    ],
+                    forecast: {
+                        score: 8.0,
+                        trend: "稳定发展",
+                        outlook: "金融科技重塑行业格局，传统金融岗位缩减。数字货币、绿色金融、财富管理成为新增长点。建议考取CFA/FRM提升竞争力。"
+                    },
+                    careers: ["投资银行家", "基金经理", "风险管理师", "量化分析师", "CFO"]
+                },
+                intl: {
+                    salary: { y1: 65, y5: 110, y10: 170, y20: 280, y40: 400 },
+                    salaryLabel: "千美元/年",
+                    industries: [
+                        { name: "Investment Banking", percent: 30 },
+                        { name: "Hedge Funds", percent: 20 },
+                        { name: "Consulting", percent: 20 },
+                        { name: "FinTech", percent: 15 },
+                        { name: "Corporate Finance", percent: 10 },
+                        { name: "Regulatory", percent: 5 }
+                    ],
+                    forecast: {
+                        score: 8.2,
+                        trend: "Stable",
+                        outlook: "FinTech disrupting traditional finance. Quant roles growing. IB remains prestigious but demanding. CFA essential for advancement."
+                    },
+                    careers: ["Investment Banker", "Portfolio Manager", "Quantitative Analyst", "Management Consultant", "CFO"]
+                }
+            },
+            {
+                id: 4,
+                name: "会计学",
+                category: "business",
+                categoryName: "商科",
+                subtitle: "商业世界的通用语言",
+                trend: "stable",
+                cn: {
+                    salary: { y1: 8, y5: 15, y10: 30, y20: 50, y40: 80 },
+                    salaryLabel: "万元/年",
+                    industries: [
+                        { name: "会计事务所", percent: 30 },
+                        { name: "企业财务", percent: 35 },
+                        { name: "金融机构", percent: 15 },
+                        { name: "咨询", percent: 10 },
+                        { name: "政府审计", percent: 10 }
+                    ],
+                    forecast: {
+                        score: 7.5,
+                        trend: "稳定",
+                        outlook: "AI财务软件替代基础核算工作，高级财务和税务筹划需求上升。CPA是进阶关键，建议向管理会计或财务分析方向发展。"
+                    },
+                    careers: ["注册会计师", "财务经理", "审计经理", "税务顾问", "财务总监"]
+                },
+                intl: {
+                    salary: { y1: 55, y5: 85, y10: 130, y20: 180, y40: 280 },
+                    salaryLabel: "千美元/年",
+                    industries: [
+                        { name: "Big Four", percent: 35 },
+                        { name: "Corporate", percent: 35 },
+                        { name: "Financial Services", percent: 15 },
+                        { name: "Consulting", percent: 10 },
+                        { name: "Government", percent: 5 }
+                    ],
+                    forecast: {
+                        score: 7.8,
+                        trend: "Stable",
+                        outlook: "Automation transforming accounting. CPA/CFA increasingly important. Forensic accounting and sustainability reporting growing fields."
+                    },
+                    careers: ["CPA", "Controller", "Audit Manager", "Tax Director", "CFO"]
+                }
+            },
+            {
+                id: 5,
+                name: "电子信息工程",
+                category: "engineering",
+                categoryName: "工学",
+                subtitle: "连接物理与数字世界",
+                trend: "up",
+                cn: {
+                    salary: { y1: 10, y5: 20, y10: 40, y20: 70, y40: 120 },
+                    salaryLabel: "万元/年",
+                    industries: [
+                        { name: "半导体/芯片", percent: 30 },
+                        { name: "通信设备", percent: 25 },
+                        { name: "消费电子", percent: 20 },
+                        { name: "汽车电子", percent: 15 },
+                        { name: "航空航天", percent: 10 }
+                    ],
+                    forecast: {
+                        score: 8.5,
+                        trend: "快速增长",
+                        outlook: "芯片国产替代加速，华为等企业大力投入研发。5G/6G通信、智能硬件、汽车电子成为黄金赛道。核心芯片设计人才极度稀缺。"
+                    },
+                    careers: ["硬件工程师", "芯片设计", "通信工程师", "嵌入式开发", "技术总监"]
+                },
+                intl: {
+                    salary: { y1: 70, y5: 105, y10: 150, y20: 220, y40: 320 },
+                    salaryLabel: "千美元/年",
+                    industries: [
+                        { name: "Semiconductors", percent: 35 },
+                        { name: "Telecom", percent: 20 },
+                        { name: "Consumer Electronics", percent: 20 },
+                        { name: "Automotive", percent: 15 },
+                        { name: "Aerospace", percent: 10 }
+                    ],
+                    forecast: {
+                        score: 8.7,
+                        trend: "Growing",
+                        outlook: "Global chip race driving demand. TSMC, Intel, Apple hiring heavily. Embedded systems and IoT expanding opportunities."
+                    },
+                    careers: ["Hardware Engineer", "Chip Designer", "RF Engineer", "Embedded Developer", "VP Engineering"]
+                }
+            },
+            {
+                id: 6,
+                name: "机械工程",
+                category: "engineering",
+                categoryName: "工学",
+                subtitle: "工业文明的基石",
+                trend: "stable",
+                cn: {
+                    salary: { y1: 8, y5: 15, y10: 30, y20: 50, y40: 80 },
+                    salaryLabel: "万元/年",
+                    industries: [
+                        { name: "制造业", percent: 35 },
+                        { name: "汽车", percent: 25 },
+                        { name: "航空航天", percent: 15 },
+                        { name: "机器人", percent: 15 },
+                        { name: "能源装备", percent: 10 }
+                    ],
+                    forecast: {
+                        score: 7.5,
+                        trend: "转型升级",
+                        outlook: "智能制造转型，机器人工程成为新方向。传统机械遇冷，但新能源汽车、航空航天、高端装备仍有机遇。建议向机电一体化方向发展。"
+                    },
+                    careers: ["机械设计师", "工艺工程师", "项目经理", "研发工程师", "工厂厂长"]
+                },
+                intl: {
+                    salary: { y1: 60, y5: 90, y10: 130, y20: 180, y40: 280 },
+                    salaryLabel: "千美元/年",
+                    industries: [
+                        { name: "Automotive", percent: 30 },
+                        { name: "Aerospace", percent: 20 },
+                        { name: "Manufacturing", percent: 25 },
+                        { name: "Robotics", percent: 15 },
+                        { name: "Energy", percent: 10 }
+                    ],
+                    forecast: {
+                        score: 7.8,
+                        trend: "Evolving",
+                        outlook: "EV revolution transforming automotive. Robotics and automation creating new demand. ME remains versatile and stable."
+                    },
+                    careers: ["Mechanical Designer", "Process Engineer", "Project Manager", "R&D Engineer", "Plant Manager"]
+                }
+            },
+            {
+                id: 7,
+                name: "土木工程",
+                category: "engineering",
+                categoryName: "工学",
+                subtitle: "构筑城市天际线",
+                trend: "stable",
+                cn: {
+                    salary: { y1: 7, y5: 14, y10: 28, y20: 50, y40: 80 },
+                    salaryLabel: "万元/年",
+                    industries: [
+                        { name: "建筑设计院", percent: 30 },
+                        { name: "房地产", percent: 25 },
+                        { name: "施工单位", percent: 20 },
+                        { name: "基础设施", percent: 15 },
+                        { name: "政府工程", percent: 10 }
+                    ],
+                    forecast: {
+                        score: 7.0,
+                        trend: "平稳",
+                        outlook: "房地产调整期，行业承压。新基建（轨道交通、海绵城市）创造新需求。低碳建筑、智慧城市是未来方向。建议向工程管理方向发展。"
+                    },
+                    careers: ["结构工程师", "项目经理", "造价工程师", "监理工程师", "甲方代表"]
+                },
+                intl: {
+                    salary: { y1: 55, y5: 80, y10: 120, y20: 160, y40: 250 },
+                    salaryLabel: "千美元/年",
+                    industries: [
+                        { name: "Construction", percent: 35 },
+                        { name: "Infrastructure", percent: 25 },
+                        { name: "Real Estate", percent: 20 },
+                        { name: "Consulting", percent: 15 },
+                        { name: "Government", percent: 5 }
+                    ],
+                    forecast: {
+                        score: 7.2,
+                        trend: "Stable",
+                        outlook: "Infrastructure spending globally. Green building and sustainable design growing. BIM and digital twins transforming the field."
+                    },
+                    careers: ["Structural Engineer", "Project Manager", "Cost Estimator", "Site Manager", "Development Director"]
+                }
+            },
+            {
+                id: 8,
+                name: "数学/统计学",
+                category: "science",
+                categoryName: "理学",
+                subtitle: "解锁数据的终极密码",
+                trend: "up",
+                cn: {
+                    salary: { y1: 14, y5: 30, y10: 55, y20: 100, y40: 180 },
+                    salaryLabel: "万元/年",
+                    industries: [
+                        { name: "金融量化", percent: 30 },
+                        { name: "互联网", percent: 25 },
+                        { name: "数据分析", percent: 20 },
+                        { name: "科研机构", percent: 15 },
+                        { name: "咨询", percent: 10 }
+                    ],
+                    forecast: {
+                        score: 8.8,
+                        trend: "持续增长",
+                        outlook: "数据要素市场化，统计学成为显学。量化金融、AI算法、数据科学家需求井喷。数学思维是AI时代的核心竞争力之一。"
+                    },
+                    careers: ["量化分析师", "数据科学家", "精算师", "算法工程师", "首席科学家"]
+                },
+                intl: {
+                    salary: { y1: 80, y5: 130, y10: 200, y20: 300, y40: 450 },
+                    salaryLabel: "千美元/年",
+                    industries: [
+                        { name: "FinTech", percent: 30 },
+                        { name: "Big Tech", percent: 30 },
+                        { name: "Hedge Funds", percent: 20 },
+                        { name: "Research", percent: 15 },
+                        { name: "Consulting", percent: 5 }
+                    ],
+                    forecast: {
+                        score: 9.2,
+                        trend: "Surging",
+                        outlook: "Data-driven everything. Math grads in highest demand across industries. Quant finance and ML offer top compensation."
+                    },
+                    careers: ["Quantitative Analyst", "Data Scientist", "Actuary", "ML Engineer", "Research Scientist"]
+                }
+            },
+            {
+                id: 9,
+                name: "心理学",
+                category: "science",
+                categoryName: "理学",
+                subtitle: "洞察人类心灵的深处",
+                trend: "up",
+                cn: {
+                    salary: { y1: 8, y5: 15, y10: 28, y20: 50, y40: 80 },
+                    salaryLabel: "万元/年",
+                    industries: [
+                        { name: "心理咨询", percent: 25 },
+                        { name: "教育培训", percent: 30 },
+                        { name: "人力资源", percent: 20 },
+                        { name: "医疗健康", percent: 15 },
+                        { name: "用户研究", percent: 10 }
+                    ],
+                    forecast: {
+                        score: 7.8,
+                        trend: "上升",
+                        outlook: "心理健康意识提升，市场需求快速增长。青少年心理、EAP、职业生涯规划成为热点。互联网+心理创业兴起，但需耐得住寂寞。"
+                    },
+                    careers: ["心理咨询师", "用户研究员", "HRBP", "生涯规划师", "心理健康教师"]
+                },
+                intl: {
+                    salary: { y1: 50, y5: 75, y10: 110, y20: 160, y40: 250 },
+                    salaryLabel: "千美元/年",
+                    industries: [
+                        { name: "Healthcare", percent: 30 },
+                        { name: "Education", percent: 25 },
+                        { name: "Corporate", percent: 25 },
+                        { name: "Private Practice", percent: 15 },
+                        { name: "Tech UX", percent: 5 }
+                    ],
+                    forecast: {
+                        score: 8.0,
+                        trend: "Growing",
+                        outlook: "Mental health awareness rising globally. Industrial-organizational psychology in demand. Tech companies hiring UX researchers."
+                    },
+                    careers: ["Clinical Psychologist", "IO Psychologist", "UX Researcher", "Career Coach", "HR Director"]
+                }
+            },
+            {
+                id: 10,
+                name: "临床医学",
+                category: "medical",
+                categoryName: "医学",
+                subtitle: "守护生命健康的使命",
+                trend: "stable",
+                cn: {
+                    salary: { y1: 10, y5: 18, y10: 30, y20: 50, y40: 80 },
+                    salaryLabel: "万元/年",
+                    industries: [
+                        { name: "三甲医院", percent: 50 },
+                        { name: "基层医疗", percent: 20 },
+                        { name: "私立医院", percent: 15 },
+                        { name: "医药企业", percent: 10 },
+                        { name: "互联网医疗", percent: 5 }
+                    ],
+                    forecast: {
+                        score: 8.5,
+                        trend: "稳定发展",
+                        outlook: "老龄化加速，医疗需求持续增长。DRG改革、分级诊疗带来机遇与挑战。专科医生仍是金饭碗，但培养周期长、压力大。建议慎重选择。"
+                    },
+                    careers: ["住院医师", "主治医生", "科室主任", "医学专家", "医院管理者"]
+                },
+                intl: {
+                    salary: { y1: 60, y5: 150, y10: 250, y20: 350, y40: 500 },
+                    salaryLabel: "千美元/年",
+                    industries: [
+                        { name: "Hospital", percent: 60 },
+                        { name: "Private Practice", percent: 25 },
+                        { name: "Research", percent: 10 },
+                        { name: "Pharma", percent: 5 }
+                    ],
+                    forecast: {
+                        score: 9.0,
+                        trend: "Growing",
+                        outlook: "Aging populations driving demand. Physician shortage in many countries. Specialization and subspecialization increasingly important."
+                    },
+                    careers: ["Resident", "Attending Physician", "Specialist", "Medical Director", "Chief Medical Officer"]
+                }
+            },
+            {
+                id: 11,
+                name: "药学",
+                category: "medical",
+                categoryName: "医学",
+                subtitle: "创新药物的研发与守护",
+                trend: "up",
+                cn: {
+                    salary: { y1: 8, y5: 16, y10: 30, y20: 50, y40: 80 },
+                    salaryLabel: "万元/年",
+                    industries: [
+                        { name: "制药企业", percent: 35 },
+                        { name: "医院药房", percent: 25 },
+                        { name: "CRO", percent: 20 },
+                        { name: "监管机构", percent: 10 },
+                        { name: "医药销售", percent: 10 }
+                    ],
+                    forecast: {
+                        score: 8.0,
+                        trend: "增长",
+                        outlook: "创新药崛起，生物药、CXO行业高速发展。仿制药集采倒逼转型。临床药师、药物警戒成为新方向。建议向研发或临床方向深耕。"
+                    },
+                    careers: ["临床药师", "药物研发", "注册事务", "医学联络官", "药厂高管"]
+                },
+                intl: {
+                    salary: { y1: 55, y5: 90, y10: 140, y20: 200, y40: 300 },
+                    salaryLabel: "千美元/年",
+                    industries: [
+                        { name: "Pharma", percent: 35 },
+                        { name: "Biotech", percent: 25 },
+                        { name: "Hospital", percent: 20 },
+                        { name: "CRO", percent: 15 },
+                        { name: "Regulatory", percent: 5 }
+                    ],
+                    forecast: {
+                        score: 8.5,
+                        trend: "Growing",
+                        outlook: "Biotech boom post-pandemic. mRNA and gene therapy creating opportunities. Clinical pharmacy growing field."
+                    },
+                    careers: ["Clinical Pharmacist", "Drug Discovery", "Regulatory Affairs", "MSL", "Pharma Executive"]
+                }
+            },
+            {
+                id: 12,
+                name: "法学",
+                category: "law",
+                categoryName: "法学",
+                subtitle: "正义的守护者与规则制定者",
+                trend: "stable",
+                cn: {
+                    salary: { y1: 8, y5: 18, y10: 35, y20: 60, y40: 100 },
+                    salaryLabel: "万元/年",
+                    industries: [
+                        { name: "律所", percent: 30 },
+                        { name: "法务", percent: 30 },
+                        { name: "公检法", percent: 20 },
+                        { name: "金融", percent: 10 },
+                        { name: "政府", percent: 10 }
+                    ],
+                    forecast: {
+                        score: 7.8,
+                        trend: "平稳",
+                        outlook: "法律市场两极分化，红圈所与普通律所差距巨大。合规、知识产权、涉外法律需求上升。法考通过是入门门槛，持续学习是关键。"
+                    },
+                    careers: ["律师", "法官/检察官", "法务总监", "合规官", "法律顾问"]
+                },
+                intl: {
+                    salary: { y1: 80, y5: 160, y10: 250, y20: 400, y40: 600 },
+                    salaryLabel: "千美元/年",
+                    industries: [
+                        { name: "Big Law", percent: 40 },
+                        { name: "In-house", percent: 30 },
+                        { name: "Judiciary", percent: 15 },
+                        { name: "Government", percent: 10 },
+                        { name: "Consulting", percent: 5 }
+                    ],
+                    forecast: {
+                        score: 8.2,
+                        trend: "Stable",
+                        outlook: "Big Law salaries skyrocketing. Corporate and M&A dominate. LLM increasingly valuable. In-house counsel becoming more common."
+                    },
+                    careers: ["Associate", "Partner", "General Counsel", "Judge", "Legal Consultant"]
+                }
+            },
+            {
+                id: 13,
+                name: "新闻传播学",
+                category: "media",
+                categoryName: "传媒",
+                subtitle: "记录时代、传播价值",
+                trend: "stable",
+                cn: {
+                    salary: { y1: 7, y5: 14, y10: 25, y20: 45, y40: 70 },
+                    salaryLabel: "万元/年",
+                    industries: [
+                        { name: "互联网媒体", percent: 35 },
+                        { name: "传统媒体", percent: 20 },
+                        { name: "品牌公关", percent: 20 },
+                        { name: "MCN机构", percent: 15 },
+                        { name: "政府宣传", percent: 10 }
+                    ],
+                    forecast: {
+                        score: 7.2,
+                        trend: "转型中",
+                        outlook: "传统媒体式微，内容创作成为新风口。短视频、直播、危机公关人才需求旺盛。自媒体创业机会多，但收入不稳定。"
+                    },
+                    careers: ["记者/编辑", "新媒体运营", "品牌公关", "内容策划", "MCN达人"]
+                },
+                intl: {
+                    salary: { y1: 45, y5: 70, y10: 110, y20: 160, y40: 250 },
+                    salaryLabel: "千美元/年",
+                    industries: [
+                        { name: "Digital Media", percent: 35 },
+                        { name: "Broadcasting", percent: 20 },
+                        { name: "PR/Communications", percent: 25 },
+                        { name: "Entertainment", percent: 15 },
+                        { name: "Government", percent: 5 }
+                    ],
+                    forecast: {
+                        score: 7.5,
+                        trend: "Evolving",
+                        outlook: "Digital media dominating. Content creation economy booming. PR and communications increasingly important for all organizations."
+                    },
+                    careers: ["Journalist", "Content Creator", "PR Manager", "Communications Director", "Media Strategist"]
+                }
+            },
+            {
+                id: 14,
+                name: "设计学",
+                category: "media",
+                categoryName: "传媒",
+                subtitle: "用创意改变世界",
+                trend: "up",
+                cn: {
+                    salary: { y1: 8, y5: 16, y10: 30, y20: 55, y40: 90 },
+                    salaryLabel: "万元/年",
+                    industries: [
+                        { name: "互联网设计", percent: 35 },
+                        { name: "品牌设计", percent: 25 },
+                        { name: "游戏/影视", percent: 20 },
+                        { name: "广告创意", percent: 15 },
+                        { name: "工业设计", percent: 5 }
+                    ],
+                    forecast: {
+                        score: 8.2,
+                        trend: "上升",
+                        outlook: "用户体验经济时代，设计师价值凸显。UI/UX、游戏设计、AI设计工具成为热点。设计师需具备商业思维和技术素养的复合能力。"
+                    },
+                    careers: ["UI/UX设计师", "品牌设计师", "游戏美术", "创意总监", "设计总监"]
+                },
+                intl: {
+                    salary: { y1: 55, y5: 90, y10: 140, y20: 220, y40: 350 },
+                    salaryLabel: "千美元/年",
+                    industries: [
+                        { name: "Tech Companies", percent: 40 },
+                        { name: "Design Studios", percent: 25 },
+                        { name: "Gaming", percent: 15 },
+                        { name: "Advertising", percent: 15 },
+                        { name: "Product", percent: 5 }
+                    ],
+                    forecast: {
+                        score: 8.5,
+                        trend: "Growing",
+                        outlook: "Design-driven companies thriving. UX/product design in high demand. Motion design and 3D growing specialties."
+                    },
+                    careers: ["Product Designer", "UX Researcher", "Creative Director", "Game Artist", "Design Lead"]
+                }
+            },
+            {
+                id: 15,
+                name: "教育学",
+                category: "education",
+                categoryName: "教育",
+                subtitle: "点燃求知之火",
+                trend: "stable",
+                cn: {
+                    salary: { y1: 7, y5: 12, y10: 22, y20: 40, y40: 65 },
+                    salaryLabel: "万元/年",
+                    industries: [
+                        { name: "公立学校", percent: 40 },
+                        { name: "教育培训", percent: 30 },
+                        { name: "在线教育", percent: 15 },
+                        { name: "教育行政", percent: 10 },
+                        { name: "出版", percent: 5 }
+                    ],
+                    forecast: {
+                        score: 7.3,
+                        trend: "稳步发展",
+                        outlook: "双减政策重塑教培格局，但教育需求永恒。职业教育、终身学习成为新增长点。教师编竞争激烈，稳定与收入需权衡。"
+                    },
+                    careers: ["教师", "课程设计师", "教育产品经理", "培训师", "校长/管理者"]
+                },
+                intl: {
+                    salary: { y1: 45, y5: 65, y10: 95, y20: 140, y40: 220 },
+                    salaryLabel: "千美元/年",
+                    industries: [
+                        { name: "K-12 Education", percent: 35 },
+                        { name: "EdTech", percent: 30 },
+                        { name: "Higher Ed", percent: 20 },
+                        { name: "Training", percent: 10 },
+                        { name: "Publishing", percent: 5 }
+                    ],
+                    forecast: {
+                        score: 7.6,
+                        trend: "Stable",
+                        outlook: "EdTech revolutionizing learning. Global demand for teachers. Lifelong learning becoming essential. International schools growing."
+                    },
+                    careers: ["Classroom Teacher", "Instructional Designer", "EdTech Product Manager", "Trainer", "Education Administrator"]
+                }
+            },
+            {
+                id: 16,
+                name: "环境科学/环境工程",
+                category: "agriculture",
+                categoryName: "农学",
+                subtitle: "守护蓝色星球的未来",
+                trend: "up",
+                cn: {
+                    salary: { y1: 7, y5: 14, y10: 28, y20: 50, y40: 85 },
+                    salaryLabel: "万元/年",
+                    industries: [
+                        { name: "环保企业", percent: 30 },
+                        { name: "政府环保部门", percent: 25 },
+                        { name: "新能源", percent: 25 },
+                        { name: "咨询", percent: 15 },
+                        { name: "研究机构", percent: 5 }
+                    ],
+                    forecast: {
+                        score: 8.5,
+                        trend: "快速增长",
+                        outlook: "双碳目标开启绿色革命，新能源、碳中和赛道爆发。环境咨询、ESG投资、绿色金融成为新风口。建议向新能源与环境金融方向发展。"
+                    },
+                    careers: ["环境工程师", "ESG分析师", "碳交易员", "新能源工程师", "环保项目经理"]
+                },
+                intl: {
+                    salary: { y1: 50, y5: 80, y10: 120, y20: 180, y40: 280 },
+                    salaryLabel: "千美元/年",
+                    industries: [
+                        { name: "Consulting", percent: 30 },
+                        { name: "Renewable Energy", percent: 30 },
+                        { name: "Government", percent: 20 },
+                        { name: "Manufacturing", percent: 15 },
+                        { name: "Research", percent: 5 }
+                    ],
+                    forecast: {
+                        score: 8.8,
+                        trend: "Surging",
+                        outlook: "Climate crisis driving unprecedented investment. ESG becoming mainstream. Green jobs growing 30% annually. Net zero by 2050 creating massive demand."
+                    },
+                    careers: ["Environmental Engineer", "ESG Analyst", "Sustainability Consultant", "Renewable Energy Engineer", "Climate Policy Advisor"]
+                }
+            }
+        ];
+
+        let currentMode = 'cn';
+        let currentCategory = 'all';
+        let currentSort = 'default';
+        let searchQuery = '';
+
+        function createStars() {
+            const starsContainer = document.getElementById('stars');
+            const count = 150;
+            for (let i = 0; i < count; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.width = Math.random() * 2 + 1 + 'px';
+                star.style.height = star.style.width;
+                star.style.setProperty('--opacity', Math.random() * 0.5 + 0.3);
+                star.style.setProperty('--duration', Math.random() * 3 + 2 + 's');
+                star.style.animationDelay = Math.random() * 5 + 's';
+                starsContainer.appendChild(star);
+            }
+        }
+
+        function formatSalary(value, mode) {
+            if (mode === 'intl') {
+                return '$' + value + 'K';
+            }
+            return value + '万';
+        }
+
+        function calculateGrowth(salary) {
+            const growth = ((salary.y40 - salary.y1) / salary.y1 * 100).toFixed(0);
+            return growth + '%';
+        }
+
+        function renderMajors() {
+            const grid = document.getElementById('majorGrid');
+            const noResults = document.getElementById('noResults');
+            
+            let filtered = majorsData.filter(major => {
+                const matchesCategory = currentCategory === 'all' || major.category === currentCategory;
+                const matchesSearch = searchQuery === '' || 
+                    major.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    major.cn.careers.some(c => c.toLowerCase().includes(searchQuery.toLowerCase())) ||
+                    major.subtitle.toLowerCase().includes(searchQuery.toLowerCase());
+                return matchesCategory && matchesSearch;
+            });
+
+            if (currentSort === 'salary') {
+                filtered.sort((a, b) => b[currentMode].salary.y1 - a[currentMode].salary.y1);
+            } else if (currentSort === 'growth') {
+                filtered.sort((a, b) => {
+                    const growthA = (a[currentMode].salary.y40 - a[currentMode].salary.y1) / a[currentMode].salary.y1;
+                    const growthB = (b[currentMode].salary.y40 - b[currentMode].salary.y1) / b[currentMode].salary.y1;
+                    return growthB - growthA;
+                });
+            }
+
+            document.getElementById('majorCount').textContent = filtered.length;
+            
+            const avgGrowth = filtered.reduce((sum, m) => {
+                const growth = (m[currentMode].salary.y40 - m[currentMode].salary.y1) / m[currentMode].salary.y1 * 100;
+                return sum + growth;
+            }, 0) / filtered.length;
+            document.getElementById('avgGrowth').textContent = Math.round(avgGrowth) + '%';
+
+            if (filtered.length === 0) {
+                grid.innerHTML = '';
+                noResults.style.display = 'block';
+                return;
+            }
+            noResults.style.display = 'none';
+
+            grid.innerHTML = filtered.map(major => {
+                const data = major[currentMode];
+                const trendClass = major.trend === 'up' ? 'trend-up' : 'trend-stable';
+                const trendText = major.trend === 'up' ? '↑ 上升' : '→ 稳定';
+                const growth = calculateGrowth(data.salary);
+                
+                return `
+                    <div class="card" onclick="openModal(${major.id})">
+                        <div class="card-header">
+                            <span class="card-category">${major.categoryName}</span>
+                            <span class="card-trend ${trendClass}">${trendText}</span>
+                        </div>
+                        <h3 class="card-title">${major.name}</h3>
+                        <p class="card-subtitle">${major.subtitle}</p>
+                        <div class="card-stats">
+                            <div class="card-stat">
+                                <div class="card-stat-value">${formatSalary(data.salary.y1, currentMode)}</div>
+                                <div class="card-stat-label">起薪</div>
+                            </div>
+                            <div class="card-stat">
+                                <div class="card-stat-value">${formatSalary(data.salary.y10, currentMode)}</div>
+                                <div class="card-stat-label">10年</div>
+                            </div>
+                            <div class="card-stat">
+                                <div class="card-stat-value">${growth}</div>
+                                <div class="card-stat-label">40年涨幅</div>
+                            </div>
+                        </div>
+                        <div class="card-careers">
+                            ${data.careers.slice(0, 3).map(c => `<span class="career-tag">${c}</span>`).join('')}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function openModal(id) {
+            const major = majorsData.find(m => m.id === id);
+            if (!major) return;
+
+            const data = major[currentMode];
+            const modal = document.getElementById('modal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalBody = document.getElementById('modalBody');
+            const modalOverlay = document.getElementById('modalOverlay');
+
+            modalTitle.textContent = major.name;
+            
+            const growth = calculateGrowth(data.salary);
+            const timeline = [
+                { year: '1年', job: data.careers[0], desc: '初入职场，从基础工作做起，积累实践经验' },
+                { year: '5年', job: data.careers[1] || data.careers[0], desc: '成为业务骨干，具备独立解决问题的能力' },
+                { year: '10年', job: data.careers[2] || data.careers[1], desc: '晋升为中层管理者或专家级人才' },
+                { year: '20年', job: data.careers[3] || data.careers[2], desc: '担任高级管理职位或成为行业专家' },
+                { year: '40年', job: data.careers[4] || data.careers[3], desc: '行业领袖、企业高管或创业成功者' }
+            ];
+
+            modalBody.innerHTML = `
+                <div class="section">
+                    <h3 class="section-title">📊 前景评分</h3>
+                    <div class="forecast-grid">
+                        <div class="forecast-card">
+                            <div class="forecast-score" style="color: var(--accent-gold);">${data.forecast.score}</div>
+                            <div class="forecast-label">综合评分</div>
+                        </div>
+                        <div class="forecast-card">
+                            <div class="forecast-score" style="color: var(--accent-cyan);">${data.forecast.trend}</div>
+                            <div class="forecast-label">发展趋势</div>
+                        </div>
+                        <div class="forecast-card">
+                            <div class="forecast-score" style="color: var(--accent-purple);">${growth}</div>
+                            <div class="forecast-label">40年薪资涨幅</div>
+                        </div>
+                    </div>
+                    <p class="forecast-text">${data.forecast.outlook}</p>
+                </div>
+
+                <div class="section">
+                    <h3 class="section-title">💼 职业轨迹</h3>
+                    <div class="tabs">
+                        <button class="tab-btn active" onclick="switchTab('timeline')">时间线</button>
+                        <button class="tab-btn" onclick="switchTab('chart')">薪资图表</button>
+                    </div>
+                    <div class="tab-content active" id="tab-timeline">
+                        <div class="timeline">
+                            ${timeline.map(t => `
+                                <div class="timeline-item">
+                                    <div class="timeline-year">${t.year}</div>
+                                    <div class="timeline-job">${t.job}</div>
+                                    <div class="timeline-desc">${t.desc}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    <div class="tab-content" id="tab-chart">
+                        <div class="chart-container">
+                            <canvas id="salaryChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3 class="section-title">🏭 行业分布</h3>
+                    <div class="industry-grid">
+                        ${data.industries.map(ind => `
+                            <div class="industry-item">
+                                <div class="industry-name">${ind.name}</div>
+                                <div class="industry-percent">${ind.percent}%</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3 class="section-title">🎯 主要职业</h3>
+                    <div class="card-careers" style="gap: 0.5rem;">
+                        ${data.careers.map(c => `<span class="career-tag">${c}</span>`).join('')}
+                    </div>
+                </div>
+            `;
+
+            modalOverlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+
+            setTimeout(() => {
+                renderSalaryChart(data.salary);
+            }, 100);
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.textContent.includes(tab === 'timeline' ? '时间线' : '薪资图表'));
+            });
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.toggle('active', content.id === 'tab-' + tab);
+            });
+            if (tab === 'chart') {
+                setTimeout(() => {
+                    const major = majorsData.find(m => m.id === parseInt(document.getElementById('modalTitle').dataset.id));
+                    if (major) {
+                        const canvas = document.getElementById('salaryChart');
+                        if (canvas) {
+                            renderSalaryChart(major[currentMode].salary);
+                        }
+                    }
+                }, 50);
+            }
+        }
+
+        let salaryChart = null;
+        function renderSalaryChart(salaryData) {
+            const ctx = document.getElementById('salaryChart');
+            if (!ctx) return;
+
+            if (salaryChart) {
+                salaryChart.destroy();
+            }
+
+            salaryChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['1年', '5年', '10年', '20年', '40年'],
+                    datasets: [{
+                        label: '薪资',
+                        data: [salaryData.y1, salaryData.y5, salaryData.y10, salaryData.y20, salaryData.y40],
+                        borderColor: '#fbbf24',
+                        backgroundColor: 'rgba(251, 191, 36, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#fbbf24',
+                        pointBorderColor: '#0a0e1a',
+                        pointBorderWidth: 2,
+                        pointRadius: 6,
+                        pointHoverRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                            titleColor: '#f1f5f9',
+                            bodyColor: '#fbbf24',
+                            borderColor: 'rgba(148, 163, 184, 0.2)',
+                            borderWidth: 1,
+                            padding: 12,
+                            displayColors: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                color: 'rgba(148, 163, 184, 0.1)'
+                            },
+                            ticks: {
+                                color: '#94a3b8'
+                            }
+                        },
+                        y: {
+                            grid: {
+                                color: 'rgba(148, 163, 184, 0.1)'
+                            },
+                            ticks: {
+                                color: '#94a3b8'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function closeModal() {
+            document.getElementById('modalOverlay').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        document.getElementById('modalClose').addEventListener('click', closeModal);
+        document.getElementById('modalOverlay').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) closeModal();
+        });
+
+        document.querySelectorAll('.toggle-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentMode = btn.dataset.mode;
+                renderMajors();
+            });
+        });
+
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentCategory = btn.dataset.category;
+                renderMajors();
+            });
+        });
+
+        document.querySelectorAll('.sort-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentSort = btn.dataset.sort;
+                renderMajors();
+            });
+        });
+
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            searchQuery = e.target.value;
+            renderMajors();
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeModal();
+        });
+
+        createStars();
+        renderMajors();
+    </script>
+</body>
+</html>
