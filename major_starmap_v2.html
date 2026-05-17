@@ -1,0 +1,4329 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>专业星图 V2 - 真实、专业的大学生专业选择指南</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            min-height: 100vh;
+            color: #fff;
+            line-height: 1.8;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            padding: 60px 20px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+            margin-bottom: 40px;
+            backdrop-filter: blur(10px);
+        }
+        
+        header h1 {
+            font-size: 3em;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+        }
+        
+        header p {
+            font-size: 1.2em;
+            color: rgba(255,255,255,0.8);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .stats-banner {
+            display: flex;
+            justify-content: center;
+            gap: 60px;
+            margin: 40px 0;
+            flex-wrap: wrap;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2.5em;
+            font-weight: bold;
+            background: linear-gradient(90deg, #f093fb 0%, #f5576c 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .stat-label {
+            color: rgba(255,255,255,0.6);
+            font-size: 0.9em;
+        }
+        
+        .filter-section {
+            background: rgba(255,255,255,0.05);
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .filter-title {
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            color: rgba(255,255,255,0.9);
+        }
+        
+        .filter-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .filter-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.95em;
+        }
+        
+        .filter-btn:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+        
+        .filter-btn.active {
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .majors-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 25px;
+        }
+        
+        .major-card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s;
+            cursor: pointer;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .major-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(102, 126, 234, 0.5);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+        
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .category-icon {
+            font-size: 2.5em;
+        }
+        
+        .major-name {
+            font-size: 1.4em;
+            font-weight: bold;
+        }
+        
+        .major-code {
+            font-size: 0.85em;
+            color: rgba(255,255,255,0.5);
+        }
+        
+        .difficulty-stars {
+            margin-top: 5px;
+            color: #f5576c;
+        }
+        
+        .salary-tag {
+            display: inline-block;
+            background: linear-gradient(90deg, #11998e 0%, #38ef7d 100%);
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 0.85em;
+            margin: 10px 0;
+        }
+        
+        .data-source-tag {
+            display: inline-block;
+            background: rgba(255,193,7,0.2);
+            color: #ffc107;
+            padding: 3px 10px;
+            border-radius: 10px;
+            font-size: 0.75em;
+            margin-left: 10px;
+        }
+        
+        .detail-section {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .detail-title {
+            font-size: 1em;
+            color: #667eea;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .detail-content {
+            font-size: 0.9em;
+            color: rgba(255,255,255,0.8);
+            margin-bottom: 10px;
+        }
+        
+        .year-list {
+            list-style: none;
+            padding-left: 15px;
+        }
+        
+        .year-list li {
+            margin: 5px 0;
+            position: relative;
+            padding-left: 15px;
+        }
+        
+        .year-list li::before {
+            content: "▸";
+            position: absolute;
+            left: 0;
+            color: #667eea;
+        }
+        
+        .pros-cons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        
+        .pros-box, .cons-box {
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 0.85em;
+        }
+        
+        .pros-box {
+            background: rgba(56, 239, 125, 0.1);
+            border-left: 3px solid #38ef7d;
+        }
+        
+        .cons-box {
+            background: rgba(245, 87, 108, 0.1);
+            border-left: 3px solid #f5576c;
+        }
+        
+        .summary-box {
+            background: rgba(102, 126, 234, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            font-style: italic;
+            color: rgba(255,255,255,0.9);
+        }
+        
+        .skill-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 5px;
+        }
+        
+        .skill-tag {
+            background: rgba(255,255,255,0.1);
+            padding: 3px 10px;
+            border-radius: 10px;
+            font-size: 0.8em;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .expanded .detail-section {
+            display: block;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 40px;
+            color: rgba(255,255,255,0.5);
+            font-size: 0.9em;
+        }
+        
+        @media (max-width: 768px) {
+            .majors-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            header h1 {
+                font-size: 2em;
+            }
+            
+            .stats-banner {
+                gap: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎓 专业星图 V2</h1>
+            <p>真实、专业的大学生专业选择指南 - 基于2024年最新行业趋势<br>
+            <span style="font-size:0.8em;color:#ffc107;">⚠️ 本网站薪资数据均为定性描述，不提供具体数字，数据仅供参考</span></p>
+            
+            <div class="stats-banner">
+                <div class="stat-item">
+                    <div class="stat-number">47</div>
+                    <div class="stat-label">精选专业</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">10</div>
+                    <div class="stat-label">学科门类</div>
+                </div>
+            </div>
+        </header>
+        
+        <section class="filter-section">
+            <div class="filter-title">📚 按学科筛选：</div>
+            <div class="filter-buttons">
+                <button class="filter-btn active" data-filter="all">全部专业</button>
+                <button class="filter-btn" data-filter="01 哲学">🎓 01 哲学</button>
+<button class="filter-btn" data-filter="02 经济学">📊 02 经济学</button>
+<button class="filter-btn" data-filter="03 法学">⚖️ 03 法学</button>
+<button class="filter-btn" data-filter="04 教育学">📚 04 教育学</button>
+<button class="filter-btn" data-filter="05 文学">📖 05 文学</button>
+<button class="filter-btn" data-filter="07 理学">🔢 07 理学</button>
+<button class="filter-btn" data-filter="08 工学">💻 08 工学</button>
+<button class="filter-btn" data-filter="10 医学">🩺 10 医学</button>
+<button class="filter-btn" data-filter="11 管理学">📋 11 管理学</button>
+<button class="filter-btn" data-filter="12 艺术学">🎨 12 艺术学</button>
+
+            </div>
+        </section>
+        
+        <div class="majors-grid" id="majorsGrid">
+            
+        <div class="major-card" id="card-010101" data-category="01 哲学" onclick="toggleCard('010101')">
+            <div class="card-header">
+                <span class="category-icon">🎓</span>
+                <div>
+                    <div class="major-name">哲学</div>
+                    <div class="major-code">010101</div>
+                    <div class="difficulty-stars">难度：★★★★☆</div>
+                </div>
+            </div>
+            
+            <div class="salary-tag">💰 起薪约5000-8000元，学术路线前期收入较低</div>
+            <span class="data-source-tag">暂无权威公开数据，仅供参考</span>
+            
+            <p style="margin-top:10px;font-size:0.9em;color:rgba(255,255,255,0.7);">
+                就业形势：就业率中等，对口就业率较低
+            </p>
+            
+            <div class="detail-section hidden">
+                <div class="detail-title">📖 学什么</div>
+                <div class="detail-content">哲学专业学习如何思考、推理和论证</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>中国哲学史、西方哲学史、逻辑学入门</li>
+                    <li><strong>大二：</strong>马克思主义哲学、伦理学、美学</li>
+                    <li><strong>大三：</strong>宗教学、科学技术哲学、专业原著选读</li>
+                    <li><strong>大四：</strong>毕业论文写作、哲学专题研讨</li>
+                </ul>
+                
+                <div class="detail-title">👤 适合人群</div>
+                <div class="detail-content">
+                    <strong>特质：</strong>喜欢深度思考、对人生意义感兴趣、耐得住寂寞
+                </div>
+                <div class="detail-content"><strong>技能要求：</strong></div>
+                <div class="skill-tags"><span class="skill-tag">阅读理解能力（大量原著）</span><span class="skill-tag">写作表达能力</span><span class="skill-tag">逻辑推理能力</span></div>
+                <div class="detail-content" style="color:#ffc107;">
+                    ⚠️ 需要长期积累，短期难以见成效
+                </div>
+                
+                <div class="detail-title">📈 前景展望</div>
+                <div class="detail-content">
+                    <strong>趋势：</strong>就业面较窄但稳定，哲学思维在管理咨询、公共政策等领域受重视
+                </div>
+                <div class="detail-content">
+                    <strong>热门去向：</strong>公务员、编辑、教师
+                </div>
+                <div class="detail-content">
+                    <strong>新兴方向：</strong>智库研究员、文化产业
+                </div>
+                
+                <div class="detail-title">💼 就业建议</div>
+                <div class="detail-content">
+                    <strong>立即行动：</strong>尽早确定方向：学术/教育/其他
+                </div>
+                <div class="detail-content">
+                    <strong>证书建议：</strong>教师资格证（想当老师必考）
+                </div>
+                <div class="detail-content">
+                    <strong>时间线：</strong>大三开始准备考研或考公
+                </div>
+                
+                <div class="detail-title">🛤️ 学习路径</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>读经典原著：论语、道德经、柏拉图对话录</li>
+                    <li><strong>大二：</strong>建立知识框架，写读书笔记</li>
+                    <li><strong>大三：</strong>参加读书会，尝试写学术论文</li>
+                    <li><strong>大四：</strong>确定方向：考研/考公/就业</li>
+                </ul>
+                
+                <div class="detail-title">⭐ 张雪峰点评</div>
+                <div class="pros-cons">
+                    <div class="pros-box">
+                        <strong style="color:#38ef7d;">✅ 优点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>培养批判性思维</li><li>考公有优势（行测逻辑题）</li><li>能看透事物本质</li></ul>
+                    </div>
+                    <div class="cons-box">
+                        <strong style="color:#f5576c;">❌ 缺点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>对口工作少</li><li>起薪低</li><li>需要持续深造</li></ul>
+                    </div>
+                </div>
+                <div class="summary-box">
+                    💬 总结：如果想赚快钱别选哲学；如果想提升思维层次，哲学是很好的通识教育
+                </div>
+            </div>
+        </div>
+    
+        <div class="major-card" id="card-020101" data-category="02 经济学" onclick="toggleCard('020101')">
+            <div class="card-header">
+                <span class="category-icon">📊</span>
+                <div>
+                    <div class="major-name">经济学</div>
+                    <div class="major-code">020101</div>
+                    <div class="difficulty-stars">难度：★★★★★</div>
+                </div>
+            </div>
+            
+            <div class="salary-tag">💰 起薪约6000-15000元，取决于院校和城市</div>
+            <span class="data-source-tag">暂无权威公开数据，仅供参考</span>
+            
+            <p style="margin-top:10px;font-size:0.9em;color:rgba(255,255,255,0.7);">
+                就业形势：就业率高，对口率高
+            </p>
+            
+            <div class="detail-section hidden">
+                <div class="detail-title">📖 学什么</div>
+                <div class="detail-content">研究资源配置、经济发展和市场运行规律</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>微积分、线性代数、政治经济学、微观经济学</li>
+                    <li><strong>大二：</strong>宏观经济学、统计学、概率论、计量经济学基础</li>
+                    <li><strong>大三：</strong>国际金融、货币银行学、财政学、计量经济学应用</li>
+                    <li><strong>大四：</strong>毕业论文、专业方向选修（如发展经济学、环境经济学）</li>
+                </ul>
+                
+                <div class="detail-title">👤 适合人群</div>
+                <div class="detail-content">
+                    <strong>特质：</strong>数学基础好、对经济现象感兴趣、逻辑思维强
+                </div>
+                <div class="detail-content"><strong>技能要求：</strong></div>
+                <div class="skill-tags"><span class="skill-tag">数学（微积分、概率统计必须精通）</span><span class="skill-tag">数据分析能力</span><span class="skill-tag">英语（看英文文献）</span></div>
+                <div class="detail-content" style="color:#ffc107;">
+                    ⚠️ 数学不好慎选，计量经济学需要较强数学基础
+                </div>
+                
+                <div class="detail-title">📈 前景展望</div>
+                <div class="detail-content">
+                    <strong>趋势：</strong>2024年经济形势复杂，但经济专业人才需求稳定
+                </div>
+                <div class="detail-content">
+                    <strong>热门去向：</strong>银行、证券、咨询公司、四大
+                </div>
+                <div class="detail-content">
+                    <strong>新兴方向：</strong>数据分析、量化投资、公共政策
+                </div>
+                
+                <div class="detail-title">💼 就业建议</div>
+                <div class="detail-content">
+                    <strong>立即行动：</strong>必须掌握Python或Stata进行数据分析
+                </div>
+                <div class="detail-content">
+                    <strong>证书建议：</strong>CFA（美国特许金融分析师）、CPA
+                </div>
+                <div class="detail-content">
+                    <strong>时间线：</strong>大三暑假前拿到实习，大四准备秋招
+                </div>
+                
+                <div class="detail-title">🛤️ 学习路径</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>学好数学和英语，了解经济学基本框架</li>
+                    <li><strong>大二：</strong>开始学计量经济学和数据分析工具</li>
+                    <li><strong>大三：</strong>参加数学建模竞赛，找第一份实习</li>
+                    <li><strong>大四：</strong>秋招/考研，简历突出实习和项目经验</li>
+                </ul>
+                
+                <div class="detail-title">⭐ 张雪峰点评</div>
+                <div class="pros-cons">
+                    <div class="pros-box">
+                        <strong style="color:#38ef7d;">✅ 优点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>就业面广</li><li>金融行业认可度高</li><li>培养商业思维</li></ul>
+                    </div>
+                    <div class="cons-box">
+                        <strong style="color:#f5576c;">❌ 缺点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>数学要求高</li><li>竞争激烈</li><li>顶尖岗位需要研究生学历</li></ul>
+                    </div>
+                </div>
+                <div class="summary-box">
+                    💬 总结：数学好的人适合，数学不好建议选其他方向
+                </div>
+            </div>
+        </div>
+    
+        <div class="major-card" id="card-020201" data-category="02 经济学" onclick="toggleCard('020201')">
+            <div class="card-header">
+                <span class="category-icon">💰</span>
+                <div>
+                    <div class="major-name">财政学</div>
+                    <div class="major-code">020201</div>
+                    <div class="difficulty-stars">难度：★★★★☆</div>
+                </div>
+            </div>
+            
+            <div class="salary-tag">💰 体制内就业为主，起薪约5000-10000元</div>
+            <span class="data-source-tag">暂无权威公开数据，仅供参考</span>
+            
+            <p style="margin-top:10px;font-size:0.9em;color:rgba(255,255,255,0.7);">
+                就业形势：就业率高，体制内比例高
+            </p>
+            
+            <div class="detail-section hidden">
+                <div class="detail-title">📖 学什么</div>
+                <div class="detail-content">学习政府理财、公共支出和税收的理论与实践</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>政治经济学、财政学基础、税收概论</li>
+                    <li><strong>大二：</strong>中国税制、预算管理、政府会计</li>
+                    <li><strong>大三：</strong>国有资产管理、地方政府财政、国际税收</li>
+                    <li><strong>大四：</strong>毕业论文、专业实习</li>
+                </ul>
+                
+                <div class="detail-title">👤 适合人群</div>
+                <div class="detail-content">
+                    <strong>特质：</strong>有家国情怀、愿意服务公共事务、文字功底好
+                </div>
+                <div class="detail-content"><strong>技能要求：</strong></div>
+                <div class="skill-tags"><span class="skill-tag">财务分析能力</span><span class="skill-tag">政策理解能力</span><span class="skill-tag">公文写作能力</span></div>
+                <div class="detail-content" style="color:#ffc107;">
+                    ⚠️ 如果只想赚钱不建议选这条路
+                </div>
+                
+                <div class="detail-title">📈 前景展望</div>
+                <div class="detail-content">
+                    <strong>趋势：</strong>财政专业人才稳定需求，公务员考试有优势
+                </div>
+                <div class="detail-content">
+                    <strong>热门去向：</strong>税务局、财政局、审计局、政府部门
+                </div>
+                <div class="detail-content">
+                    <strong>新兴方向：</strong>PPP项目、财政绩效评价
+                </div>
+                
+                <div class="detail-title">💼 就业建议</div>
+                <div class="detail-content">
+                    <strong>立即行动：</strong>关注公务员考试，提早准备行测申论
+                </div>
+                <div class="detail-content">
+                    <strong>证书建议：</strong>税务师、会计师
+                </div>
+                <div class="detail-content">
+                    <strong>时间线：</strong>大三开始备考公务员
+                </div>
+                
+                <div class="detail-title">🛤️ 学习路径</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>了解财政体制，看政府工作报告</li>
+                    <li><strong>大二：</strong>学税收实务，关注财政政策</li>
+                    <li><strong>大三：</strong>找财税类实习，备考税务师</li>
+                    <li><strong>大四：</strong>国考/省考，简历突出财务分析能力</li>
+                </ul>
+                
+                <div class="detail-title">⭐ 张雪峰点评</div>
+                <div class="pros-cons">
+                    <div class="pros-box">
+                        <strong style="color:#38ef7d;">✅ 优点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>考公优势明显</li><li>工作稳定</li><li>社会地位较高</li></ul>
+                    </div>
+                    <div class="cons-box">
+                        <strong style="color:#f5576c;">❌ 缺点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>薪资天花板较低</li><li>体制内晋升慢</li></ul>
+                    </div>
+                </div>
+                <div class="summary-box">
+                    💬 总结：想稳定生活的人适合，想快速致富的不适合
+                </div>
+            </div>
+        </div>
+    
+        <div class="major-card" id="card-030101" data-category="03 法学" onclick="toggleCard('030101')">
+            <div class="card-header">
+                <span class="category-icon">⚖️</span>
+                <div>
+                    <div class="major-name">法学</div>
+                    <div class="major-code">030101</div>
+                    <div class="difficulty-stars">难度：★★★★★</div>
+                </div>
+            </div>
+            
+            <div class="salary-tag">💰 前期收入低（3000-6000元），后期差距大</div>
+            <span class="data-source-tag">暂无权威公开数据，仅供参考</span>
+            
+            <p style="margin-top:10px;font-size:0.9em;color:rgba(255,255,255,0.7);">
+                就业形势：就业率较高，但对口率低（法考是门槛）
+            </p>
+            
+            <div class="detail-section hidden">
+                <div class="detail-title">📖 学什么</div>
+                <div class="detail-content">学习法律知识和法律思维</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>法理学、宪法学、中国法制史、民法总论</li>
+                    <li><strong>大二：</strong>物权法、合同法、侵权责任法、民事诉讼法</li>
+                    <li><strong>大三：</strong>刑法、刑事诉讼法、行政法与行政诉讼法</li>
+                    <li><strong>大四：</strong>商法、经济法、知识产权法、国际法、毕业论文</li>
+                </ul>
+                
+                <div class="detail-title">👤 适合人群</div>
+                <div class="detail-content">
+                    <strong>特质：</strong>记忆力好（背法条）、逻辑思维强（分析案情）、文字表达好（写诉状）
+                </div>
+                <div class="detail-content"><strong>技能要求：</strong></div>
+                <div class="skill-tags"><span class="skill-tag">记忆力（大量法条需要记忆）</span><span class="skill-tag">逻辑推理能力</span><span class="skill-tag">表达能力</span></div>
+                <div class="detail-content" style="color:#ffc107;">
+                    ⚠️ 法考通过率仅12%，没通过的很难从事法律工作
+                </div>
+                
+                <div class="detail-title">📈 前景展望</div>
+                <div class="detail-content">
+                    <strong>趋势：</strong>2024年法律行业竞争激烈，红圈所门槛极高
+                </div>
+                <div class="detail-content">
+                    <strong>热门去向：</strong>律所、法院、检察院、企业法务
+                </div>
+                <div class="detail-content">
+                    <strong>新兴方向：</strong>合规业务、涉外法律、数据合规
+                </div>
+                
+                <div class="detail-title">💼 就业建议</div>
+                <div class="detail-content">
+                    <strong>立即行动：</strong>大学期间必须过法考，否则就业困难
+                </div>
+                <div class="detail-content">
+                    <strong>证书建议：</strong>法律职业资格证（必考）、律师执业证
+                </div>
+                <div class="detail-content">
+                    <strong>时间线：</strong>大四第一学期考法考，考研/就业同步准备
+                </div>
+                
+                <div class="detail-title">🛤️ 学习路径</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>培养法律思维，读《西窗法雨》等入门书</li>
+                    <li><strong>大二：</strong>开始系统学习民法刑法，练习案例分析</li>
+                    <li><strong>大三：</strong>准备法考（至少复习6个月），找律所实习</li>
+                    <li><strong>大四：</strong>过法考！过法考！过法考！</li>
+                </ul>
+                
+                <div class="detail-title">⭐ 张雪峰点评</div>
+                <div class="pros-cons">
+                    <div class="pros-box">
+                        <strong style="color:#38ef7d;">✅ 优点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>社会地位高</li><li>越老越吃香</li><li>能帮人解决实际问题</li></ul>
+                    </div>
+                    <div class="cons-box">
+                        <strong style="color:#f5576c;">❌ 缺点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>法考难（通过率12%）</li><li>前期收入低</li><li>加班多</li></ul>
+                    </div>
+                </div>
+                <div class="summary-box">
+                    💬 总结：背书不行别选法学，法考是硬门槛
+                </div>
+            </div>
+        </div>
+    
+        <div class="major-card" id="card-030301" data-category="03 法学" onclick="toggleCard('030301')">
+            <div class="card-header">
+                <span class="category-icon">👥</span>
+                <div>
+                    <div class="major-name">社会学</div>
+                    <div class="major-code">030301</div>
+                    <div class="difficulty-stars">难度：★★★★☆</div>
+                </div>
+            </div>
+            
+            <div class="salary-tag">💰 起薪约5000-10000元，非热门但稳定</div>
+            <span class="data-source-tag">暂无权威公开数据，仅供参考</span>
+            
+            <p style="margin-top:10px;font-size:0.9em;color:rgba(255,255,255,0.7);">
+                就业形势：就业率中等，适合继续深造
+            </p>
+            
+            <div class="detail-section hidden">
+                <div class="detail-title">📖 学什么</div>
+                <div class="detail-content">研究社会结构、社会问题和社会变迁</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>社会学概论、社会学理论、社会研究方法</li>
+                    <li><strong>大二：</strong>社会统计学、社会调查方法、质性研究</li>
+                    <li><strong>大三：</strong>社会分层与流动、城市社会学、农村社会学</li>
+                    <li><strong>大四：</strong>社会政策、社会工作、毕业论文</li>
+                </ul>
+                
+                <div class="detail-title">👤 适合人群</div>
+                <div class="detail-content">
+                    <strong>特质：</strong>关心社会问题、喜欢与人打交道、有同理心
+                </div>
+                <div class="detail-content"><strong>技能要求：</strong></div>
+                <div class="skill-tags"><span class="skill-tag">问卷设计能力</span><span class="skill-tag">数据分析能力</span><span class="skill-tag">报告写作能力</span></div>
+                <div class="detail-content" style="color:#ffc107;">
+                    ⚠️ 纯学术路线需要读研读博
+                </div>
+                
+                <div class="detail-title">📈 前景展望</div>
+                <div class="detail-content">
+                    <strong>趋势：</strong>社会调研需求增加，新兴领域包括互联网用户研究
+                </div>
+                <div class="detail-content">
+                    <strong>热门去向：</strong>市场研究公司、咨询公司、政府部门
+                </div>
+                <div class="detail-content">
+                    <strong>新兴方向：</strong>用户研究、社会企业、公共政策
+                </div>
+                
+                <div class="detail-title">💼 就业建议</div>
+                <div class="detail-content">
+                    <strong>立即行动：</strong>掌握SPSS或R语言进行数据分析
+                </div>
+                <div class="detail-content">
+                    <strong>证书建议：</strong>社工证（想做社工必考）
+                </div>
+                <div class="detail-content">
+                    <strong>时间线：</strong>大三确定方向：学术/市场研究/社工
+                </div>
+                
+                <div class="detail-title">🛤️ 学习路径</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>读费孝通《乡土中国》等经典</li>
+                    <li><strong>大二：</strong>学社会调查方法，做实地调研</li>
+                    <li><strong>大三：</strong>学数据分析，找市场研究公司实习</li>
+                    <li><strong>大四：</strong>写高质量调研报告</li>
+                </ul>
+                
+                <div class="detail-title">⭐ 张雪峰点评</div>
+                <div class="pros-cons">
+                    <div class="pros-box">
+                        <strong style="color:#38ef7d;">✅ 优点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>理解社会深刻</li><li>培养调查能力</li><li>考公有优势</li></ul>
+                    </div>
+                    <div class="cons-box">
+                        <strong style="color:#f5576c;">❌ 缺点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>对口工作少</li><li>薪资不高</li></ul>
+                    </div>
+                </div>
+                <div class="summary-box">
+                    💬 总结：适合做学术或市场研究，不适合想赚快钱的人
+                </div>
+            </div>
+        </div>
+    
+        <div class="major-card" id="card-040101" data-category="04 教育学" onclick="toggleCard('040101')">
+            <div class="card-header">
+                <span class="category-icon">📚</span>
+                <div>
+                    <div class="major-name">教育学</div>
+                    <div class="major-code">040101</div>
+                    <div class="difficulty-stars">难度：★★★☆☆</div>
+                </div>
+            </div>
+            
+            <div class="salary-tag">💰 教师编制内稳定，薪资与地区职称挂钩</div>
+            <span class="data-source-tag">暂无权威公开数据，仅供参考</span>
+            
+            <p style="margin-top:10px;font-size:0.9em;color:rgba(255,255,255,0.7);">
+                就业形势：就业率高，教师岗位需求稳定
+            </p>
+            
+            <div class="detail-section hidden">
+                <div class="detail-title">📖 学什么</div>
+                <div class="detail-content">学习教育理论和教育实践</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>教育学概论、教育心理学、教育史</li>
+                    <li><strong>大二：</strong>课程与教学论、教育研究方法、教育评价</li>
+                    <li><strong>大三：</strong>教育管理学、教育政策学、比较教育</li>
+                    <li><strong>大四：</strong>教育实习、毕业论文</li>
+                </ul>
+                
+                <div class="detail-title">👤 适合人群</div>
+                <div class="detail-content">
+                    <strong>特质：</strong>有爱心、善于表达、耐心
+                </div>
+                <div class="detail-content"><strong>技能要求：</strong></div>
+                <div class="skill-tags"><span class="skill-tag">表达能力</span><span class="skill-tag">组织协调能力</span><span class="skill-tag">抗压能力</span></div>
+                <div class="detail-content" style="color:#ffc107;">
+                    ⚠️ 想当老师必须考教师资格证和编制
+                </div>
+                
+                <div class="detail-title">📈 前景展望</div>
+                <div class="detail-content">
+                    <strong>趋势：</strong>2024年教师编制竞争激烈，好学校门槛高
+                </div>
+                <div class="detail-content">
+                    <strong>热门去向：</strong>中小学教师、教育培训机构、教育管理
+                </div>
+                <div class="detail-content">
+                    <strong>新兴方向：</strong>在线教育、教育科技、教育咨询
+                </div>
+                
+                <div class="detail-title">💼 就业建议</div>
+                <div class="detail-content">
+                    <strong>立即行动：</strong>必须考教师资格证，大三开始准备考编
+                </div>
+                <div class="detail-content">
+                    <strong>证书建议：</strong>教师资格证（必考）、普通话证书
+                </div>
+                <div class="detail-content">
+                    <strong>时间线：</strong>大三上学期拿教资，大三下开始备考编制
+                </div>
+                
+                <div class="detail-title">🛤️ 学习路径</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>考普通话证书，了解教育行业</li>
+                    <li><strong>大二：</strong>参加教学实践，试讲练习</li>
+                    <li><strong>大三：</strong>考教资，准备教师编制考试</li>
+                    <li><strong>大四：</strong>参加教师招聘考试</li>
+                </ul>
+                
+                <div class="detail-title">⭐ 张雪峰点评</div>
+                <div class="pros-cons">
+                    <div class="pros-box">
+                        <strong style="color:#38ef7d;">✅ 优点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>稳定体面</li><li>有寒暑假</li><li>社会地位高</li></ul>
+                    </div>
+                    <div class="cons-box">
+                        <strong style="color:#f5576c;">❌ 缺点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>薪资增长慢</li><li>编制难考</li><li>教学压力大</li></ul>
+                    </div>
+                </div>
+                <div class="summary-box">
+                    💬 总结：适合追求稳定生活的人，挣钱不是首要目标
+                </div>
+            </div>
+        </div>
+    
+        <div class="major-card" id="card-040201" data-category="04 教育学" onclick="toggleCard('040201')">
+            <div class="card-header">
+                <span class="category-icon">⚽</span>
+                <div>
+                    <div class="major-name">体育教育</div>
+                    <div class="major-code">040201</div>
+                    <div class="difficulty-stars">难度：★★★☆☆</div>
+                </div>
+            </div>
+            
+            <div class="salary-tag">💰 教师编制内稳定，薪资与地区相关</div>
+            <span class="data-source-tag">暂无权威公开数据，仅供参考</span>
+            
+            <p style="margin-top:10px;font-size:0.9em;color:rgba(255,255,255,0.7);">
+                就业形势：就业率高，体育老师需求稳定
+            </p>
+            
+            <div class="detail-section hidden">
+                <div class="detail-title">📖 学什么</div>
+                <div class="detail-content">学习体育理论、运动技能和教学方法</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>运动解剖学、体育概论、田径、篮球</li>
+                    <li><strong>大二：</strong>运动生理学、体操、武术、游泳</li>
+                    <li><strong>大三：</strong>体育教学论、运动训练学、体育游戏</li>
+                    <li><strong>大四：</strong>教育实习、毕业论文</li>
+                </ul>
+                
+                <div class="detail-title">👤 适合人群</div>
+                <div class="detail-content">
+                    <strong>特质：</strong>热爱体育、身体素质好、有耐心
+                </div>
+                <div class="detail-content"><strong>技能要求：</strong></div>
+                <div class="skill-tags"><span class="skill-tag">运动技能（至少一项专长）</span><span class="skill-tag">教学能力</span><span class="skill-tag">组织能力</span></div>
+                <div class="detail-content" style="color:#ffc107;">
+                    ⚠️ 运动伤病是职业风险
+                </div>
+                
+                <div class="detail-title">📈 前景展望</div>
+                <div class="detail-content">
+                    <strong>趋势：</strong>体育产业快速发展，中考高考体育地位提升
+                </div>
+                <div class="detail-content">
+                    <strong>热门去向：</strong>中小学体育老师、健身教练、体育培训机构
+                </div>
+                <div class="detail-content">
+                    <strong>新兴方向：</strong>体育经纪、运动康复、体育管理
+                </div>
+                
+                <div class="detail-title">💼 就业建议</div>
+                <div class="detail-content">
+                    <strong>立即行动：</strong>培养一项运动专长，考取相关证书
+                </div>
+                <div class="detail-content">
+                    <strong>证书建议：</strong>教师资格证、教练员证、社会体育指导员证
+                </div>
+                <div class="detail-content">
+                    <strong>时间线：</strong>大三准备考编
+                </div>
+                
+                <div class="detail-title">🛤️ 学习路径</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>确定运动专长方向，考取相关证书</li>
+                    <li><strong>大二：</strong>考教资，参加教学实习</li>
+                    <li><strong>大三：</strong>准备考编，了解体育产业</li>
+                    <li><strong>大四：</strong>参加教师招聘考试</li>
+                </ul>
+                
+                <div class="detail-title">⭐ 张雪峰点评</div>
+                <div class="pros-cons">
+                    <div class="pros-box">
+                        <strong style="color:#38ef7d;">✅ 优点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>工作稳定</li><li>有寒暑假</li><li>适合热爱运动的人</li></ul>
+                    </div>
+                    <div class="cons-box">
+                        <strong style="color:#f5576c;">❌ 缺点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>薪资有限</li><li>发展空间有限</li></ul>
+                    </div>
+                </div>
+                <div class="summary-box">
+                    💬 总结：热爱体育且追求稳定的人适合
+                </div>
+            </div>
+        </div>
+    
+        <div class="major-card" id="card-050101" data-category="05 文学" onclick="toggleCard('050101')">
+            <div class="card-header">
+                <span class="category-icon">📖</span>
+                <div>
+                    <div class="major-name">汉语言文学</div>
+                    <div class="major-code">050101</div>
+                    <div class="difficulty-stars">难度：★★★☆☆</div>
+                </div>
+            </div>
+            
+            <div class="salary-tag">💰 起薪约5000-9000元，稳定型收入</div>
+            <span class="data-source-tag">暂无权威公开数据，仅供参考</span>
+            
+            <p style="margin-top:10px;font-size:0.9em;color:rgba(255,255,255,0.7);">
+                就业形势：就业率高，体制内岗位多
+            </p>
+            
+            <div class="detail-section hidden">
+                <div class="detail-title">📖 学什么</div>
+                <div class="detail-content">学习汉语语言知识和文学鉴赏创作能力</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>现代汉语、古代汉语、文学概论、中国现代文学</li>
+                    <li><strong>大二：</strong>中国古代文学、外国文学、写作学</li>
+                    <li><strong>大三：</strong>文学批评、语言学概论、比较文学</li>
+                    <li><strong>大四：</strong>毕业论文、选修方向深化</li>
+                </ul>
+                
+                <div class="detail-title">👤 适合人群</div>
+                <div class="detail-content">
+                    <strong>特质：</strong>热爱阅读、文字敏感、善于表达
+                </div>
+                <div class="detail-content"><strong>技能要求：</strong></div>
+                <div class="skill-tags"><span class="skill-tag">写作能力（各种文体）</span><span class="skill-tag">阅读理解能力</span><span class="skill-tag">文字功底</span></div>
+                <div class="detail-content" style="color:#ffc107;">
+                    ⚠️ 纯文学创作需要天赋，不是每个人都适合
+                </div>
+                
+                <div class="detail-title">📈 前景展望</div>
+                <div class="detail-content">
+                    <strong>趋势：</strong>考公考编热门专业，新媒体行业需求增加
+                </div>
+                <div class="detail-content">
+                    <strong>热门去向：</strong>语文老师、编辑、记者、公务员
+                </div>
+                <div class="detail-content">
+                    <strong>新兴方向：</strong>新媒体运营、内容编辑、文案策划
+                </div>
+                
+                <div class="detail-title">💼 就业建议</div>
+                <div class="detail-content">
+                    <strong>立即行动：</strong>多练写作，建立作品集
+                </div>
+                <div class="detail-content">
+                    <strong>证书建议：</strong>教师资格证（想当老师）、出版专业资格证
+                </div>
+                <div class="detail-content">
+                    <strong>时间线：</strong>大三确定方向，准备考公或考编
+                </div>
+                
+                <div class="detail-title">🛤️ 学习路径</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>大量阅读经典文学作品，开始写读书笔记</li>
+                    <li><strong>大二：</strong>练习各种文体写作，尝试投稿</li>
+                    <li><strong>大三：</strong>确定方向（教育/出版/新媒体），针对性准备</li>
+                    <li><strong>大四：</strong>积累作品集，准备秋招</li>
+                </ul>
+                
+                <div class="detail-title">⭐ 张雪峰点评</div>
+                <div class="pros-cons">
+                    <div class="pros-box">
+                        <strong style="color:#38ef7d;">✅ 优点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>考公考编优势大</li><li>文字能力强</li><li>文化底蕴深</li></ul>
+                    </div>
+                    <div class="cons-box">
+                        <strong style="color:#f5576c;">❌ 缺点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>薪资天花板有限</li><li>纯文字工作竞争激烈</li></ul>
+                    </div>
+                </div>
+                <div class="summary-box">
+                    💬 总结：适合追求稳定、热爱文学的人
+                </div>
+            </div>
+        </div>
+    
+        <div class="major-card" id="card-050201" data-category="05 文学" onclick="toggleCard('050201')">
+            <div class="card-header">
+                <span class="category-icon">🌍</span>
+                <div>
+                    <div class="major-name">英语</div>
+                    <div class="major-code">050201</div>
+                    <div class="difficulty-stars">难度：★★★★☆</div>
+                </div>
+            </div>
+            
+            <div class="salary-tag">💰 差距极大，翻译和教育类5000-20000元不等</div>
+            <span class="data-source-tag">暂无权威公开数据，仅供参考</span>
+            
+            <p style="margin-top:10px;font-size:0.9em;color:rgba(255,255,255,0.7);">
+                就业形势：就业率高，但竞争激烈
+            </p>
+            
+            <div class="detail-section hidden">
+                <div class="detail-title">📖 学什么</div>
+                <div class="detail-content">学习英语语言技能和文化知识</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>综合英语、听力、口语、语音</li>
+                    <li><strong>大二：</strong>阅读、写作、翻译入门、语言学概论</li>
+                    <li><strong>大三：</strong>高级翻译、英美文学、商务英语/旅游英语</li>
+                    <li><strong>大四：</strong>毕业论文、专业实习</li>
+                </ul>
+                
+                <div class="detail-title">👤 适合人群</div>
+                <div class="detail-content">
+                    <strong>特质：</strong>对语言有天赋、刻苦努力、敢于开口
+                </div>
+                <div class="detail-content"><strong>技能要求：</strong></div>
+                <div class="skill-tags"><span class="skill-tag">听说读写译（全方位）</span><span class="skill-tag">跨文化交际能力</span><span class="skill-tag">学习能力</span></div>
+                <div class="detail-content" style="color:#ffc107;">
+                    ⚠️ 必须过专八，否则没有竞争力
+                </div>
+                
+                <div class="detail-title">📈 前景展望</div>
+                <div class="detail-content">
+                    <strong>趋势：</strong>AI翻译冲击基础翻译岗位，高端翻译仍有需求
+                </div>
+                <div class="detail-content">
+                    <strong>热门去向：</strong>英语老师、翻译、外贸、涉外工作
+                </div>
+                <div class="detail-content">
+                    <strong>新兴方向：</strong>跨境电商、国际旅游、语言培训
+                </div>
+                
+                <div class="detail-title">💼 就业建议</div>
+                <div class="detail-content">
+                    <strong>立即行动：</strong>必须过专八，最好有CATTI证书
+                </div>
+                <div class="detail-content">
+                    <strong>证书建议：</strong>专八（必须）、CATTI、雅思7.0+
+                </div>
+                <div class="detail-content">
+                    <strong>时间线：</strong>大二下学期开始准备专八
+                </div>
+                
+                <div class="detail-title">🛤️ 学习路径</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>打好基础，每天练习听说读写</li>
+                    <li><strong>大二：</strong>过四六级专四，找外教聊天</li>
+                    <li><strong>大三：</strong>准备专八，考CATTI三级</li>
+                    <li><strong>大四：</strong>确定方向，积累专业领域英语</li>
+                </ul>
+                
+                <div class="detail-title">⭐ 张雪峰点评</div>
+                <div class="pros-cons">
+                    <div class="pros-box">
+                        <strong style="color:#38ef7d;">✅ 优点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>国际视野</li><li>就业面广</li><li>有留学优势</li></ul>
+                    </div>
+                    <div class="cons-box">
+                        <strong style="color:#f5576c;">❌ 缺点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>AI冲击</li><li>竞争激烈</li><li>需要持续学习</li></ul>
+                    </div>
+                </div>
+                <div class="summary-box">
+                    💬 总结：英语是工具而非专业，必须结合其他技能
+                </div>
+            </div>
+        </div>
+    
+        <div class="major-card" id="card-050303" data-category="05 文学" onclick="toggleCard('050303')">
+            <div class="card-header">
+                <span class="category-icon">📰</span>
+                <div>
+                    <div class="major-name">新闻学</div>
+                    <div class="major-code">050303</div>
+                    <div class="difficulty-stars">难度：★★★☆☆</div>
+                </div>
+            </div>
+            
+            <div class="salary-tag">💰 传统媒体低（约5000-8000元），新媒体高</div>
+            <span class="data-source-tag">暂无权威公开数据，仅供参考</span>
+            
+            <p style="margin-top:10px;font-size:0.9em;color:rgba(255,255,255,0.7);">
+                就业形势：就业率高，但行业变革快
+            </p>
+            
+            <div class="detail-section hidden">
+                <div class="detail-title">📖 学什么</div>
+                <div class="detail-content">学习新闻采写编评和传播技能</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>新闻学概论、传播学概论、采访写作</li>
+                    <li><strong>大二：</strong>新闻编辑、新闻摄影、电视摄像</li>
+                    <li><strong>大三：</strong>深度报道、新闻评论、新媒体运营</li>
+                    <li><strong>大四：</strong>毕业实习、毕业论文</li>
+                </ul>
+                
+                <div class="detail-title">👤 适合人群</div>
+                <div class="detail-content">
+                    <strong>特质：</strong>好奇心强、善于交际、反应快
+                </div>
+                <div class="detail-content"><strong>技能要求：</strong></div>
+                <div class="skill-tags"><span class="skill-tag">写作能力</span><span class="skill-tag">人际沟通能力</span><span class="skill-tag">抗压能力</span></div>
+                <div class="detail-content" style="color:#ffc107;">
+                    ⚠️ 媒体工作强度大，加班是常态
+                </div>
+                
+                <div class="detail-title">📈 前景展望</div>
+                <div class="detail-content">
+                    <strong>趋势：</strong>传统媒体衰落，新媒体和短视频崛起
+                </div>
+                <div class="detail-content">
+                    <strong>热门去向：</strong>新媒体运营、记者、编辑、内容创作
+                </div>
+                <div class="detail-content">
+                    <strong>新兴方向：</strong>短视频制作、直播运营、品牌公关
+                </div>
+                
+                <div class="detail-title">💼 就业建议</div>
+                <div class="detail-content">
+                    <strong>立即行动：</strong>运营自己的自媒体账号，建立作品集
+                </div>
+                <div class="detail-content">
+                    <strong>证书建议：</strong>记者证（想当记者必考）
+                </div>
+                <div class="detail-content">
+                    <strong>时间线：</strong>大三开始实习积累作品
+                </div>
+                
+                <div class="detail-title">🛤️ 学习路径</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>关注新闻热点，开始写稿投稿</li>
+                    <li><strong>大二：</strong>学新媒体技能，做自己的账号</li>
+                    <li><strong>大三：</strong>找媒体实习，积累作品</li>
+                    <li><strong>大四：</strong>确定方向，准备秋招</li>
+                </ul>
+                
+                <div class="detail-title">⭐ 张雪峰点评</div>
+                <div class="pros-cons">
+                    <div class="pros-box">
+                        <strong style="color:#38ef7d;">✅ 优点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>能接触社会各层面</li><li>成长快</li><li>有成就感</li></ul>
+                    </div>
+                    <div class="cons-box">
+                        <strong style="color:#f5576c;">❌ 缺点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>工作强度大</li><li>薪资不稳定</li><li>行业变动大</li></ul>
+                    </div>
+                </div>
+                <div class="summary-box">
+                    💬 总结：热爱新闻的人适合，追求稳定的不适合
+                </div>
+            </div>
+        </div>
+    
+        <div class="major-card" id="card-070101" data-category="07 理学" onclick="toggleCard('070101')">
+            <div class="card-header">
+                <span class="category-icon">🔢</span>
+                <div>
+                    <div class="major-name">数学与应用数学</div>
+                    <div class="major-code">070101</div>
+                    <div class="difficulty-stars">难度：★★★★★</div>
+                </div>
+            </div>
+            
+            <div class="salary-tag">💰 起薪约6000-20000元，取决于行业</div>
+            <span class="data-source-tag">暂无权威公开数据，仅供参考</span>
+            
+            <p style="margin-top:10px;font-size:0.9em;color:rgba(255,255,255,0.7);">
+                就业形势：就业率高，跨行业能力强
+            </p>
+            
+            <div class="detail-section hidden">
+                <div class="detail-title">📖 学什么</div>
+                <div class="detail-content">学习数学理论、应用数学和计算方法</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>数学分析、高等代数、解析几何</li>
+                    <li><strong>大二：</strong>常微分方程、概率论、数理统计</li>
+                    <li><strong>大三：</strong>实变函数、泛函分析、数值分析</li>
+                    <li><strong>大四：</strong>毕业论文、专业方向选修</li>
+                </ul>
+                
+                <div class="detail-title">👤 适合人群</div>
+                <div class="detail-content">
+                    <strong>特质：</strong>数学天赋、逻辑思维强、耐得住寂寞
+                </div>
+                <div class="detail-content"><strong>技能要求：</strong></div>
+                <div class="skill-tags"><span class="skill-tag">数学分析能力</span><span class="skill-tag">抽象思维能力</span><span class="skill-tag">编程能力（Python/MATLAB）</span></div>
+                <div class="detail-content" style="color:#ffc107;">
+                    ⚠️ 数学难，必须是真的喜欢，否则坚持不下去
+                </div>
+                
+                <div class="detail-title">📈 前景展望</div>
+                <div class="detail-content">
+                    <strong>趋势：</strong>数据科学AI火热，数学人才需求大增
+                </div>
+                <div class="detail-content">
+                    <strong>热门去向：</strong>数据分析、算法工程师、金融量化
+                </div>
+                <div class="detail-content">
+                    <strong>新兴方向：</strong>人工智能、密码学、生物统计
+                </div>
+                
+                <div class="detail-title">💼 就业建议</div>
+                <div class="detail-content">
+                    <strong>立即行动：</strong>学Python和机器学习，数学+编程是王炸组合
+                </div>
+                <div class="detail-content">
+                    <strong>证书建议：</strong>教师资格证（想当老师）、计算机等级证书
+                </div>
+                <div class="detail-content">
+                    <strong>时间线：</strong>大二确定方向，开始针对性学习
+                </div>
+                
+                <div class="detail-title">🛤️ 学习路径</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>学好数分高代，打好基础</li>
+                    <li><strong>大二：</strong>学编程，开始接触机器学习</li>
+                    <li><strong>大三：</strong>参加数学建模竞赛，找实习</li>
+                    <li><strong>大四：</strong>确定方向：读研/就业</li>
+                </ul>
+                
+                <div class="detail-title">⭐ 张雪峰点评</div>
+                <div class="pros-cons">
+                    <div class="pros-box">
+                        <strong style="color:#38ef7d;">✅ 优点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>基础学科，跨专业容易</li><li>薪资潜力大</li><li>培养逻辑思维</li></ul>
+                    </div>
+                    <div class="cons-box">
+                        <strong style="color:#f5576c;">❌ 缺点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>课程很难</li><li>需要持续深造</li></ul>
+                    </div>
+                </div>
+                <div class="summary-box">
+                    💬 总结：数学好的人选这个专业很有优势
+                </div>
+            </div>
+        </div>
+    
+        <div class="major-card" id="card-070201" data-category="07 理学" onclick="toggleCard('070201')">
+            <div class="card-header">
+                <span class="category-icon">⚛️</span>
+                <div>
+                    <div class="major-name">物理学</div>
+                    <div class="major-code">070201</div>
+                    <div class="difficulty-stars">难度：★★★★★</div>
+                </div>
+            </div>
+            
+            <div class="salary-tag">💰 基础学科收入一般，但跨行能力强</div>
+            <span class="data-source-tag">暂无权威公开数据，仅供参考</span>
+            
+            <p style="margin-top:10px;font-size:0.9em;color:rgba(255,255,255,0.7);">
+                就业形势：就业率较高，但大部分需要读研读博
+            </p>
+            
+            <div class="detail-section hidden">
+                <div class="detail-title">📖 学什么</div>
+                <div class="detail-content">学习物质运动规律和基本结构</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>力学、热学、电磁学、光学</li>
+                    <li><strong>大二：</strong>理论力学、量子力学、电动力学、热力学与统计物理</li>
+                    <li><strong>大三：</strong>固体物理、计算物理、实验物理</li>
+                    <li><strong>大四：</strong>毕业论文、毕业设计</li>
+                </ul>
+                
+                <div class="detail-title">👤 适合人群</div>
+                <div class="detail-content">
+                    <strong>特质：</strong>好奇心强、逻辑思维强、动手能力好
+                </div>
+                <div class="detail-content"><strong>技能要求：</strong></div>
+                <div class="skill-tags"><span class="skill-tag">数学物理方法</span><span class="skill-tag">实验技能</span><span class="skill-tag">编程能力</span></div>
+                <div class="detail-content" style="color:#ffc107;">
+                    ⚠️ 纯物理路线需要读博才能有成就
+                </div>
+                
+                <div class="detail-title">📈 前景展望</div>
+                <div class="detail-content">
+                    <strong>趋势：</strong>半导体、新能源等产业带动物理人才需求
+                </div>
+                <div class="detail-content">
+                    <strong>热门去向：</strong>半导体、光电、新能源、科研
+                </div>
+                <div class="detail-content">
+                    <strong>新兴方向：</strong>量子计算、光电子、新材料
+                </div>
+                
+                <div class="detail-title">💼 就业建议</div>
+                <div class="detail-content">
+                    <strong>立即行动：</strong>尽早确定方向：学术/工业界
+                </div>
+                <div class="detail-content">
+                    <strong>证书建议：</strong>教师资格证（想当老师）
+                </div>
+                <div class="detail-content">
+                    <strong>时间线：</strong>大二开始进实验室
+                </div>
+                
+                <div class="detail-title">🛤️ 学习路径</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>学好四大力学基础，数学要扎实</li>
+                    <li><strong>大二：</strong>进实验室参与科研，学编程</li>
+                    <li><strong>大三：</strong>参加科研项目，发论文</li>
+                    <li><strong>大四：</strong>确定方向：读研/就业</li>
+                </ul>
+                
+                <div class="detail-title">⭐ 张雪峰点评</div>
+                <div class="pros-cons">
+                    <div class="pros-box">
+                        <strong style="color:#38ef7d;">✅ 优点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>培养科学思维</li><li>跨行业能力强</li><li>社会尊重</li></ul>
+                    </div>
+                    <div class="cons-box">
+                        <strong style="color:#f5576c;">❌ 缺点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>学习难度大</li><li>学术路线周期长</li></ul>
+                    </div>
+                </div>
+                <div class="summary-box">
+                    💬 总结：真正热爱物理的人适合，想快速就业的慎选
+                </div>
+            </div>
+        </div>
+    
+        <div class="major-card" id="card-071001" data-category="07 理学" onclick="toggleCard('071001')">
+            <div class="card-header">
+                <span class="category-icon">🧬</span>
+                <div>
+                    <div class="major-name">生物科学</div>
+                    <div class="major-code">071001</div>
+                    <div class="difficulty-stars">难度：★★★★☆</div>
+                </div>
+            </div>
+            
+            <div class="salary-tag">💰 起薪约5000-10000元，需读研才有好发展</div>
+            <span class="data-source-tag">暂无权威公开数据，仅供参考</span>
+            
+            <p style="margin-top:10px;font-size:0.9em;color:rgba(255,255,255,0.7);">
+                就业形势：就业率一般，科研路线需要高学历
+            </p>
+            
+            <div class="detail-section hidden">
+                <div class="detail-title">📖 学什么</div>
+                <div class="detail-content">学习生命科学的基础理论和实验技术</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>普通生物学、生物化学、细胞生物学</li>
+                    <li><strong>大二：</strong>遗传学、微生物学、分子生物学</li>
+                    <li><strong>大三：</strong>植物学、动物学、生理学</li>
+                    <li><strong>大四：</strong>毕业论文、毕业实习</li>
+                </ul>
+                
+                <div class="detail-title">👤 适合人群</div>
+                <div class="detail-content">
+                    <strong>特质：</strong>热爱生命科学、动手能力强、有耐心
+                </div>
+                <div class="detail-content"><strong>技能要求：</strong></div>
+                <div class="skill-tags"><span class="skill-tag">实验操作能力</span><span class="skill-tag">观察能力</span><span class="skill-tag">数据分析能力</span></div>
+                <div class="detail-content" style="color:#ffc107;">
+                    ⚠️ 生物行业就业竞争激烈，必须读研
+                </div>
+                
+                <div class="detail-title">📈 前景展望</div>
+                <div class="detail-content">
+                    <strong>趋势：</strong>生物医药行业发展，生物专业就业有所改善
+                </div>
+                <div class="detail-content">
+                    <strong>热门去向：</strong>生物医药、医疗器械、环保
+                </div>
+                <div class="detail-content">
+                    <strong>新兴方向：</strong>基因编辑、生物信息、合成生物学
+                </div>
+                
+                <div class="detail-title">💼 就业建议</div>
+                <div class="detail-content">
+                    <strong>立即行动：</strong>必须读研究生，最好读博
+                </div>
+                <div class="detail-content">
+                    <strong>证书建议：</strong>教师资格证（想当老师）
+                </div>
+                <div class="detail-content">
+                    <strong>时间线：</strong>大三开始准备考研
+                </div>
+                
+                <div class="detail-title">🛤️ 学习路径</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>基础课程学好，进实验室参观</li>
+                    <li><strong>大二：</strong>进实验室参与科研项目</li>
+                    <li><strong>大三：</strong>确定研究方向，准备考研</li>
+                    <li><strong>大四：</strong>考研/保研</li>
+                </ul>
+                
+                <div class="detail-title">⭐ 张雪峰点评</div>
+                <div class="pros-cons">
+                    <div class="pros-box">
+                        <strong style="color:#38ef7d;">✅ 优点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>生命科学是未来方向</li><li>科研意义大</li></ul>
+                    </div>
+                    <div class="cons-box">
+                        <strong style="color:#f5576c;">❌ 缺点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>学习周期长</li><li>前期收入低</li></ul>
+                    </div>
+                </div>
+                <div class="summary-box">
+                    💬 总结：必须读研读博才能有好发展，短期就业不适合
+                </div>
+            </div>
+        </div>
+    
+        <div class="major-card" id="card-071101" data-category="07 理学" onclick="toggleCard('071101')">
+            <div class="card-header">
+                <span class="category-icon">🧠</span>
+                <div>
+                    <div class="major-name">心理学</div>
+                    <div class="major-code">071101</div>
+                    <div class="difficulty-stars">难度：★★★★☆</div>
+                </div>
+            </div>
+            
+            <div class="salary-tag">💰 起薪约5000-12000元，行业差距大</div>
+            <span class="data-source-tag">暂无权威公开数据，仅供参考</span>
+            
+            <p style="margin-top:10px;font-size:0.9em;color:rgba(255,255,255,0.7);">
+                就业形势：就业率中等，心理咨询师需要经验积累
+            </p>
+            
+            <div class="detail-section hidden">
+                <div class="detail-title">📖 学什么</div>
+                <div class="detail-content">学习心理现象规律和心理服务技术</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>普通心理学、实验心理学、心理统计</li>
+                    <li><strong>大二：</strong>发展心理学、社会心理学、变态心理学</li>
+                    <li><strong>大三：</strong>心理咨询与治疗、心理测量、人格心理学</li>
+                    <li><strong>大四：</strong>毕业论文、心理咨询实习</li>
+                </ul>
+                
+                <div class="detail-title">👤 适合人群</div>
+                <div class="detail-content">
+                    <strong>特质：</strong>善于倾听、同理心强、情绪稳定
+                </div>
+                <div class="detail-content"><strong>技能要求：</strong></div>
+                <div class="skill-tags"><span class="skill-tag">人际沟通能力</span><span class="skill-tag">洞察力</span><span class="skill-tag">情绪管理能力</span></div>
+                <div class="detail-content" style="color:#ffc107;">
+                    ⚠️ 心理咨询师前期收入低，需要长期积累
+                </div>
+                
+                <div class="detail-title">📈 前景展望</div>
+                <div class="detail-content">
+                    <strong>趋势：</strong>社会压力增大，心理健康需求上升
+                </div>
+                <div class="detail-content">
+                    <strong>热门去向：</strong>心理咨询师、用户体验研究 HR
+                </div>
+                <div class="detail-content">
+                    <strong>新兴方向：</strong>在线心理咨询、心理测评、EAP
+                </div>
+                
+                <div class="detail-title">💼 就业建议</div>
+                <div class="detail-content">
+                    <strong>立即行动：</strong>学咨询技术，积累个案经验
+                </div>
+                <div class="detail-content">
+                    <strong>证书建议：</strong>心理咨询师证（取消职业资格后可考协会认证）
+                </div>
+                <div class="detail-content">
+                    <strong>时间线：</strong>大三开始接个案实习
+                </div>
+                
+                <div class="detail-title">🛤️ 学习路径</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>读心理学经典著作，自我成长</li>
+                    <li><strong>大二：</strong>学心理统计和咨询技术</li>
+                    <li><strong>大三：</strong>开始接个案实习，督导成长</li>
+                    <li><strong>大四：</strong>确定方向：咨询/用户研究/HR</li>
+                </ul>
+                
+                <div class="detail-title">⭐ 张雪峰点评</div>
+                <div class="pros-cons">
+                    <div class="pros-box">
+                        <strong style="color:#38ef7d;">✅ 优点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>帮助他人</li><li>自我成长</li><li>行业前景好</li></ul>
+                    </div>
+                    <div class="cons-box">
+                        <strong style="color:#f5576c;">❌ 缺点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>前期积累期长</li><li>收入增长慢</li></ul>
+                    </div>
+                </div>
+                <div class="summary-box">
+                    💬 总结：真正热爱心理学、能承受他人痛苦的人适合
+                </div>
+            </div>
+        </div>
+    
+        <div class="major-card" id="card-071201" data-category="07 理学" onclick="toggleCard('071201')">
+            <div class="card-header">
+                <span class="category-icon">📈</span>
+                <div>
+                    <div class="major-name">统计学</div>
+                    <div class="major-code">071201</div>
+                    <div class="difficulty-stars">难度：★★★★☆</div>
+                </div>
+            </div>
+            
+            <div class="salary-tag">💰 数据时代起薪高，约8000-20000元</div>
+            <span class="data-source-tag">暂无权威公开数据，仅供参考</span>
+            
+            <p style="margin-top:10px;font-size:0.9em;color:rgba(255,255,255,0.7);">
+                就业形势：就业率高，数据人才需求大
+            </p>
+            
+            <div class="detail-section hidden">
+                <div class="detail-title">📖 学什么</div>
+                <div class="detail-content">学习数据收集、处理和分析的理论方法</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>数学分析、高等代数、概率论</li>
+                    <li><strong>大二：</strong>数理统计、回归分析、时间序列</li>
+                    <li><strong>大三：</strong>多元统计、抽样调查、贝叶斯统计</li>
+                    <li><strong>大四：</strong>毕业论文、数据分析项目</li>
+                </ul>
+                
+                <div class="detail-title">👤 适合人群</div>
+                <div class="detail-content">
+                    <strong>特质：</strong>数学好、对数据敏感、细心耐心
+                </div>
+                <div class="detail-content"><strong>技能要求：</strong></div>
+                <div class="skill-tags"><span class="skill-tag">统计软件（R/Python/SAS）</span><span class="skill-tag">数据分析能力</span><span class="skill-tag">业务理解能力</span></div>
+                <div class="detail-content" style="color:#ffc107;">
+                    ⚠️ 必须会编程，纯理论不够用
+                </div>
+                
+                <div class="detail-title">📈 前景展望</div>
+                <div class="detail-content">
+                    <strong>趋势：</strong>数据科学时代，统计人才极度稀缺
+                </div>
+                <div class="detail-content">
+                    <strong>热门去向：</strong>数据分析师、量化分析师、精算师
+                </div>
+                <div class="detail-content">
+                    <strong>新兴方向：</strong>数据科学、AI、风险管理
+                </div>
+                
+                <div class="detail-title">💼 就业建议</div>
+                <div class="detail-content">
+                    <strong>立即行动：</strong>必须精通Python或R，会SQL
+                </div>
+                <div class="detail-content">
+                    <strong>证书建议：</strong>CDA数据分析师、Python编程证书
+                </div>
+                <div class="detail-content">
+                    <strong>时间线：</strong>大二开始做数据分析项目
+                </div>
+                
+                <div class="detail-title">🛤️ 学习路径</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>学好数学和统计理论</li>
+                    <li><strong>大二：</strong>学Python/R，开始做项目</li>
+                    <li><strong>大三：</strong>参加数据竞赛，找实习</li>
+                    <li><strong>大四：</strong>秋招，准备数据分析面试</li>
+                </ul>
+                
+                <div class="detail-title">⭐ 张雪峰点评</div>
+                <div class="pros-cons">
+                    <div class="pros-box">
+                        <strong style="color:#38ef7d;">✅ 优点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>就业前景好</li><li>薪资高</li><li>跨行业容易</li></ul>
+                    </div>
+                    <div class="cons-box">
+                        <strong style="color:#f5576c;">❌ 缺点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>需要持续学习新技术</li></ul>
+                    </div>
+                </div>
+                <div class="summary-box">
+                    💬 总结：数学好、会编程的人选这个专业很有优势
+                </div>
+            </div>
+        </div>
+    
+        <div class="major-card" id="card-080901" data-category="08 工学" onclick="toggleCard('080901')">
+            <div class="card-header">
+                <span class="category-icon">💻</span>
+                <div>
+                    <div class="major-name">计算机科学与技术</div>
+                    <div class="major-code">080901</div>
+                    <div class="difficulty-stars">难度：★★★★★</div>
+                </div>
+            </div>
+            
+            <div class="salary-tag">💰 起薪高，应届生白菜价15K+，sp可达30K+</div>
+            <span class="data-source-tag">暂无权威公开数据，仅供参考</span>
+            
+            <p style="margin-top:10px;font-size:0.9em;color:rgba(255,255,255,0.7);">
+                就业形势：就业率高，2024年因AI竞争激烈度上升
+            </p>
+            
+            <div class="detail-section hidden">
+                <div class="detail-title">📖 学什么</div>
+                <div class="detail-content">学习软件硬件理论、软件开发与系统架构</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>C语言、数据结构与算法、计算机导论、高等数学</li>
+                    <li><strong>大二：</strong>算法、数据库、操作系统、计算机网络</li>
+                    <li><strong>大三：</strong>软件工程、编译原理、选修AI/大数据/云计算</li>
+                    <li><strong>大四：</strong>项目实战、毕业设计、实习</li>
+                </ul>
+                
+                <div class="detail-title">👤 适合人群</div>
+                <div class="detail-content">
+                    <strong>特质：</strong>逻辑思维强、对技术感兴趣、能持续学习
+                </div>
+                <div class="detail-content"><strong>技能要求：</strong></div>
+                <div class="skill-tags"><span class="skill-tag">编程能力（至少精通一门语言）</span><span class="skill-tag">算法功底</span><span class="skill-tag">自学能力</span></div>
+                <div class="detail-content" style="color:#ffc107;">
+                    ⚠️ 必须持续学习，技术更新快，35岁危机存在
+                </div>
+                
+                <div class="detail-title">📈 前景展望</div>
+                <div class="detail-content">
+                    <strong>趋势：</strong>2024年AI算法岗竞争激烈，约100人竞争1个岗位，但开发岗仍需求大
+                </div>
+                <div class="detail-content">
+                    <strong>热门去向：</strong>软件开发、算法工程师、产品经理
+                </div>
+                <div class="detail-content">
+                    <strong>新兴方向：</strong>人工智能、大数据、云计算、网络安全
+                </div>
+                
+                <div class="detail-title">💼 就业建议</div>
+                <div class="detail-content">
+                    <strong>立即行动：</strong>大二必须刷算法题，大三暑假前拿到实习offer，建议3月份开始投递
+                </div>
+                <div class="detail-content">
+                    <strong>证书建议：</strong>软考、阿里云认证
+                </div>
+                <div class="detail-content">
+                    <strong>时间线：</strong>大二下：刷题+项目；大三：实习；大四：秋招
+                </div>
+                
+                <div class="detail-title">🛤️ 学习路径</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>学C语言，打好编程基础，过四级</li>
+                    <li><strong>大二：</strong>学数据结构算法，刷LeetCode，准备ACM</li>
+                    <li><strong>大三：</strong>实习+项目，面试算法</li>
+                    <li><strong>大四：</strong>秋招/考研，简历突出项目经验</li>
+                </ul>
+                
+                <div class="detail-title">⭐ 张雪峰点评</div>
+                <div class="pros-cons">
+                    <div class="pros-box">
+                        <strong style="color:#38ef7d;">✅ 优点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>起薪高（应届生15K+）</li><li>需求量大（每年校招数万人）</li><li>技术更迭带来机会</li></ul>
+                    </div>
+                    <div class="cons-box">
+                        <strong style="color:#f5576c;">❌ 缺点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>学习难度大</li><li>35岁危机</li><li>竞争激烈（尤其是AI方向）</li></ul>
+                    </div>
+                </div>
+                <div class="summary-box">
+                    💬 总结：数学逻辑好、能持续学习的人适合；数学不好慎选AI方向
+                </div>
+            </div>
+        </div>
+    
+        <div class="major-card" id="card-080717" data-category="08 工学" onclick="toggleCard('080717')">
+            <div class="card-header">
+                <span class="category-icon">🤖</span>
+                <div>
+                    <div class="major-name">人工智能</div>
+                    <div class="major-code">080717</div>
+                    <div class="difficulty-stars">难度：★★★★★</div>
+                </div>
+            </div>
+            
+            <div class="salary-tag">💰 顶尖人才薪资极高，硕士应届可达30-50K</div>
+            <span class="data-source-tag">暂无权威公开数据，仅供参考</span>
+            
+            <p style="margin-top:10px;font-size:0.9em;color:rgba(255,255,255,0.7);">
+                就业形势：高端人才稀缺，但门槛极高
+            </p>
+            
+            <div class="detail-section hidden">
+                <div class="detail-title">📖 学什么</div>
+                <div class="detail-content">学习机器学习、深度学习、自然语言处理等AI核心技术</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>高等数学、线性代数、概率论、Python编程</li>
+                    <li><strong>大二：</strong>机器学习、数据挖掘、TensorFlow/PyTorch</li>
+                    <li><strong>大三：</strong>深度学习、计算机视觉、自然语言处理、强化学习</li>
+                    <li><strong>大四：</strong>AI项目实战、顶会论文（大厂方向）、毕业设计</li>
+                </ul>
+                
+                <div class="detail-title">👤 适合人群</div>
+                <div class="detail-content">
+                    <strong>特质：</strong>数学极好、对AI有热情、能啃硬骨头
+                </div>
+                <div class="detail-content"><strong>技能要求：</strong></div>
+                <div class="skill-tags"><span class="skill-tag">数学（高数线代概率必须精通）</span><span class="skill-tag">Python编程</span><span class="skill-tag">英文阅读（看paper）</span></div>
+                <div class="detail-content" style="color:#ffc107;">
+                    ⚠️ 必须读研究生，本科生难以胜任AI岗位
+                </div>
+                
+                <div class="detail-title">📈 前景展望</div>
+                <div class="detail-content">
+                    <strong>趋势：</strong>2024年AI方向卷出天际，顶会论文+顶会比赛经验是入场券
+                </div>
+                <div class="detail-content">
+                    <strong>热门去向：</strong>算法工程师、AI研究员、大模型
+                </div>
+                <div class="detail-content">
+                    <strong>新兴方向：</strong>大模型、AIGC具身智能
+                </div>
+                
+                <div class="detail-title">💼 就业建议</div>
+                <div class="detail-content">
+                    <strong>立即行动：</strong>必须读研究生，争取发顶会paper
+                </div>
+                <div class="detail-content">
+                    <strong>证书建议：</strong>无硬性证书，但Kaggle比赛成绩很重要
+                </div>
+                <div class="detail-content">
+                    <strong>时间线：</strong>大二进实验室，大三发论文，大四保研/考研
+                </div>
+                
+                <div class="detail-title">🛤️ 学习路径</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>数学基础+Python，学吴恩达课程</li>
+                    <li><strong>大二：</strong>机器学习，进实验室打杂</li>
+                    <li><strong>大三：</strong>做AI项目，争取发论文</li>
+                    <li><strong>大四：</strong>保研/考研到AI强校</li>
+                </ul>
+                
+                <div class="detail-title">⭐ 张雪峰点评</div>
+                <div class="pros-cons">
+                    <div class="pros-box">
+                        <strong style="color:#38ef7d;">✅ 优点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>薪资天花板极高</li><li>改变世界的机会</li></ul>
+                    </div>
+                    <div class="cons-box">
+                        <strong style="color:#f5576c;">❌ 缺点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>难度最高的专业之一</li><li>必须读研</li><li>竞争极其激烈</li></ul>
+                    </div>
+                </div>
+                <div class="summary-box">
+                    💬 总结：数学极好、极度热爱AI的人适合；只想赚钱的别来
+                </div>
+            </div>
+        </div>
+    
+        <div class="major-card" id="card-080701" data-category="08 工学" onclick="toggleCard('080701')">
+            <div class="card-header">
+                <span class="category-icon">📡</span>
+                <div>
+                    <div class="major-name">电子信息工程</div>
+                    <div class="major-code">080701</div>
+                    <div class="difficulty-stars">难度：★★★★☆</div>
+                </div>
+            </div>
+            
+            <div class="salary-tag">💰 起薪约6000-15000元，硬件方向稳定</div>
+            <span class="data-source-tag">暂无权威公开数据，仅供参考</span>
+            
+            <p style="margin-top:10px;font-size:0.9em;color:rgba(255,255,255,0.7);">
+                就业形势：就业率高，制造业和科技公司需求稳定
+            </p>
+            
+            <div class="detail-section hidden">
+                <div class="detail-title">📖 学什么</div>
+                <div class="detail-content">学习电子电路、信号处理和通信技术</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>电路分析、模拟电路、数字电路、C语言</li>
+                    <li><strong>大二：</strong>信号与系统、数字信号处理、微机原理</li>
+                    <li><strong>大三：</strong>通信原理、嵌入式系统、电磁场与电磁波</li>
+                    <li><strong>大四：</strong>电子设计项目、毕业设计、实习</li>
+                </ul>
+                
+                <div class="detail-title">👤 适合人群</div>
+                <div class="detail-content">
+                    <strong>特质：</strong>动手能力强、对硬件感兴趣、细心耐心
+                </div>
+                <div class="detail-content"><strong>技能要求：</strong></div>
+                <div class="skill-tags"><span class="skill-tag">电路设计能力</span><span class="skill-tag">编程能力</span><span class="skill-tag">仪器使用能力</span></div>
+                <div class="detail-content" style="color:#ffc107;">
+                    ⚠️ 硬件学习周期长，需要实践经验
+                </div>
+                
+                <div class="detail-title">📈 前景展望</div>
+                <div class="detail-content">
+                    <strong>趋势：</strong>芯片产业受重视，电子人才需求增加
+                </div>
+                <div class="detail-content">
+                    <strong>热门去向：</strong>华为、中兴、电子制造、通信
+                </div>
+                <div class="detail-content">
+                    <strong>新兴方向：</strong>半导体、5G/6G、物联网
+                </div>
+                
+                <div class="detail-title">💼 就业建议</div>
+                <div class="detail-content">
+                    <strong>立即行动：</strong>参加电子设计竞赛，做实际项目
+                </div>
+                <div class="detail-content">
+                    <strong>证书建议：</strong>电工证、嵌入式工程师认证
+                </div>
+                <div class="detail-content">
+                    <strong>时间线：</strong>大二开始做项目
+                </div>
+                
+                <div class="detail-title">🛤️ 学习路径</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>电路基础+编程，画PCB板</li>
+                    <li><strong>大二：</strong>参加电子设计竞赛</li>
+                    <li><strong>大三：</strong>找对口实习，学嵌入式开发</li>
+                    <li><strong>大四：</strong>秋招或考研</li>
+                </ul>
+                
+                <div class="detail-title">⭐ 张雪峰点评</div>
+                <div class="pros-cons">
+                    <div class="pros-box">
+                        <strong style="color:#38ef7d;">✅ 优点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>技术门槛高</li><li>稳定不易被替代</li><li>芯片行业受重视</li></ul>
+                    </div>
+                    <div class="cons-box">
+                        <strong style="color:#f5576c;">❌ 缺点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>学习难度大</li><li>薪资不如CS高</li></ul>
+                    </div>
+                </div>
+                <div class="summary-box">
+                    💬 总结：硬件爱好者适合，想赚快钱的不如选CS
+                </div>
+            </div>
+        </div>
+    
+        <div class="major-card" id="card-080801" data-category="08 工学" onclick="toggleCard('080801')">
+            <div class="card-header">
+                <span class="category-icon">🤖</span>
+                <div>
+                    <div class="major-name">自动化</div>
+                    <div class="major-code">080801</div>
+                    <div class="difficulty-stars">难度：★★★★☆</div>
+                </div>
+            </div>
+            
+            <div class="salary-tag">💰 起薪约6000-12000元，工业应用广</div>
+            <span class="data-source-tag">暂无权威公开数据，仅供参考</span>
+            
+            <p style="margin-top:10px;font-size:0.9em;color:rgba(255,255,255,0.7);">
+                就业形势：就业率高，工业4.0带动需求
+            </p>
+            
+            <div class="detail-section hidden">
+                <div class="detail-title">📖 学什么</div>
+                <div class="detail-content">学习自动控制原理、系统设计和智能技术</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>电路基础、C语言、微积分、线性代数</li>
+                    <li><strong>大二：</strong>自动控制原理、数字电子技术、PLC编程</li>
+                    <li><strong>大三：</strong>运动控制、过程控制、机器人技术</li>
+                    <li><strong>大四：</strong>控制系统设计、毕业设计、实习</li>
+                </ul>
+                
+                <div class="detail-title">👤 适合人群</div>
+                <div class="detail-content">
+                    <strong>特质：</strong>喜欢控制系统、动手能力强、逻辑思维好
+                </div>
+                <div class="detail-content"><strong>技能要求：</strong></div>
+                <div class="skill-tags"><span class="skill-tag">编程能力</span><span class="skill-tag">系统设计能力</span><span class="skill-tag">PLC编程</span></div>
+                <div class="detail-content" style="color:#ffc107;">
+                    ⚠️ 需要软硬件结合，学习面广
+                </div>
+                
+                <div class="detail-title">📈 前景展望</div>
+                <div class="detail-content">
+                    <strong>趋势：</strong>工业4.0、智能制造带动自动化需求
+                </div>
+                <div class="detail-content">
+                    <strong>热门去向：</strong>制造业、机器人公司、智能装备
+                </div>
+                <div class="detail-content">
+                    <strong>新兴方向：</strong>工业互联网、智能工厂、无人机
+                </div>
+                
+                <div class="detail-title">💼 就业建议</div>
+                <div class="detail-content">
+                    <strong>立即行动：</strong>学PLC和单片机，做控制系统项目
+                </div>
+                <div class="detail-content">
+                    <strong>证书建议：</strong>PLC工程师认证
+                </div>
+                <div class="detail-content">
+                    <strong>时间线：</strong>大二开始做项目
+                </div>
+                
+                <div class="detail-title">🛤️ 学习路径</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>编程基础+电路基础</li>
+                    <li><strong>大二：</strong>学PLC和单片机</li>
+                    <li><strong>大三：</strong>参加机器人大赛，找实习</li>
+                    <li><strong>大四：</strong>秋招或考研</li>
+                </ul>
+                
+                <div class="detail-title">⭐ 张雪峰点评</div>
+                <div class="pros-cons">
+                    <div class="pros-box">
+                        <strong style="color:#38ef7d;">✅ 优点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>就业面广</li><li>工业需求稳定</li><li>技术积累价值高</li></ul>
+                    </div>
+                    <div class="cons-box">
+                        <strong style="color:#f5576c;">❌ 缺点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>学习难度较大</li><li>薪资不如CS高</li></ul>
+                    </div>
+                </div>
+                <div class="summary-box">
+                    💬 总结：工科里面比较均衡的专业
+                </div>
+            </div>
+        </div>
+    
+        <div class="major-card" id="card-080902" data-category="08 工学" onclick="toggleCard('080902')">
+            <div class="card-header">
+                <span class="category-icon">🖥️</span>
+                <div>
+                    <div class="major-name">软件工程</div>
+                    <div class="major-code">080902</div>
+                    <div class="difficulty-stars">难度：★★★★☆</div>
+                </div>
+            </div>
+            
+            <div class="salary-tag">💰 与CS类似，起薪约10-20K</div>
+            <span class="data-source-tag">暂无权威公开数据，仅供参考</span>
+            
+            <p style="margin-top:10px;font-size:0.9em;color:rgba(255,255,255,0.7);">
+                就业形势：就业率高，互联网公司需求大
+            </p>
+            
+            <div class="detail-section hidden">
+                <div class="detail-title">📖 学什么</div>
+                <div class="detail-content">学习软件开发方法论和工程实践</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>程序设计基础、数据结构、离散数学</li>
+                    <li><strong>大二：</strong>算法、数据库、软件工程概论、操作系统</li>
+                    <li><strong>大三：</strong>软件架构、Web开发、移动开发、测试</li>
+                    <li><strong>大四：</strong>企业实习、毕业项目</li>
+                </ul>
+                
+                <div class="detail-title">👤 适合人群</div>
+                <div class="detail-content">
+                    <strong>特质：</strong>喜欢编程、逻辑思维好、善于团队协作
+                </div>
+                <div class="detail-content"><strong>技能要求：</strong></div>
+                <div class="skill-tags"><span class="skill-tag">编程能力</span><span class="skill-tag">架构设计能力</span><span class="skill-tag">沟通能力</span></div>
+                <div class="detail-content" style="color:#ffc107;">
+                    ⚠️ 必须大量实践，只看书不够
+                </div>
+                
+                <div class="detail-title">📈 前景展望</div>
+                <div class="detail-content">
+                    <strong>趋势：</strong>互联网行业波动，但软件人才需求稳定
+                </div>
+                <div class="detail-content">
+                    <strong>热门去向：</strong>互联网公司、外包公司、传统企业IT
+                </div>
+                <div class="detail-content">
+                    <strong>新兴方向：</strong>云计算、SaaS、企业数字化
+                </div>
+                
+                <div class="detail-title">💼 就业建议</div>
+                <div class="detail-content">
+                    <strong>立即行动：</strong>做项目！做项目！做项目！
+                </div>
+                <div class="detail-content">
+                    <strong>证书建议：</strong>软考、阿里云认证
+                </div>
+                <div class="detail-content">
+                    <strong>时间线：</strong>大二开始做完整项目
+                </div>
+                
+                <div class="detail-title">🛤️ 学习路径</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>学编程，做小工具</li>
+                    <li><strong>大二：</strong>学主流框架，做完整项目</li>
+                    <li><strong>大三：</strong>实习+接私活积累经验</li>
+                    <li><strong>大四：</strong>秋招，简历突出项目经验</li>
+                </ul>
+                
+                <div class="detail-title">⭐ 张雪峰点评</div>
+                <div class="pros-cons">
+                    <div class="pros-box">
+                        <strong style="color:#38ef7d;">✅ 优点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>就业好</li><li>薪资高</li><li>实践性强</li></ul>
+                    </div>
+                    <div class="cons-box">
+                        <strong style="color:#f5576c;">❌ 缺点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>需要持续学习</li><li>工作强度可能大</li></ul>
+                    </div>
+                </div>
+                <div class="summary-box">
+                    💬 总结：CS的亲兄弟，比CS更偏应用
+                </div>
+            </div>
+        </div>
+    
+        <div class="major-card" id="card-081001" data-category="08 工学" onclick="toggleCard('081001')">
+            <div class="card-header">
+                <span class="category-icon">🏗️</span>
+                <div>
+                    <div class="major-name">土木工程</div>
+                    <div class="major-code">081001</div>
+                    <div class="difficulty-stars">难度：★★★★☆</div>
+                </div>
+            </div>
+            
+            <div class="salary-tag">💰 施工方向起薪约5000-10000元，设计院更高</div>
+            <span class="data-source-tag">暂无权威公开数据，仅供参考</span>
+            
+            <p style="margin-top:10px;font-size:0.9em;color:rgba(255,255,255,0.7);">
+                就业形势：就业率高，但行业下行压力增大
+            </p>
+            
+            <div class="detail-section hidden">
+                <div class="detail-title">📖 学什么</div>
+                <div class="detail-content">学习房屋建筑和基础设施的设计施工</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>高等数学、理论力学、材料力学</li>
+                    <li><strong>大二：</strong>结构力学、混凝土结构设计原理、钢结构</li>
+                    <li><strong>大三：</strong>基础工程、土木工程施工、工程项目管理</li>
+                    <li><strong>大四：</strong>毕业设计、施工实习</li>
+                </ul>
+                
+                <div class="detail-title">👤 适合人群</div>
+                <div class="detail-content">
+                    <strong>特质：</strong>能吃苦、空间想象能力、身体素质好
+                </div>
+                <div class="detail-content"><strong>技能要求：</strong></div>
+                <div class="skill-tags"><span class="skill-tag">力学分析能力</span><span class="skill-tag">识图绘图能力</span><span class="skill-tag">现场协调能力</span></div>
+                <div class="detail-content" style="color:#ffc107;">
+                    ⚠️ 施工方向需要常驻工地，工作条件艰苦
+                </div>
+                
+                <div class="detail-title">📈 前景展望</div>
+                <div class="detail-content">
+                    <strong>趋势：</strong>2024年房地产行业低迷，新基建带来新机会
+                </div>
+                <div class="detail-content">
+                    <strong>热门去向：</strong>施工企业、设计院、房地产公司
+                </div>
+                <div class="detail-content">
+                    <strong>新兴方向：</strong>装配式建筑、智能建造、城市更新
+                </div>
+                
+                <div class="detail-title">💼 就业建议</div>
+                <div class="detail-content">
+                    <strong>立即行动：</strong>尽早去工地实习，了解行业
+                </div>
+                <div class="detail-content">
+                    <strong>证书建议：</strong>建造师（工作后考）、结构工程师
+                </div>
+                <div class="detail-content">
+                    <strong>时间线：</strong>大三确定方向：施工/设计/甲方
+                </div>
+                
+                <div class="detail-title">🛤️ 学习路径</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>力学基础，打好专业基础</li>
+                    <li><strong>大二：</strong>学专业核心课，去工地实习</li>
+                    <li><strong>大三：</strong>确定方向，考相关证书</li>
+                    <li><strong>大四：</strong>秋招或考研</li>
+                </ul>
+                
+                <div class="detail-title">⭐ 张雪峰点评</div>
+                <div class="pros-cons">
+                    <div class="pros-box">
+                        <strong style="color:#38ef7d;">✅ 优点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>就业稳定</li><li>越老越值钱</li><li>技术门槛高</li></ul>
+                    </div>
+                    <div class="cons-box">
+                        <strong style="color:#f5576c;">❌ 缺点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>行业下行</li><li>工地条件艰苦</li><li>薪资增长慢</li></ul>
+                    </div>
+                </div>
+                <div class="summary-box">
+                    💬 总结：行业寒冬中，适合能吃苦、耐得住的人
+                </div>
+            </div>
+        </div>
+    
+        <div class="major-card" id="card-081301" data-category="08 工学" onclick="toggleCard('081301')">
+            <div class="card-header">
+                <span class="category-icon">🏛️</span>
+                <div>
+                    <div class="major-name">建筑学</div>
+                    <div class="major-code">081301</div>
+                    <div class="difficulty-stars">难度：★★★★☆</div>
+                </div>
+            </div>
+            
+            <div class="salary-tag">💰 起薪约5000-12000元，需要熬资历</div>
+            <span class="data-source-tag">暂无权威公开数据，仅供参考</span>
+            
+            <p style="margin-top:10px;font-size:0.9em;color:rgba(255,255,255,0.7);">
+                就业形势：就业率中等，建筑行业整体承压
+            </p>
+            
+            <div class="detail-section hidden">
+                <div class="detail-title">📖 学什么</div>
+                <div class="detail-content">学习建筑设计理论和实践</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>建筑素描、建筑水彩、建筑概论</li>
+                    <li><strong>大二：</strong>建筑设计原理、中外建筑史、建筑构造</li>
+                    <li><strong>大三：</strong>居住建筑设计、公共建筑设计、城市规划</li>
+                    <li><strong>大四：</strong>毕业设计、建筑事务所实习</li>
+                </ul>
+                
+                <div class="detail-title">👤 适合人群</div>
+                <div class="detail-content">
+                    <strong>特质：</strong>有审美、有创造力、能熬夜画图
+                </div>
+                <div class="detail-content"><strong>技能要求：</strong></div>
+                <div class="skill-tags"><span class="skill-tag">美术基础</span><span class="skill-tag">空间设计能力</span><span class="skill-tag">软件建模能力</span></div>
+                <div class="detail-content" style="color:#ffc107;">
+                    ⚠️ 需要美术基础，需要准备作品集
+                </div>
+                
+                <div class="detail-title">📈 前景展望</div>
+                <div class="detail-content">
+                    <strong>趋势：</strong>行业整体承压，但优秀建筑师仍然稀缺
+                </div>
+                <div class="detail-content">
+                    <strong>热门去向：</strong>设计院、建筑事务所、房地产公司
+                </div>
+                <div class="detail-content">
+                    <strong>新兴方向：</strong>绿色建筑、智慧城市、历史建筑保护
+                </div>
+                
+                <div class="detail-title">💼 就业建议</div>
+                <div class="detail-content">
+                    <strong>立即行动：</strong>做作品集！做作品集！做作品集！
+                </div>
+                <div class="detail-content">
+                    <strong>证书建议：</strong>注册建筑师（工作后考）
+                </div>
+                <div class="detail-content">
+                    <strong>时间线：</strong>大三开始准备作品集
+                </div>
+                
+                <div class="detail-title">🛤️ 学习路径</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>练手绘，打美术基础</li>
+                    <li><strong>大二：</strong>学建筑设计软件，做课程设计</li>
+                    <li><strong>大三：</strong>去设计院实习，完善作品集</li>
+                    <li><strong>大四：</strong>申请留学或秋招</li>
+                </ul>
+                
+                <div class="detail-title">⭐ 张雪峰点评</div>
+                <div class="pros-cons">
+                    <div class="pros-box">
+                        <strong style="color:#38ef7d;">✅ 优点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>有成就感</li><li>越老越值钱</li><li>艺术与技术结合</li></ul>
+                    </div>
+                    <div class="cons-box">
+                        <strong style="color:#f5576c;">❌ 缺点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>学习周期长</li><li>前期收入低</li><li>行业承压</li></ul>
+                    </div>
+                </div>
+                <div class="summary-box">
+                    💬 总结：真正热爱建筑的人适合，赚钱不是首要目标
+                </div>
+            </div>
+        </div>
+    
+        <div class="major-card" id="card-081801" data-category="08 工学" onclick="toggleCard('081801')">
+            <div class="card-header">
+                <span class="category-icon">🚗</span>
+                <div>
+                    <div class="major-name">车辆工程</div>
+                    <div class="major-code">081801</div>
+                    <div class="difficulty-stars">难度：★★★★☆</div>
+                </div>
+            </div>
+            
+            <div class="salary-tag">💰 新能源方向起薪高，约8000-18000元</div>
+            <span class="data-source-tag">暂无权威公开数据，仅供参考</span>
+            
+            <p style="margin-top:10px;font-size:0.9em;color:rgba(255,255,255,0.7);">
+                就业形势：就业率高，新能源汽车带动需求
+            </p>
+            
+            <div class="detail-section hidden">
+                <div class="detail-title">📖 学什么</div>
+                <div class="detail-content">学习汽车设计、制造和新技术</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>高等数学、机械制图、工程力学</li>
+                    <li><strong>大二：</strong>机械原理、汽车构造、发动机原理</li>
+                    <li><strong>大三：</strong>汽车理论、新能源汽车技术、智能网联汽车</li>
+                    <li><strong>大四：</strong>毕业设计、汽车企业实习</li>
+                </ul>
+                
+                <div class="detail-title">👤 适合人群</div>
+                <div class="detail-content">
+                    <strong>特质：</strong>热爱汽车、动手能力强、关注新技术
+                </div>
+                <div class="detail-content"><strong>技能要求：</strong></div>
+                <div class="skill-tags"><span class="skill-tag">机械设计能力</span><span class="skill-tag">汽车电子知识</span><span class="skill-tag">新能源技术</span></div>
+                <div class="detail-content" style="color:#ffc107;">
+                    ⚠️ 传统方向就业差，新能源方向前景好
+                </div>
+                
+                <div class="detail-title">📈 前景展望</div>
+                <div class="detail-content">
+                    <strong>趋势：</strong>2024年新能源汽车爆发，人才缺口大
+                </div>
+                <div class="detail-content">
+                    <strong>热门去向：</strong>比亚迪、蔚来、小鹏等新能源车企
+                </div>
+                <div class="detail-content">
+                    <strong>新兴方向：</strong>自动驾驶、动力电池、智能座舱
+                </div>
+                
+                <div class="detail-title">💼 就业建议</div>
+                <div class="detail-content">
+                    <strong>立即行动：</strong>往新能源和自动驾驶方向靠
+                </div>
+                <div class="detail-content">
+                    <strong>证书建议：</strong>汽车工程师认证
+                </div>
+                <div class="detail-content">
+                    <strong>时间线：</strong>大三确定方向：传统/新能源/智能
+                </div>
+                
+                <div class="detail-title">🛤️ 学习路径</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>机械基础，了解汽车结构</li>
+                    <li><strong>大二：</strong>学汽车构造，关注新能源技术</li>
+                    <li><strong>大三：</strong>去车企实习，学智能网联知识</li>
+                    <li><strong>大四：</strong>秋招或考研</li>
+                </ul>
+                
+                <div class="detail-title">⭐ 张雪峰点评</div>
+                <div class="pros-cons">
+                    <div class="pros-box">
+                        <strong style="color:#38ef7d;">✅ 优点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>新能源方向薪资高</li><li>汽车行业稳定</li></ul>
+                    </div>
+                    <div class="cons-box">
+                        <strong style="color:#f5576c;">❌ 缺点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>传统方向就业差</li><li>地域限制（车企集中）</li></ul>
+                    </div>
+                </div>
+                <div class="summary-box">
+                    💬 总结：选对方向很重要，新能源和智能驾驶是未来
+                </div>
+            </div>
+        </div>
+    
+        <div class="major-card" id="card-082502" data-category="08 工学" onclick="toggleCard('082502')">
+            <div class="card-header">
+                <span class="category-icon">🌿</span>
+                <div>
+                    <div class="major-name">环境工程</div>
+                    <div class="major-code">082502</div>
+                    <div class="difficulty-stars">难度：★★★☆☆</div>
+                </div>
+            </div>
+            
+            <div class="salary-tag">💰 起薪约5000-10000元，稳定型</div>
+            <span class="data-source-tag">暂无权威公开数据，仅供参考</span>
+            
+            <p style="margin-top:10px;font-size:0.9em;color:rgba(255,255,255,0.7);">
+                就业形势：就业率中等，环保政策带动需求
+            </p>
+            
+            <div class="detail-section hidden">
+                <div class="detail-title">📖 学什么</div>
+                <div class="detail-content">学习环境污染治理和环境管理</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>普通化学、环境科学概论、环境监测</li>
+                    <li><strong>大二：</strong>水污染控制工程、大气污染控制工程</li>
+                    <li><strong>大三：</strong>固体废物处理、环境影响评价、环境管理</li>
+                    <li><strong>大四：</strong>毕业设计、环保企业实习</li>
+                </ul>
+                
+                <div class="detail-title">👤 适合人群</div>
+                <div class="detail-content">
+                    <strong>特质：</strong>关心环境、有责任感、动手能力
+                </div>
+                <div class="detail-content"><strong>技能要求：</strong></div>
+                <div class="skill-tags"><span class="skill-tag">化学实验能力</span><span class="skill-tag">工程设计能力</span><span class="skill-tag">政策理解能力</span></div>
+                <div class="detail-content" style="color:#ffc107;">
+                    ⚠️ 薪资相对不高，需要情怀
+                </div>
+                
+                <div class="detail-title">📈 前景展望</div>
+                <div class="detail-content">
+                    <strong>趋势：</strong>双碳目标带动，环保行业迎来发展机遇
+                </div>
+                <div class="detail-content">
+                    <strong>热门去向：</strong>环保公司、环境监测、政府环保部门
+                </div>
+                <div class="detail-content">
+                    <strong>新兴方向：</strong>碳中和、污水处理、新能源环保
+                </div>
+                
+                <div class="detail-title">💼 就业建议</div>
+                <div class="detail-content">
+                    <strong>立即行动：</strong>关注环保政策和双碳目标
+                </div>
+                <div class="detail-content">
+                    <strong>证书建议：</strong>环境影响评价工程师
+                </div>
+                <div class="detail-content">
+                    <strong>时间线：</strong>大三确定方向
+                </div>
+                
+                <div class="detail-title">🛤️ 学习路径</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>化学基础，了解环境问题</li>
+                    <li><strong>大二：</strong>学水气固处理技术</li>
+                    <li><strong>大三：</strong>去环保公司实习</li>
+                    <li><strong>大四：</strong>秋招或考研</li>
+                </ul>
+                
+                <div class="detail-title">⭐ 张雪峰点评</div>
+                <div class="pros-cons">
+                    <div class="pros-box">
+                        <strong style="color:#38ef7d;">✅ 优点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>行业前景好</li><li>有社会意义</li><li>政策支持</li></ul>
+                    </div>
+                    <div class="cons-box">
+                        <strong style="color:#f5576c;">❌ 缺点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>薪资不高</li><li>就业岗位有限</li></ul>
+                    </div>
+                </div>
+                <div class="summary-box">
+                    💬 总结：有环保情怀的人适合，赚钱不是首要目标
+                </div>
+            </div>
+        </div>
+    
+        <div class="major-card" id="card-083001" data-category="08 工学" onclick="toggleCard('083001')">
+            <div class="card-header">
+                <span class="category-icon">🏥</span>
+                <div>
+                    <div class="major-name">生物医学工程</div>
+                    <div class="major-code">083001</div>
+                    <div class="difficulty-stars">难度：★★★★★</div>
+                </div>
+            </div>
+            
+            <div class="salary-tag">💰 起薪约6000-15000元，医疗器械方向高</div>
+            <span class="data-source-tag">暂无权威公开数据，仅供参考</span>
+            
+            <p style="margin-top:10px;font-size:0.9em;color:rgba(255,255,255,0.7);">
+                就业形势：就业率高，医疗器械行业发展迅速
+            </p>
+            
+            <div class="detail-section hidden">
+                <div class="detail-title">📖 学什么</div>
+                <div class="detail-content">学习医学与工程交叉的理论和应用</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>高等数学、生物学基础、电路基础</li>
+                    <li><strong>大二：</strong>生理学、数字信号处理、医学影像学</li>
+                    <li><strong>大三：</strong>生物材料、医疗器械设计、嵌入式系统</li>
+                    <li><strong>大四：</strong>毕业设计、医疗器械企业实习</li>
+                </ul>
+                
+                <div class="detail-title">👤 适合人群</div>
+                <div class="detail-content">
+                    <strong>特质：</strong>对医学和工程都有兴趣、学习能力强、细心
+                </div>
+                <div class="detail-content"><strong>技能要求：</strong></div>
+                <div class="skill-tags"><span class="skill-tag">编程能力</span><span class="skill-tag">电子电路能力</span><span class="skill-tag">医学知识</span></div>
+                <div class="detail-content" style="color:#ffc107;">
+                    ⚠️ 交叉学科，需要学习多个领域知识
+                </div>
+                
+                <div class="detail-title">📈 前景展望</div>
+                <div class="detail-content">
+                    <strong>趋势：</strong>医疗器械国产替代加速，人才需求增加
+                </div>
+                <div class="detail-content">
+                    <strong>热门去向：</strong>医疗器械公司、医院设备科、医疗AI
+                </div>
+                <div class="detail-content">
+                    <strong>新兴方向：</strong>手术机器人、AI诊断、可穿戴设备
+                </div>
+                
+                <div class="detail-title">💼 就业建议</div>
+                <div class="detail-content">
+                    <strong>立即行动：</strong>学编程和嵌入式，确定细分方向
+                </div>
+                <div class="detail-content">
+                    <strong>证书建议：</strong>医疗器械工程师认证
+                </div>
+                <div class="detail-content">
+                    <strong>时间线：</strong>大三确定方向
+                </div>
+                
+                <div class="detail-title">🛤️ 学习路径</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>基础课程，确定医学还是工程方向</li>
+                    <li><strong>大二：</strong>学电子或编程，进实验室</li>
+                    <li><strong>大三：</strong>去医疗器械公司实习</li>
+                    <li><strong>大四：</strong>秋招或考研</li>
+                </ul>
+                
+                <div class="detail-title">⭐ 张雪峰点评</div>
+                <div class="pros-cons">
+                    <div class="pros-box">
+                        <strong style="color:#38ef7d;">✅ 优点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>交叉学科优势</li><li>行业前景好</li><li>不可替代性强</li></ul>
+                    </div>
+                    <div class="cons-box">
+                        <strong style="color:#f5576c;">❌ 缺点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>学习难度大</li><li>需要持续学习</li></ul>
+                    </div>
+                </div>
+                <div class="summary-box">
+                    💬 总结：真正热爱医工结合的人适合
+                </div>
+            </div>
+        </div>
+    
+        <div class="major-card" id="card-080703" data-category="08 工学" onclick="toggleCard('080703')">
+            <div class="card-header">
+                <span class="category-icon">📱</span>
+                <div>
+                    <div class="major-name">通信工程</div>
+                    <div class="major-code">080703</div>
+                    <div class="difficulty-stars">难度：★★★★☆</div>
+                </div>
+            </div>
+            
+            <div class="salary-tag">💰 起薪约6000-15000元，5G/6G带动需求</div>
+            <span class="data-source-tag">暂无权威公开数据，仅供参考</span>
+            
+            <p style="margin-top:10px;font-size:0.9em;color:rgba(255,255,255,0.7);">
+                就业形势：就业率高，通信行业需求稳定
+            </p>
+            
+            <div class="detail-section hidden">
+                <div class="detail-title">📖 学什么</div>
+                <div class="detail-content">学习通信原理、信号处理和通信系统</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>电路分析、模拟电路、数字电路、信号与系统</li>
+                    <li><strong>大二：</strong>通信原理、数字信号处理、电磁场理论</li>
+                    <li><strong>大三：</strong>移动通信、光纤通信、卫星通信</li>
+                    <li><strong>大四：</strong>毕业设计、通信企业实习</li>
+                </ul>
+                
+                <div class="detail-title">👤 适合人群</div>
+                <div class="detail-content">
+                    <strong>特质：</strong>对通信技术感兴趣、数学物理好、逻辑思维强
+                </div>
+                <div class="detail-content"><strong>技能要求：</strong></div>
+                <div class="skill-tags"><span class="skill-tag">信号处理能力</span><span class="skill-tag">编程能力</span><span class="skill-tag">硬件设计能力</span></div>
+                <div class="detail-content" style="color:#ffc107;">
+                    ⚠️ 知识更新快，需要持续学习
+                </div>
+                
+                <div class="detail-title">📈 前景展望</div>
+                <div class="detail-content">
+                    <strong>趋势：</strong>5G商用推进，6G研发启动，通信人才需求稳定
+                </div>
+                <div class="detail-content">
+                    <strong>热门去向：</strong>华为、中兴、移动运营商、通信设备商
+                </div>
+                <div class="detail-content">
+                    <strong>新兴方向：</strong>5G应用、卫星互联网、物联网
+                </div>
+                
+                <div class="detail-title">💼 就业建议</div>
+                <div class="detail-content">
+                    <strong>立即行动：</strong>学FPGA和信号处理，确定细分方向
+                </div>
+                <div class="detail-content">
+                    <strong>证书建议：</strong>通信工程师认证
+                </div>
+                <div class="detail-content">
+                    <strong>时间线：</strong>大三确定方向
+                </div>
+                
+                <div class="detail-title">🛤️ 学习路径</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>电路基础+信号基础</li>
+                    <li><strong>大二：</strong>学通信原理，做通信项目</li>
+                    <li><strong>大三：</strong>去华为等企业实习</li>
+                    <li><strong>大四：</strong>秋招或考研</li>
+                </ul>
+                
+                <div class="detail-title">⭐ 张雪峰点评</div>
+                <div class="pros-cons">
+                    <div class="pros-box">
+                        <strong style="color:#38ef7d;">✅ 优点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>行业稳定</li><li>技术门槛高</li><li>不容易被替代</li></ul>
+                    </div>
+                    <div class="cons-box">
+                        <strong style="color:#f5576c;">❌ 缺点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>学习难度大</li><li>大公司集中</li></ul>
+                    </div>
+                </div>
+                <div class="summary-box">
+                    💬 总结：通信是基础设施，专业人才需求稳定
+                </div>
+            </div>
+        </div>
+    
+        <div class="major-card" id="card-080601" data-category="08 工学" onclick="toggleCard('080601')">
+            <div class="card-header">
+                <span class="category-icon">⚡</span>
+                <div>
+                    <div class="major-name">电气工程及其自动化</div>
+                    <div class="major-code">080601</div>
+                    <div class="difficulty-stars">难度：★★★★☆</div>
+                </div>
+            </div>
+            
+            <div class="salary-tag">💰 起薪约5000-12000元，国家电网是主要去向</div>
+            <span class="data-source-tag">暂无权威公开数据，仅供参考</span>
+            
+            <p style="margin-top:10px;font-size:0.9em;color:rgba(255,255,255,0.7);">
+                就业形势：就业率高，电网和电力设备需求稳定
+            </p>
+            
+            <div class="detail-section hidden">
+                <div class="detail-title">📖 学什么</div>
+                <div class="detail-content">学习电力系统和电气控制技术</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>高等数学、电路、电机学基础</li>
+                    <li><strong>大二：</strong>电磁场、电力系统分析、继电保护</li>
+                    <li><strong>大三：</strong>发电厂电气部分、电力电子技术、PLC</li>
+                    <li><strong>大四：</strong>毕业设计、电力企业实习</li>
+                </ul>
+                
+                <div class="detail-title">👤 适合人群</div>
+                <div class="detail-content">
+                    <strong>特质：</strong>对电气感兴趣、动手能力强、能适应倒班
+                </div>
+                <div class="detail-content"><strong>技能要求：</strong></div>
+                <div class="skill-tags"><span class="skill-tag">电气设计能力</span><span class="skill-tag">PLC编程</span><span class="skill-tag">电力系统分析</span></div>
+                <div class="detail-content" style="color:#ffc107;">
+                    ⚠️ 电网工作需要倒班或出差
+                </div>
+                
+                <div class="detail-title">📈 前景展望</div>
+                <div class="detail-content">
+                    <strong>趋势：</strong>新能源并网、新型电力系统带来新机遇
+                </div>
+                <div class="detail-content">
+                    <strong>热门去向：</strong>国家电网、南方电网、电力设备商
+                </div>
+                <div class="detail-content">
+                    <strong>新兴方向：</strong>新能源发电、储能、智能电网
+                </div>
+                
+                <div class="detail-title">💼 就业建议</div>
+                <div class="detail-content">
+                    <strong>立即行动：</strong>关注电网考试，大三开始准备
+                </div>
+                <div class="detail-content">
+                    <strong>证书建议：</strong>注册电气工程师（工作后考）
+                </div>
+                <div class="detail-content">
+                    <strong>时间线：</strong>大三准备电网考试
+                </div>
+                
+                <div class="detail-title">🛤️ 学习路径</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>电路电机基础</li>
+                    <li><strong>大二：</strong>电力系统分析，进电网实习</li>
+                    <li><strong>大三：</strong>准备电网考试</li>
+                    <li><strong>大四：</strong>电网考试/考研</li>
+                </ul>
+                
+                <div class="detail-title">⭐ 张雪峰点评</div>
+                <div class="pros-cons">
+                    <div class="pros-box">
+                        <strong style="color:#38ef7d;">✅ 优点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>电网工作稳定</li><li>福利好</li><li>社会地位高</li></ul>
+                    </div>
+                    <div class="cons-box">
+                        <strong style="color:#f5576c;">❌ 缺点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>考试竞争激烈</li><li>晋升慢</li></ul>
+                    </div>
+                </div>
+                <div class="summary-box">
+                    💬 总结：想进体制内电网的人适合
+                </div>
+            </div>
+        </div>
+    
+        <div class="major-card" id="card-080202" data-category="08 工学" onclick="toggleCard('080202')">
+            <div class="card-header">
+                <span class="category-icon">🔧</span>
+                <div>
+                    <div class="major-name">机械设计制造及其自动化</div>
+                    <div class="major-code">080202</div>
+                    <div class="difficulty-stars">难度：★★★★☆</div>
+                </div>
+            </div>
+            
+            <div class="salary-tag">💰 起薪约5000-10000元，需要经验积累</div>
+            <span class="data-source-tag">暂无权威公开数据，仅供参考</span>
+            
+            <p style="margin-top:10px;font-size:0.9em;color:rgba(255,255,255,0.7);">
+                就业形势：就业率高，但薪资增长慢
+            </p>
+            
+            <div class="detail-section hidden">
+                <div class="detail-title">📖 学什么</div>
+                <div class="detail-content">学习机械设计制造和自动化技术</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>机械制图、工程力学、机械设计基础</li>
+                    <li><strong>大二：</strong>机械原理、材料力学、数控技术</li>
+                    <li><strong>大三：</strong>先进制造技术、机器人技术、液压传动</li>
+                    <li><strong>大四：</strong>毕业设计、机械企业实习</li>
+                </ul>
+                
+                <div class="detail-title">👤 适合人群</div>
+                <div class="detail-content">
+                    <strong>特质：</strong>喜欢机械、动手能力强、空间想象能力
+                </div>
+                <div class="detail-content"><strong>技能要求：</strong></div>
+                <div class="skill-tags"><span class="skill-tag">机械设计能力</span><span class="skill-tag">绘图能力</span><span class="skill-tag">数控编程</span></div>
+                <div class="detail-content" style="color:#ffc107;">
+                    ⚠️ 车间环境，需要从基层做起
+                </div>
+                
+                <div class="detail-title">📈 前景展望</div>
+                <div class="detail-content">
+                    <strong>趋势：</strong>智能制造带动，但传统机械薪资增长慢
+                </div>
+                <div class="detail-content">
+                    <strong>热门去向：</strong>制造业企业、汽车厂、机械设备商
+                </div>
+                <div class="detail-content">
+                    <strong>新兴方向：</strong>智能制造、工业机器人、3D打印
+                </div>
+                
+                <div class="detail-title">💼 就业建议</div>
+                <div class="detail-content">
+                    <strong>立即行动：</strong>学CAD/SolidWorks，做机械项目
+                </div>
+                <div class="detail-content">
+                    <strong>证书建议：</strong>机械工程师认证
+                </div>
+                <div class="detail-content">
+                    <strong>时间线：</strong>大二开始做项目
+                </div>
+                
+                <div class="detail-title">🛤️ 学习路径</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>机械制图基础</li>
+                    <li><strong>大二：</strong>学CAD/SolidWorks，做课程设计</li>
+                    <li><strong>大三：</strong>去机械企业实习</li>
+                    <li><strong>大四：</strong>秋招或考研</li>
+                </ul>
+                
+                <div class="detail-title">⭐ 张雪峰点评</div>
+                <div class="pros-cons">
+                    <div class="pros-box">
+                        <strong style="color:#38ef7d;">✅ 优点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>就业稳定</li><li>越老越值钱</li><li>技术积累价值高</li></ul>
+                    </div>
+                    <div class="cons-box">
+                        <strong style="color:#f5576c;">❌ 缺点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>起薪不高</li><li>工作环境一般</li></ul>
+                    </div>
+                </div>
+                <div class="summary-box">
+                    💬 总结：传统工科，适合能吃苦积累的人
+                </div>
+            </div>
+        </div>
+    
+        <div class="major-card" id="card-100201" data-category="10 医学" onclick="toggleCard('100201')">
+            <div class="card-header">
+                <span class="category-icon">🩺</span>
+                <div>
+                    <div class="major-name">临床医学</div>
+                    <div class="major-code">100201</div>
+                    <div class="difficulty-stars">难度：★★★★★</div>
+                </div>
+            </div>
+            
+            <div class="salary-tag">💰 规培期间低（3000-6000元），主治后显著提升</div>
+            <span class="data-source-tag">暂无权威公开数据，仅供参考</span>
+            
+            <p style="margin-top:10px;font-size:0.9em;color:rgba(255,255,255,0.7);">
+                就业形势：就业率高，但必须读研读博才有好发展
+            </p>
+            
+            <div class="detail-section hidden">
+                <div class="detail-title">📖 学什么</div>
+                <div class="detail-content">学习临床诊断治疗和医学实践</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>人体解剖学、组织学与胚胎学、生物化学</li>
+                    <li><strong>大二：</strong>生理学、病理学、病理生理学、药理学</li>
+                    <li><strong>大三：</strong>诊断学、内科学、外科学、妇产科学</li>
+                    <li><strong>大四：</strong>内科学实习、外科学实习、毕业实习</li>
+                </ul>
+                
+                <div class="detail-title">👤 适合人群</div>
+                <div class="detail-content">
+                    <strong>特质：</strong>有爱心、心理素质好、学习能力强
+                </div>
+                <div class="detail-content"><strong>技能要求：</strong></div>
+                <div class="skill-tags"><span class="skill-tag">记忆能力（大量医学知识）</span><span class="skill-tag">动手能力（临床操作）</span><span class="skill-tag">沟通能力</span></div>
+                <div class="detail-content" style="color:#ffc107;">
+                    ⚠️ 培养周期极长：5年本科+3年硕士+3年博士+3年规培=14年
+                </div>
+                
+                <div class="detail-title">📈 前景展望</div>
+                <div class="detail-content">
+                    <strong>趋势：</strong>2024年医疗需求增加，医生社会地位和收入稳定
+                </div>
+                <div class="detail-content">
+                    <strong>热门去向：</strong>三甲医院、医学科研、医学教育
+                </div>
+                <div class="detail-content">
+                    <strong>新兴方向：</strong>精准医疗、AI辅助诊断、远程医疗
+                </div>
+                
+                <div class="detail-title">💼 就业建议</div>
+                <div class="detail-content">
+                    <strong>立即行动：</strong>必须读研读博，临床和科研要兼顾
+                </div>
+                <div class="detail-content">
+                    <strong>证书建议：</strong>执业医师资格证（必考）、规培证
+                </div>
+                <div class="detail-content">
+                    <strong>时间线：</strong>本科5年+硕士3年+博士3年+规培3年=14年
+                </div>
+                
+                <div class="detail-title">🛤️ 学习路径</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>医学基础课，打好基础</li>
+                    <li><strong>大二：</strong>基础医学课，开始接触临床</li>
+                    <li><strong>大三：</strong>临床实习，备考研究生</li>
+                    <li><strong>大四：</strong>实习+考研</li>
+                </ul>
+                
+                <div class="detail-title">⭐ 张雪峰点评</div>
+                <div class="pros-cons">
+                    <div class="pros-box">
+                        <strong style="color:#38ef7d;">✅ 优点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>社会地位高</li><li>越老越值钱</li><li>帮助他人成就感强</li></ul>
+                    </div>
+                    <div class="cons-box">
+                        <strong style="color:#f5576c;">❌ 缺点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>培养周期极长</li><li>前期收入低</li><li>工作强度大</li><li>医患关系</li></ul>
+                    </div>
+                </div>
+                <div class="summary-box">
+                    💬 总结：真正热爱医学、能承受长期培养周期的人适合
+                </div>
+            </div>
+        </div>
+    
+        <div class="major-card" id="card-100301" data-category="10 医学" onclick="toggleCard('100301')">
+            <div class="card-header">
+                <span class="category-icon">🦷</span>
+                <div>
+                    <div class="major-name">口腔医学</div>
+                    <div class="major-code">100301</div>
+                    <div class="difficulty-stars">难度：★★★★★</div>
+                </div>
+            </div>
+            
+            <div class="salary-tag">💰 独立执业后收入可观，牙医是金领职业</div>
+            <span class="data-source-tag">暂无权威公开数据，仅供参考</span>
+            
+            <p style="margin-top:10px;font-size:0.9em;color:rgba(255,255,255,0.7);">
+                就业形势：就业率高，牙医需求大
+            </p>
+            
+            <div class="detail-section hidden">
+                <div class="detail-title">📖 学什么</div>
+                <div class="detail-content">学习口腔疾病诊断和治疗</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>人体解剖学、生物化学、口腔解剖生理学</li>
+                    <li><strong>大二：</strong>口腔组织病理学、口腔颌面外科学</li>
+                    <li><strong>大三：</strong>口腔修复学、口腔内科学、口腔正畸学</li>
+                    <li><strong>大四：</strong>口腔科实习、毕业实习</li>
+                </ul>
+                
+                <div class="detail-title">👤 适合人群</div>
+                <div class="detail-content">
+                    <strong>特质：</strong>手巧、有耐心、审美能力
+                </div>
+                <div class="detail-content"><strong>技能要求：</strong></div>
+                <div class="skill-tags"><span class="skill-tag">动手操作能力</span><span class="skill-tag">空间想象能力</span><span class="skill-tag">沟通能力</span></div>
+                <div class="detail-content" style="color:#ffc107;">
+                    ⚠️ 需要持续学习新技术，种植牙等新技术收入高
+                </div>
+                
+                <div class="detail-title">📈 前景展望</div>
+                <div class="detail-content">
+                    <strong>趋势：</strong>口腔健康意识提升，牙医需求持续增长
+                </div>
+                <div class="detail-content">
+                    <strong>热门去向：</strong>口腔医院、口腔诊所、综合医院口腔科
+                </div>
+                <div class="detail-content">
+                    <strong>新兴方向：</strong>种植牙、正畸、口腔美容
+                </div>
+                
+                <div class="detail-title">💼 就业建议</div>
+                <div class="detail-content">
+                    <strong>立即行动：</strong>必须读研，动手能力要强
+                </div>
+                <div class="detail-content">
+                    <strong>证书建议：</strong>执业医师资格证、口腔专科医师证
+                </div>
+                <div class="detail-content">
+                    <strong>时间线：</strong>本科5年+硕士/规培3年
+                </div>
+                
+                <div class="detail-title">🛤️ 学习路径</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>医学基础课</li>
+                    <li><strong>大二：</strong>口腔基础课，练习操作</li>
+                    <li><strong>大三：</strong>口腔临床实习</li>
+                    <li><strong>大四：</strong>实习+考研</li>
+                </ul>
+                
+                <div class="detail-title">⭐ 张雪峰点评</div>
+                <div class="pros-cons">
+                    <div class="pros-box">
+                        <strong style="color:#38ef7d;">✅ 优点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>收入高</li><li>医患关系相对缓和</li><li>可独立执业</li></ul>
+                    </div>
+                    <div class="cons-box">
+                        <strong style="color:#f5576c;">❌ 缺点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>培养周期长</li><li>需要动手能力</li></ul>
+                    </div>
+                </div>
+                <div class="summary-box">
+                    💬 总结：手巧、有耐心的人适合，是医学里收入较好的方向
+                </div>
+            </div>
+        </div>
+    
+        <div class="major-card" id="card-101101" data-category="10 医学" onclick="toggleCard('101101')">
+            <div class="card-header">
+                <span class="category-icon">💉</span>
+                <div>
+                    <div class="major-name">护理学</div>
+                    <div class="major-code">101101</div>
+                    <div class="difficulty-stars">难度：★★★☆☆</div>
+                </div>
+            </div>
+            
+            <div class="salary-tag">💰 起薪约4000-8000元，编制内稳定</div>
+            <span class="data-source-tag">暂无权威公开数据，仅供参考</span>
+            
+            <p style="margin-top:10px;font-size:0.9em;color:rgba(255,255,255,0.7);">
+                就业形势：就业率极高，护士缺口大
+            </p>
+            
+            <div class="detail-section hidden">
+                <div class="detail-title">📖 学什么</div>
+                <div class="detail-content">学习临床护理和护理管理</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>人体解剖学、生理学、护理学基础</li>
+                    <li><strong>大二：</strong>内科护理学、外科护理学、儿科护理学</li>
+                    <li><strong>大三：</strong>妇产科护理学、急危重症护理学、精神科护理学</li>
+                    <li><strong>大四：</strong>护理实习、毕业实习</li>
+                </ul>
+                
+                <div class="detail-title">👤 适合人群</div>
+                <div class="detail-content">
+                    <strong>特质：</strong>有爱心、耐心细心、心理素质好
+                </div>
+                <div class="detail-content"><strong>技能要求：</strong></div>
+                <div class="skill-tags"><span class="skill-tag">护理操作能力</span><span class="skill-tag">沟通能力</span><span class="skill-tag">应急处理能力</span></div>
+                <div class="detail-content" style="color:#ffc107;">
+                    ⚠️ 夜班多，工作强度大
+                </div>
+                
+                <div class="detail-title">📈 前景展望</div>
+                <div class="detail-content">
+                    <strong>趋势：</strong>老龄化社会，护理需求持续增长
+                </div>
+                <div class="detail-content">
+                    <strong>热门去向：</strong>医院护士、社区护士、养老机构
+                </div>
+                <div class="detail-content">
+                    <strong>新兴方向：</strong>老年护理、康复护理、家庭护士
+                </div>
+                
+                <div class="detail-title">💼 就业建议</div>
+                <div class="detail-content">
+                    <strong>立即行动：</strong>必须考护士资格证
+                </div>
+                <div class="detail-content">
+                    <strong>证书建议：</strong>护士资格证（必考）、专科护士证
+                </div>
+                <div class="detail-content">
+                    <strong>时间线：</strong>大三开始准备护士资格证考试
+                </div>
+                
+                <div class="detail-title">🛤️ 学习路径</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>医学基础课+护理基础</li>
+                    <li><strong>大二：</strong>各科护理学</li>
+                    <li><strong>大三：</strong>临床实习</li>
+                    <li><strong>大四：</strong>考护士资格证，准备就业</li>
+                </ul>
+                
+                <div class="detail-title">⭐ 张雪峰点评</div>
+                <div class="pros-cons">
+                    <div class="pros-box">
+                        <strong style="color:#38ef7d;">✅ 优点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>就业稳定</li><li>需求量大</li><li>白衣天使社会地位</li></ul>
+                    </div>
+                    <div class="cons-box">
+                        <strong style="color:#f5576c;">❌ 缺点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>夜班多</li><li>工作强度大</li><li>医患关系</li></ul>
+                    </div>
+                </div>
+                <div class="summary-box">
+                    💬 总结：有爱心、能吃苦的人适合
+                </div>
+            </div>
+        </div>
+    
+        <div class="major-card" id="card-100701" data-category="10 医学" onclick="toggleCard('100701')">
+            <div class="card-header">
+                <span class="category-icon">💊</span>
+                <div>
+                    <div class="major-name">药学</div>
+                    <div class="major-code">100701</div>
+                    <div class="difficulty-stars">难度：★★★★☆</div>
+                </div>
+            </div>
+            
+            <div class="salary-tag">💰 起薪约5000-10000元，研发方向需要高学历</div>
+            <span class="data-source-tag">暂无权威公开数据，仅供参考</span>
+            
+            <p style="margin-top:10px;font-size:0.9em;color:rgba(255,255,255,0.7);">
+                就业形势：就业率较高，但研发需要硕博
+            </p>
+            
+            <div class="detail-section hidden">
+                <div class="detail-title">📖 学什么</div>
+                <div class="detail-content">学习药物研发、生产和使用</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>无机化学、有机化学、分析化学</li>
+                    <li><strong>大二：</strong>生物化学、药物化学、药理学</li>
+                    <li><strong>大三：</strong>药剂学、药物分析、药事管理</li>
+                    <li><strong>大四：</strong>毕业实习、毕业论文</li>
+                </ul>
+                
+                <div class="detail-title">👤 适合人群</div>
+                <div class="detail-content">
+                    <strong>特质：</strong>化学好、细心、有耐心
+                </div>
+                <div class="detail-content"><strong>技能要求：</strong></div>
+                <div class="skill-tags"><span class="skill-tag">化学实验能力</span><span class="skill-tag">数据分析能力</span><span class="skill-tag">记忆力</span></div>
+                <div class="detail-content" style="color:#ffc107;">
+                    ⚠️ 研发需要读研读博，销售门槛低但压力大
+                </div>
+                
+                <div class="detail-title">📈 前景展望</div>
+                <div class="detail-content">
+                    <strong>趋势：</strong>创新药发展，药物研发人才需求增加
+                </div>
+                <div class="detail-content">
+                    <strong>热门去向：</strong>药企、药店、医院药房、监管部门
+                </div>
+                <div class="detail-content">
+                    <strong>新兴方向：</strong>创新药、生物药、药物研发
+                </div>
+                
+                <div class="detail-title">💼 就业建议</div>
+                <div class="detail-content">
+                    <strong>立即行动：</strong>确定方向：研发/生产/销售
+                </div>
+                <div class="detail-content">
+                    <strong>证书建议：</strong>执业药师证
+                </div>
+                <div class="detail-content">
+                    <strong>时间线：</strong>大三确定方向
+                </div>
+                
+                <div class="detail-title">🛤️ 学习路径</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>化学基础</li>
+                    <li><strong>大二：</strong>药学专业基础课</li>
+                    <li><strong>大三：</strong>去药企实习</li>
+                    <li><strong>大四：</strong>秋招或考研</li>
+                </ul>
+                
+                <div class="detail-title">⭐ 张雪峰点评</div>
+                <div class="pros-cons">
+                    <div class="pros-box">
+                        <strong style="color:#38ef7d;">✅ 优点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>医药行业稳定</li><li>可做研发</li></ul>
+                    </div>
+                    <div class="cons-box">
+                        <strong style="color:#f5576c;">❌ 缺点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>研发周期长</li><li>薪资增长慢</li></ul>
+                    </div>
+                </div>
+                <div class="summary-box">
+                    💬 总结：研发需要高学历，销售门槛低
+                </div>
+            </div>
+        </div>
+    
+        <div class="major-card" id="card-101001" data-category="10 医学" onclick="toggleCard('101001')">
+            <div class="card-header">
+                <span class="category-icon">🏮</span>
+                <div>
+                    <div class="major-name">中医学</div>
+                    <div class="major-code">101001</div>
+                    <div class="difficulty-stars">难度：★★★★☆</div>
+                </div>
+            </div>
+            
+            <div class="salary-tag">💰 起薪约4000-8000元，名中医收入高</div>
+            <span class="data-source-tag">暂无权威公开数据，仅供参考</span>
+            
+            <p style="margin-top:10px;font-size:0.9em;color:rgba(255,255,255,0.7);">
+                就业形势：就业率中等，需要经验积累
+            </p>
+            
+            <div class="detail-section hidden">
+                <div class="detail-title">📖 学什么</div>
+                <div class="detail-content">学习中医学理论和中医临床实践</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>中医基础理论、中医诊断学、中药学</li>
+                    <li><strong>大二：</strong>方剂学、伤寒论、金匮要略</li>
+                    <li><strong>大三：</strong>中医内科学、针灸学、中医各家学说</li>
+                    <li><strong>大四：</strong>中医临床实习、毕业实习</li>
+                </ul>
+                
+                <div class="detail-title">👤 适合人群</div>
+                <div class="detail-content">
+                    <strong>特质：</strong>热爱中医、古文基础、有耐心
+                </div>
+                <div class="detail-content"><strong>技能要求：</strong></div>
+                <div class="skill-tags"><span class="skill-tag">记忆能力（大量经典）</span><span class="skill-tag">辨证论治能力</span><span class="skill-tag">沟通能力</span></div>
+                <div class="detail-content" style="color:#ffc107;">
+                    ⚠️ 成才周期长，需要跟师学习
+                </div>
+                
+                <div class="detail-title">📈 前景展望</div>
+                <div class="detail-content">
+                    <strong>趋势：</strong>国家支持中医发展，但竞争也增加
+                </div>
+                <div class="detail-content">
+                    <strong>热门去向：</strong>中医院、中医诊所、养生机构
+                </div>
+                <div class="detail-content">
+                    <strong>新兴方向：</strong>中医现代化、中药研发、中医养生
+                </div>
+                
+                <div class="detail-title">💼 就业建议</div>
+                <div class="detail-content">
+                    <strong>立即行动：</strong>拜师学艺，跟老中医抄方
+                </div>
+                <div class="detail-content">
+                    <strong>证书建议：</strong>中医执业医师证
+                </div>
+                <div class="detail-content">
+                    <strong>时间线：</strong>大三开始跟师
+                </div>
+                
+                <div class="detail-title">🛤️ 学习路径</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>中医基础+背诵经典</li>
+                    <li><strong>大二：</strong>中医经典+临床基础</li>
+                    <li><strong>大三：</strong>临床实习+跟师</li>
+                    <li><strong>大四：</strong>实习+考研</li>
+                </ul>
+                
+                <div class="detail-title">⭐ 张雪峰点评</div>
+                <div class="pros-cons">
+                    <div class="pros-box">
+                        <strong style="color:#38ef7d;">✅ 优点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>越老越值钱</li><li>国家政策支持</li><li>可独立执业</li></ul>
+                    </div>
+                    <div class="cons-box">
+                        <strong style="color:#f5576c;">❌ 缺点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>成才周期长</li><li>现代医学竞争</li></ul>
+                    </div>
+                </div>
+                <div class="summary-box">
+                    💬 总结：真正热爱中医、愿意沉淀的人适合
+                </div>
+            </div>
+        </div>
+    
+        <div class="major-card" id="card-120201" data-category="11 管理学" onclick="toggleCard('120201')">
+            <div class="card-header">
+                <span class="category-icon">📋</span>
+                <div>
+                    <div class="major-name">工商管理</div>
+                    <div class="major-code">120201</div>
+                    <div class="difficulty-stars">难度：★★★☆☆</div>
+                </div>
+            </div>
+            
+            <div class="salary-tag">💰 差距极大，起薪约5000-15000元</div>
+            <span class="data-source-tag">暂无权威公开数据，仅供参考</span>
+            
+            <p style="margin-top:10px;font-size:0.9em;color:rgba(255,255,255,0.7);">
+                就业形势：就业率高，但竞争激烈
+            </p>
+            
+            <div class="detail-section hidden">
+                <div class="detail-title">📖 学什么</div>
+                <div class="detail-content">学习企业运营管理的理论和实践</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>管理学原理、经济学基础、会计学基础</li>
+                    <li><strong>大二：</strong>市场营销、人力资源管理、组织行为学</li>
+                    <li><strong>大三：</strong>战略管理、运营管理、财务管理</li>
+                    <li><strong>大四：</strong>毕业论文、企业实习</li>
+                </ul>
+                
+                <div class="detail-title">👤 适合人群</div>
+                <div class="detail-content">
+                    <strong>特质：</strong>善于交际、有领导力、综合能力强
+                </div>
+                <div class="detail-content"><strong>技能要求：</strong></div>
+                <div class="skill-tags"><span class="skill-tag">沟通协调能力</span><span class="skill-tag">商业思维</span><span class="skill-tag">数据分析能力</span></div>
+                <div class="detail-content" style="color:#ffc107;">
+                    ⚠️ 万金油专业，需要尽早确定方向
+                </div>
+                
+                <div class="detail-title">📈 前景展望</div>
+                <div class="detail-content">
+                    <strong>趋势：</strong>管理培训生竞争激烈，但管培生项目仍受欢迎
+                </div>
+                <div class="detail-content">
+                    <strong>热门去向：</strong>管理培训生、管培生项目、企业管理岗位
+                </div>
+                <div class="detail-content">
+                    <strong>新兴方向：</strong>数字化管理、创业管理
+                </div>
+                
+                <div class="detail-title">💼 就业建议</div>
+                <div class="detail-content">
+                    <strong>立即行动：</strong>尽早实习，确定方向：市场/HR/财务/运营
+                </div>
+                <div class="detail-content">
+                    <strong>证书建议：</strong>人力资源管理师、会计资格证
+                </div>
+                <div class="detail-content">
+                    <strong>时间线：</strong>大二开始实习积累经验
+                </div>
+                
+                <div class="detail-title">🛤️ 学习路径</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>了解商业世界，确定兴趣方向</li>
+                    <li><strong>大二：</strong>学专业基础课，开始实习</li>
+                    <li><strong>大三：</strong>深入方向，找管培生项目</li>
+                    <li><strong>大四：</strong>秋招，争取管培生offer</li>
+                </ul>
+                
+                <div class="detail-title">⭐ 张雪峰点评</div>
+                <div class="pros-cons">
+                    <div class="pros-box">
+                        <strong style="color:#38ef7d;">✅ 优点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>就业面广</li><li>综合能力培养</li></ul>
+                    </div>
+                    <div class="cons-box">
+                        <strong style="color:#f5576c;">❌ 缺点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>不够专业</li><li>竞争激烈</li></ul>
+                    </div>
+                </div>
+                <div class="summary-box">
+                    💬 总结：需要尽早确定方向，不能什么都学
+                </div>
+            </div>
+        </div>
+    
+        <div class="major-card" id="card-120203" data-category="11 管理学" onclick="toggleCard('120203')">
+            <div class="card-header">
+                <span class="category-icon">🧾</span>
+                <div>
+                    <div class="major-name">会计学</div>
+                    <div class="major-code">120203</div>
+                    <div class="difficulty-stars">难度：★★★★☆</div>
+                </div>
+            </div>
+            
+            <div class="salary-tag">💰 起薪约5000-10000元，注会持证后显著提升</div>
+            <span class="data-source-tag">暂无权威公开数据，仅供参考</span>
+            
+            <p style="margin-top:10px;font-size:0.9em;color:rgba(255,255,255,0.7);">
+                就业形势：就业率高，会计人才需求稳定
+            </p>
+            
+            <div class="detail-section hidden">
+                <div class="detail-title">📖 学什么</div>
+                <div class="detail-content">学习财务核算、审计和财务管理</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>会计学原理、管理学、经济法</li>
+                    <li><strong>大二：</strong>财务会计、成本会计、管理会计</li>
+                    <li><strong>大三：</strong>审计学、财务管理、税法</li>
+                    <li><strong>大四：</strong>毕业论文、会计事务所/企业实习</li>
+                </ul>
+                
+                <div class="detail-title">👤 适合人群</div>
+                <div class="detail-content">
+                    <strong>特质：</strong>细心、对数字敏感、有原则性
+                </div>
+                <div class="detail-content"><strong>技能要求：</strong></div>
+                <div class="skill-tags"><span class="skill-tag">计算能力</span><span class="skill-tag">逻辑分析能力</span><span class="skill-tag">细心耐心</span></div>
+                <div class="detail-content" style="color:#ffc107;">
+                    ⚠️ 必须考CPA，否则很难有发展
+                </div>
+                
+                <div class="detail-title">📈 前景展望</div>
+                <div class="detail-content">
+                    <strong>趋势：</strong>会计电算化冲击基础岗位，高端会计仍稀缺
+                </div>
+                <div class="detail-content">
+                    <strong>热门去向：</strong>企业财务、会计师事务所、金融机构
+                </div>
+                <div class="detail-content">
+                    <strong>新兴方向：</strong>管理会计、财务分析、CFO
+                </div>
+                
+                <div class="detail-title">💼 就业建议</div>
+                <div class="detail-content">
+                    <strong>立即行动：</strong>必须考CPA，实习积累经验
+                </div>
+                <div class="detail-content">
+                    <strong>证书建议：</strong>CPA（必考）、ACCA（加分）
+                </div>
+                <div class="detail-content">
+                    <strong>时间线：</strong>大三开始备考CPA
+                </div>
+                
+                <div class="detail-title">🛤️ 学习路径</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>会计基础，打好专业基础</li>
+                    <li><strong>大二：</strong>学中级财务会计，开始备考CPA</li>
+                    <li><strong>大三：</strong>去会计事务所实习，备考CPA</li>
+                    <li><strong>大四：</strong>秋招，CPA过几门</li>
+                </ul>
+                
+                <div class="detail-title">⭐ 张雪峰点评</div>
+                <div class="pros-cons">
+                    <div class="pros-box">
+                        <strong style="color:#38ef7d;">✅ 优点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>就业稳定</li><li>越老越值钱</li><li>可考CPA</li></ul>
+                    </div>
+                    <div class="cons-box">
+                        <strong style="color:#f5576c;">❌ 缺点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>初级岗位竞争激烈</li><li>AI冲击基础核算</li></ul>
+                    </div>
+                </div>
+                <div class="summary-box">
+                    💬 总结：CPA是硬道理，过了CPA前途光明
+                </div>
+            </div>
+        </div>
+    
+        <div class="major-card" id="card-120401" data-category="11 管理学" onclick="toggleCard('120401')">
+            <div class="card-header">
+                <span class="category-icon">🏛️</span>
+                <div>
+                    <div class="major-name">公共事业管理</div>
+                    <div class="major-code">120401</div>
+                    <div class="difficulty-stars">难度：★★★☆☆</div>
+                </div>
+            </div>
+            
+            <div class="salary-tag">💰 体制内为主，起薪约5000-9000元</div>
+            <span class="data-source-tag">暂无权威公开数据，仅供参考</span>
+            
+            <p style="margin-top:10px;font-size:0.9em;color:rgba(255,255,255,0.7);">
+                就业形势：就业率中等，考公是主要出路
+            </p>
+            
+            <div class="detail-section hidden">
+                <div class="detail-title">📖 学什么</div>
+                <div class="detail-content">学习公共部门管理和公共政策</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>管理学原理、政治学基础、公共行政</li>
+                    <li><strong>大二：</strong>公共政策分析、公共部门人力资源管理</li>
+                    <li><strong>大三：</strong>公共事业管理、法律基础、公共关系</li>
+                    <li><strong>大四：</strong>毕业论文、公共部门实习</li>
+                </ul>
+                
+                <div class="detail-title">👤 适合人群</div>
+                <div class="detail-content">
+                    <strong>特质：</strong>关心公共事务、有责任感、善于沟通
+                </div>
+                <div class="detail-content"><strong>技能要求：</strong></div>
+                <div class="skill-tags"><span class="skill-tag">政策分析能力</span><span class="skill-tag">公文写作能力</span><span class="skill-tag">组织协调能力</span></div>
+                <div class="detail-content" style="color:#ffc107;">
+                    ⚠️ 就业不如想象中好，需要考公或考研
+                </div>
+                
+                <div class="detail-title">📈 前景展望</div>
+                <div class="detail-content">
+                    <strong>趋势：</strong>考公热门专业，但竞争激烈
+                </div>
+                <div class="detail-content">
+                    <strong>热门去向：</strong>公务员、事业单位、公共部门
+                </div>
+                <div class="detail-content">
+                    <strong>新兴方向：</strong>公共政策、非营利组织管理
+                </div>
+                
+                <div class="detail-title">💼 就业建议</div>
+                <div class="detail-content">
+                    <strong>立即行动：</strong>尽早准备考公或考研
+                </div>
+                <div class="detail-content">
+                    <strong>证书建议：</strong>人力资源管理师
+                </div>
+                <div class="detail-content">
+                    <strong>时间线：</strong>大三开始备考
+                </div>
+                
+                <div class="detail-title">🛤️ 学习路径</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>了解公共管理领域</li>
+                    <li><strong>大二：</strong>专业基础课，开始准备考公</li>
+                    <li><strong>大三：</strong>实习+备考</li>
+                    <li><strong>大四：</strong>考公/考研</li>
+                </ul>
+                
+                <div class="detail-title">⭐ 张雪峰点评</div>
+                <div class="pros-cons">
+                    <div class="pros-box">
+                        <strong style="color:#38ef7d;">✅ 优点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>考公有优势</li><li>稳定</li></ul>
+                    </div>
+                    <div class="cons-box">
+                        <strong style="color:#f5576c;">❌ 缺点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>专业性不强</li><li>就业面窄</li></ul>
+                    </div>
+                </div>
+                <div class="summary-box">
+                    💬 总结：适合想进体制内的人
+                </div>
+            </div>
+        </div>
+    
+        <div class="major-card" id="card-120202" data-category="11 管理学" onclick="toggleCard('120202')">
+            <div class="card-header">
+                <span class="category-icon">📢</span>
+                <div>
+                    <div class="major-name">市场营销</div>
+                    <div class="major-code">120202</div>
+                    <div class="difficulty-stars">难度：★★★☆☆</div>
+                </div>
+            </div>
+            
+            <div class="salary-tag">💰 底薪低+提成，能力差异极大</div>
+            <span class="data-source-tag">暂无权威公开数据，仅供参考</span>
+            
+            <p style="margin-top:10px;font-size:0.9em;color:rgba(255,255,255,0.7);">
+                就业形势：就业率高，但淘汰率高
+            </p>
+            
+            <div class="detail-section hidden">
+                <div class="detail-title">📖 学什么</div>
+                <div class="detail-content">学习市场分析和营销策划</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>管理学原理、经济学基础、市场营销学</li>
+                    <li><strong>大二：</strong>消费者行为学、市场调研、广告学</li>
+                    <li><strong>大三：</strong>营销策划、数字营销、品牌管理</li>
+                    <li><strong>大四：</strong>毕业论文、营销实战实习</li>
+                </ul>
+                
+                <div class="detail-title">👤 适合人群</div>
+                <div class="detail-content">
+                    <strong>特质：</strong>善于交际、有创意、抗压能力强
+                </div>
+                <div class="detail-content"><strong>技能要求：</strong></div>
+                <div class="skill-tags"><span class="skill-tag">沟通能力</span><span class="skill-tag">创意策划能力</span><span class="skill-tag">数据分析能力</span></div>
+                <div class="detail-content" style="color:#ffc107;">
+                    ⚠️ 销售岗位门槛低，但做好很难
+                </div>
+                
+                <div class="detail-title">📈 前景展望</div>
+                <div class="detail-content">
+                    <strong>趋势：</strong>数字营销兴起，短视频/直播带货成为新方向
+                </div>
+                <div class="detail-content">
+                    <strong>热门去向：</strong>品牌策划、数字营销、销售管培生
+                </div>
+                <div class="detail-content">
+                    <strong>新兴方向：</strong>直播电商、私域运营、跨境营销
+                </div>
+                
+                <div class="detail-title">💼 就业建议</div>
+                <div class="detail-content">
+                    <strong>立即行动：</strong>积累实战经验，有自己的案例
+                </div>
+                <div class="detail-content">
+                    <strong>证书建议：</strong>营销师认证
+                </div>
+                <div class="detail-content">
+                    <strong>时间线：</strong>大二开始实习
+                </div>
+                
+                <div class="detail-title">🛤️ 学习路径</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>营销基础课，开始做小生意/兼职</li>
+                    <li><strong>大二：</strong>学数字营销，运营自己的账号</li>
+                    <li><strong>大三：</strong>去营销公司实习</li>
+                    <li><strong>大四：</strong>秋招，有自己案例</li>
+                </ul>
+                
+                <div class="detail-title">⭐ 张雪峰点评</div>
+                <div class="pros-cons">
+                    <div class="pros-box">
+                        <strong style="color:#38ef7d;">✅ 优点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>能者多得</li><li>不看出身看能力</li></ul>
+                    </div>
+                    <div class="cons-box">
+                        <strong style="color:#f5576c;">❌ 缺点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>不稳定</li><li>淘汰率高</li></ul>
+                    </div>
+                </div>
+                <div class="summary-box">
+                    💬 总结：适合有冲劲、能承受压力的人
+                </div>
+            </div>
+        </div>
+    
+        <div class="major-card" id="card-120801" data-category="11 管理学" onclick="toggleCard('120801')">
+            <div class="card-header">
+                <span class="category-icon">🛒</span>
+                <div>
+                    <div class="major-name">电子商务</div>
+                    <div class="major-code">120801</div>
+                    <div class="difficulty-stars">难度：★★★☆☆</div>
+                </div>
+            </div>
+            
+            <div class="salary-tag">💰 起薪约5000-12000元，运营岗位差异大</div>
+            <span class="data-source-tag">暂无权威公开数据，仅供参考</span>
+            
+            <p style="margin-top:10px;font-size:0.9em;color:rgba(255,255,255,0.7);">
+                就业形势：就业率高，电商行业蓬勃发展
+            </p>
+            
+            <div class="detail-section hidden">
+                <div class="detail-title">📖 学什么</div>
+                <div class="detail-content">学习电子商务运营和技术</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>管理学原理、经济学、电子商务概论</li>
+                    <li><strong>大二：</strong>网络经济学、网络营销、网页设计</li>
+                    <li><strong>大三：</strong>电商运营、数据分析、供应链管理</li>
+                    <li><strong>大四：</strong>毕业论文、电商企业实习</li>
+                </ul>
+                
+                <div class="detail-title">👤 适合人群</div>
+                <div class="detail-content">
+                    <strong>特质：</strong>对互联网感兴趣、善于学习、有商业思维
+                </div>
+                <div class="detail-content"><strong>技能要求：</strong></div>
+                <div class="skill-tags"><span class="skill-tag">运营能力</span><span class="skill-tag">数据分析能力</span><span class="skill-tag">沟通能力</span></div>
+                <div class="detail-content" style="color:#ffc107;">
+                    ⚠️ 行业变化快，需要持续学习
+                </div>
+                
+                <div class="detail-title">📈 前景展望</div>
+                <div class="detail-content">
+                    <strong>趋势：</strong>直播电商、短视频电商成为新趋势
+                </div>
+                <div class="detail-content">
+                    <strong>热门去向：</strong>电商平台、直播电商、品牌电商
+                </div>
+                <div class="detail-content">
+                    <strong>新兴方向：</strong>跨境电商、私域电商、即时零售
+                </div>
+                
+                <div class="detail-title">💼 就业建议</div>
+                <div class="detail-content">
+                    <strong>立即行动：</strong>运营自己的网店或账号，积累经验
+                </div>
+                <div class="detail-content">
+                    <strong>证书建议：</strong>电子商务师
+                </div>
+                <div class="detail-content">
+                    <strong>时间线：</strong>大二开始做电商项目
+                </div>
+                
+                <div class="detail-title">🛤️ 学习路径</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>电商基础，了解电商生态</li>
+                    <li><strong>大二：</strong>学运营技能，开始做项目</li>
+                    <li><strong>大三：</strong>去电商公司实习</li>
+                    <li><strong>大四：</strong>秋招，有成功案例</li>
+                </ul>
+                
+                <div class="detail-title">⭐ 张雪峰点评</div>
+                <div class="pros-cons">
+                    <div class="pros-box">
+                        <strong style="color:#38ef7d;">✅ 优点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>行业前景好</li><li>创业机会多</li></ul>
+                    </div>
+                    <div class="cons-box">
+                        <strong style="color:#f5576c;">❌ 缺点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>变化快</li><li>竞争激烈</li></ul>
+                    </div>
+                </div>
+                <div class="summary-box">
+                    💬 总结：适合有商业嗅觉、善于学习的人
+                </div>
+            </div>
+        </div>
+    
+        <div class="major-card" id="card-120601" data-category="11 管理学" onclick="toggleCard('120601')">
+            <div class="card-header">
+                <span class="category-icon">📦</span>
+                <div>
+                    <div class="major-name">物流管理</div>
+                    <div class="major-code">120601</div>
+                    <div class="difficulty-stars">难度：★★★☆☆</div>
+                </div>
+            </div>
+            
+            <div class="salary-tag">💰 起薪约5000-10000元，供应链方向薪资高</div>
+            <span class="data-source-tag">暂无权威公开数据，仅供参考</span>
+            
+            <p style="margin-top:10px;font-size:0.9em;color:rgba(255,255,255,0.7);">
+                就业形势：就业率高，电商带动物流需求
+            </p>
+            
+            <div class="detail-section hidden">
+                <div class="detail-title">📖 学什么</div>
+                <div class="detail-content">学习物流运作和供应链管理</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>管理学原理、经济学、物流学概论</li>
+                    <li><strong>大二：</strong>仓储管理、运输管理、供应链管理</li>
+                    <li><strong>大三：</strong>物流系统规划、国际物流、物流信息系统</li>
+                    <li><strong>大四：</strong>毕业论文、物流企业实习</li>
+                </ul>
+                
+                <div class="detail-title">👤 适合人群</div>
+                <div class="detail-content">
+                    <strong>特质：</strong>逻辑思维好、细心、能吃苦
+                </div>
+                <div class="detail-content"><strong>技能要求：</strong></div>
+                <div class="skill-tags"><span class="skill-tag">系统规划能力</span><span class="skill-tag">数据分析能力</span><span class="skill-tag">协调能力</span></div>
+                <div class="detail-content" style="color:#ffc107;">
+                    ⚠️ 物流基层工作条件艰苦
+                </div>
+                
+                <div class="detail-title">📈 前景展望</div>
+                <div class="detail-content">
+                    <strong>趋势：</strong>智慧物流、跨境物流发展迅速
+                </div>
+                <div class="detail-content">
+                    <strong>热门去向：</strong>电商物流、快递公司、供应链公司
+                </div>
+                <div class="detail-content">
+                    <strong>新兴方向：</strong>智慧物流、跨境电商供应链
+                </div>
+                
+                <div class="detail-title">💼 就业建议</div>
+                <div class="detail-content">
+                    <strong>立即行动：</strong>学供应链软件（SAP等）
+                </div>
+                <div class="detail-content">
+                    <strong>证书建议：</strong>供应链管理师
+                </div>
+                <div class="detail-content">
+                    <strong>时间线：</strong>大三确定方向
+                </div>
+                
+                <div class="detail-title">🛤️ 学习路径</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>物流基础课</li>
+                    <li><strong>大二：</strong>学供应链管理，进物流公司实习</li>
+                    <li><strong>大三：</strong>学物流信息系统</li>
+                    <li><strong>大四：</strong>秋招或考研</li>
+                </ul>
+                
+                <div class="detail-title">⭐ 张雪峰点评</div>
+                <div class="pros-cons">
+                    <div class="pros-box">
+                        <strong style="color:#38ef7d;">✅ 优点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>就业稳定</li><li>行业需求大</li></ul>
+                    </div>
+                    <div class="cons-box">
+                        <strong style="color:#f5576c;">❌ 缺点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>基层工作条件差</li><li>薪资增长慢</li></ul>
+                    </div>
+                </div>
+                <div class="summary-box">
+                    💬 总结：供应链方向更有前景
+                </div>
+            </div>
+        </div>
+    
+        <div class="major-card" id="card-120901" data-category="11 管理学" onclick="toggleCard('120901')">
+            <div class="card-header">
+                <span class="category-icon">✈️</span>
+                <div>
+                    <div class="major-name">旅游管理</div>
+                    <div class="major-code">120901</div>
+                    <div class="difficulty-stars">难度：★★★☆☆</div>
+                </div>
+            </div>
+            
+            <div class="salary-tag">💰 起薪约4000-8000元，服务行业特点</div>
+            <span class="data-source-tag">暂无权威公开数据，仅供参考</span>
+            
+            <p style="margin-top:10px;font-size:0.9em;color:rgba(255,255,255,0.7);">
+                就业形势：就业率高，但疫情后恢复中
+            </p>
+            
+            <div class="detail-section hidden">
+                <div class="detail-title">📖 学什么</div>
+                <div class="detail-content">学习旅游运营和管理</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>旅游学概论、管理学、导游业务</li>
+                    <li><strong>大二：</strong>旅游经济学、酒店管理、景区管理</li>
+                    <li><strong>大三：</strong>旅游规划、会展管理、旅游市场营销</li>
+                    <li><strong>大四：</strong>毕业论文、旅游企业实习</li>
+                </ul>
+                
+                <div class="detail-title">👤 适合人群</div>
+                <div class="detail-content">
+                    <strong>特质：</strong>热爱旅游、善于交际、服务意识
+                </div>
+                <div class="detail-content"><strong>技能要求：</strong></div>
+                <div class="skill-tags"><span class="skill-tag">沟通能力</span><span class="skill-tag">组织协调能力</span><span class="skill-tag">外语能力</span></div>
+                <div class="detail-content" style="color:#ffc107;">
+                    ⚠️ 服务行业工作时间长，节假日不能休息
+                </div>
+                
+                <div class="detail-title">📈 前景展望</div>
+                <div class="detail-content">
+                    <strong>趋势：</strong>旅游复苏，但竞争激烈
+                </div>
+                <div class="detail-content">
+                    <strong>热门去向：</strong>酒店、旅行社、景区、旅游电商
+                </div>
+                <div class="detail-content">
+                    <strong>新兴方向：</strong>文旅融合、定制旅游、旅游科技
+                </div>
+                
+                <div class="detail-title">💼 就业建议</div>
+                <div class="detail-content">
+                    <strong>立即行动：</strong>考导游证，多实习积累经验
+                </div>
+                <div class="detail-content">
+                    <strong>证书建议：</strong>导游证（导游必考）
+                </div>
+                <div class="detail-content">
+                    <strong>时间线：</strong>大二考导游证
+                </div>
+                
+                <div class="detail-title">🛤️ 学习路径</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>旅游基础课，考导游证</li>
+                    <li><strong>大二：</strong>酒店/旅行社实习</li>
+                    <li><strong>大三：</strong>深入方向，准备就业</li>
+                    <li><strong>大四：</strong>秋招</li>
+                </ul>
+                
+                <div class="detail-title">⭐ 张雪峰点评</div>
+                <div class="pros-cons">
+                    <div class="pros-box">
+                        <strong style="color:#38ef7d;">✅ 优点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>能到处玩</li><li>行业复苏中</li></ul>
+                    </div>
+                    <div class="cons-box">
+                        <strong style="color:#f5576c;">❌ 缺点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>薪资不高</li><li>工作时间长</li></ul>
+                    </div>
+                </div>
+                <div class="summary-box">
+                    💬 总结：热爱旅游、能吃苦的人适合
+                </div>
+            </div>
+        </div>
+    
+        <div class="major-card" id="card-120204" data-category="11 管理学" onclick="toggleCard('120204')">
+            <div class="card-header">
+                <span class="category-icon">💹</span>
+                <div>
+                    <div class="major-name">财务管理</div>
+                    <div class="major-code">120204</div>
+                    <div class="difficulty-stars">难度：★★★★☆</div>
+                </div>
+            </div>
+            
+            <div class="salary-tag">💰 起薪约5000-12000元， CFO路线薪资高</div>
+            <span class="data-source-tag">暂无权威公开数据，仅供参考</span>
+            
+            <p style="margin-top:10px;font-size:0.9em;color:rgba(255,255,255,0.7);">
+                就业形势：就业率高，企业财务需求稳定
+            </p>
+            
+            <div class="detail-section hidden">
+                <div class="detail-title">📖 学什么</div>
+                <div class="detail-content">学习企业财务和投融资管理</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>会计学原理、管理学、财务学基础</li>
+                    <li><strong>大二：</strong>中级财务会计、财务管理、投资学</li>
+                    <li><strong>大三：</strong>公司金融、风险管理、财务报表分析</li>
+                    <li><strong>大四：</strong>毕业论文、财务实习</li>
+                </ul>
+                
+                <div class="detail-title">👤 适合人群</div>
+                <div class="detail-content">
+                    <strong>特质：</strong>对数字敏感、细心、有原则
+                </div>
+                <div class="detail-content"><strong>技能要求：</strong></div>
+                <div class="skill-tags"><span class="skill-tag">财务分析能力</span><span class="skill-tag">数据分析能力</span><span class="skill-tag">风险意识</span></div>
+                <div class="detail-content" style="color:#ffc107;">
+                    ⚠️ 需要考CPA或CFA才有好发展
+                </div>
+                
+                <div class="detail-title">📈 前景展望</div>
+                <div class="detail-content">
+                    <strong>趋势：</strong>企业合规要求提升，财务人才需求稳定
+                </div>
+                <div class="detail-content">
+                    <strong>热门去向：</strong>企业财务、投资机构、金融机构
+                </div>
+                <div class="detail-content">
+                    <strong>新兴方向：</strong>财务数字化、CFO、风控
+                </div>
+                
+                <div class="detail-title">💼 就业建议</div>
+                <div class="detail-content">
+                    <strong>立即行动：</strong>考CPA或CFA，积累实习经验
+                </div>
+                <div class="detail-content">
+                    <strong>证书建议：</strong>CPA、CFA
+                </div>
+                <div class="detail-content">
+                    <strong>时间线：</strong>大三开始备考
+                </div>
+                
+                <div class="detail-title">🛤️ 学习路径</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>财务基础，打好会计基础</li>
+                    <li><strong>大二：</strong>学财务分析，开始备考</li>
+                    <li><strong>大三：</strong>去金融或财务公司实习</li>
+                    <li><strong>大四：</strong>秋招</li>
+                </ul>
+                
+                <div class="detail-title">⭐ 张雪峰点评</div>
+                <div class="pros-cons">
+                    <div class="pros-box">
+                        <strong style="color:#38ef7d;">✅ 优点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>企业必需</li><li>越老越值钱</li><li>可向CFO发展</li></ul>
+                    </div>
+                    <div class="cons-box">
+                        <strong style="color:#f5576c;">❌ 缺点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>考证压力大</li><li>AI冲击基础岗位</li></ul>
+                    </div>
+                </div>
+                <div class="summary-box">
+                    💬 总结：财务是企业的命脉，有真才实学的人有前途
+                </div>
+            </div>
+        </div>
+    
+        <div class="major-card" id="card-120103" data-category="11 管理学" onclick="toggleCard('120103')">
+            <div class="card-header">
+                <span class="category-icon">🏗️</span>
+                <div>
+                    <div class="major-name">工程管理</div>
+                    <div class="major-code">120103</div>
+                    <div class="difficulty-stars">难度：★★★★☆</div>
+                </div>
+            </div>
+            
+            <div class="salary-tag">💰 起薪约5000-12000元，甲方方向薪资高</div>
+            <span class="data-source-tag">暂无权威公开数据，仅供参考</span>
+            
+            <p style="margin-top:10px;font-size:0.9em;color:rgba(255,255,255,0.7);">
+                就业形势：就业率高，基建和房地产带动需求
+            </p>
+            
+            <div class="detail-section hidden">
+                <div class="detail-title">📖 学什么</div>
+                <div class="detail-content">学习工程项目的计划组织和管理</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>管理学原理、工程制图、工程力学</li>
+                    <li><strong>大二：</strong>工程经济学、项目管理、工程合同管理</li>
+                    <li><strong>大三：</strong>工程造价、工程施工、工程监理</li>
+                    <li><strong>大四：</strong>毕业论文、工程项目实习</li>
+                </ul>
+                
+                <div class="detail-title">👤 适合人群</div>
+                <div class="detail-content">
+                    <strong>特质：</strong>综合能力强、协调能力好、能适应工地
+                </div>
+                <div class="detail-content"><strong>技能要求：</strong></div>
+                <div class="skill-tags"><span class="skill-tag">项目管理能力</span><span class="skill-tag">合同管理能力</span><span class="skill-tag">成本控制能力</span></div>
+                <div class="detail-content" style="color:#ffc107;">
+                    ⚠️ 需要去工地实践
+                </div>
+                
+                <div class="detail-title">📈 前景展望</div>
+                <div class="detail-content">
+                    <strong>趋势：</strong>基础设施建设稳定，但房地产下行
+                </div>
+                <div class="detail-content">
+                    <strong>热门去向：</strong>房地产公司、施工企业、监理公司
+                </div>
+                <div class="detail-content">
+                    <strong>新兴方向：</strong>智慧工地、BIM、工程咨询
+                </div>
+                
+                <div class="detail-title">💼 就业建议</div>
+                <div class="detail-content">
+                    <strong>立即行动：</strong>考建造师，学BIM
+                </div>
+                <div class="detail-content">
+                    <strong>证书建议：</strong>建造师（工作后考）
+                </div>
+                <div class="detail-content">
+                    <strong>时间线：</strong>大三确定方向
+                </div>
+                
+                <div class="detail-title">🛤️ 学习路径</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>工程基础+管理基础</li>
+                    <li><strong>大二：</strong>项目管理课，去工地实习</li>
+                    <li><strong>大三：</strong>学BIM，准备考证</li>
+                    <li><strong>大四：</strong>秋招或考研</li>
+                </ul>
+                
+                <div class="detail-title">⭐ 张雪峰点评</div>
+                <div class="pros-cons">
+                    <div class="pros-box">
+                        <strong style="color:#38ef7d;">✅ 优点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>就业稳定</li><li>越老越值钱</li></ul>
+                    </div>
+                    <div class="cons-box">
+                        <strong style="color:#f5576c;">❌ 缺点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>工地条件艰苦</li><li>房地产下行</li></ul>
+                    </div>
+                </div>
+                <div class="summary-box">
+                    💬 总结：甲方方向更有前景
+                </div>
+            </div>
+        </div>
+    
+        <div class="major-card" id="card-130502" data-category="12 艺术学" onclick="toggleCard('130502')">
+            <div class="card-header">
+                <span class="category-icon">🎨</span>
+                <div>
+                    <div class="major-name">视觉传达设计</div>
+                    <div class="major-code">130502</div>
+                    <div class="difficulty-stars">难度：★★★☆☆</div>
+                </div>
+            </div>
+            
+            <div class="salary-tag">💰 差距极大，5000-30000元不等</div>
+            <span class="data-source-tag">暂无权威公开数据，仅供参考</span>
+            
+            <p style="margin-top:10px;font-size:0.9em;color:rgba(255,255,255,0.7);">
+                就业形势：就业率高，但竞争激烈
+            </p>
+            
+            <div class="detail-section hidden">
+                <div class="detail-title">📖 学什么</div>
+                <div class="detail-content">学习视觉设计和创意表达</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>素描、色彩、平面构成、设计概论</li>
+                    <li><strong>大二：</strong>字体设计、标志设计、包装设计</li>
+                    <li><strong>大三：</strong>品牌设计、UI设计、广告设计</li>
+                    <li><strong>大四：</strong>毕业设计、设计公司实习</li>
+                </ul>
+                
+                <div class="detail-title">👤 适合人群</div>
+                <div class="detail-content">
+                    <strong>特质：</strong>有审美、有创意、对设计感兴趣
+                </div>
+                <div class="detail-content"><strong>技能要求：</strong></div>
+                <div class="skill-tags"><span class="skill-tag">设计软件（PS/AI/AE）</span><span class="skill-tag">创意能力</span><span class="skill-tag">审美能力</span></div>
+                <div class="detail-content" style="color:#ffc107;">
+                    ⚠️ 作品集是就业的关键
+                </div>
+                
+                <div class="detail-title">📈 前景展望</div>
+                <div class="detail-content">
+                    <strong>趋势：</strong>UI设计、短视频设计需求增加
+                </div>
+                <div class="detail-content">
+                    <strong>热门去向：</strong>设计公司、互联网公司、广告公司
+                </div>
+                <div class="detail-content">
+                    <strong>新兴方向：</strong>UI设计、品牌设计、插画
+                </div>
+                
+                <div class="detail-title">💼 就业建议</div>
+                <div class="detail-content">
+                    <strong>立即行动：</strong>做作品集！做作品集！做作品集！
+                </div>
+                <div class="detail-content">
+                    <strong>证书建议：</strong>Adobe认证
+                </div>
+                <div class="detail-content">
+                    <strong>时间线：</strong>大二开始做作品集
+                </div>
+                
+                <div class="detail-title">🛤️ 学习路径</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>设计基础，练手绘</li>
+                    <li><strong>大二：</strong>学设计软件，做课程作品</li>
+                    <li><strong>大三：</strong>去设计公司实习，完善作品集</li>
+                    <li><strong>大四：</strong>秋招/春招</li>
+                </ul>
+                
+                <div class="detail-title">⭐ 张雪峰点评</div>
+                <div class="pros-cons">
+                    <div class="pros-box">
+                        <strong style="color:#38ef7d;">✅ 优点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>能发挥创意</li><li>可自己接单</li></ul>
+                    </div>
+                    <div class="cons-box">
+                        <strong style="color:#f5576c;">❌ 缺点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>竞争激烈</li><li>需要持续学习</li></ul>
+                    </div>
+                </div>
+                <div class="summary-box">
+                    💬 总结：作品集决定一切，没有好作品集找不到好工作
+                </div>
+            </div>
+        </div>
+    
+        <div class="major-card" id="card-130310" data-category="12 艺术学" onclick="toggleCard('130310')">
+            <div class="card-header">
+                <span class="category-icon">🎬</span>
+                <div>
+                    <div class="major-name">动画</div>
+                    <div class="major-code">130310</div>
+                    <div class="difficulty-stars">难度：★★★★☆</div>
+                </div>
+            </div>
+            
+            <div class="salary-tag">💰 起薪约5000-15000元，游戏动画高</div>
+            <span class="data-source-tag">暂无权威公开数据，仅供参考</span>
+            
+            <p style="margin-top:10px;font-size:0.9em;color:rgba(255,255,255,0.7);">
+                就业形势：就业率较高，游戏影视行业带动
+            </p>
+            
+            <div class="detail-section hidden">
+                <div class="detail-title">📖 学什么</div>
+                <div class="detail-content">学习动画制作和创意</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>素描、色彩、动画概论、动画运动规律</li>
+                    <li><strong>大二：</strong>二维动画制作、三维动画基础、分镜头设计</li>
+                    <li><strong>大三：</strong>Maya/3ds Max深入、动画特效、后期合成</li>
+                    <li><strong>大四：</strong>毕业设计、动画公司实习</li>
+                </ul>
+                
+                <div class="detail-title">👤 适合人群</div>
+                <div class="detail-content">
+                    <strong>特质：</strong>热爱动画、有想象力、能熬夜
+                </div>
+                <div class="detail-content"><strong>技能要求：</strong></div>
+                <div class="skill-tags"><span class="skill-tag">动画制作能力</span><span class="skill-tag">软件操作能力</span><span class="skill-tag">艺术审美</span></div>
+                <div class="detail-content" style="color:#ffc107;">
+                    ⚠️ 需要作品集，身体要能熬夜
+                </div>
+                
+                <div class="detail-title">📈 前景展望</div>
+                <div class="detail-content">
+                    <strong>趋势：</strong>游戏动漫行业发展迅速，人才需求大
+                </div>
+                <div class="detail-content">
+                    <strong>热门去向：</strong>游戏公司、动画公司、影视公司
+                </div>
+                <div class="detail-content">
+                    <strong>新兴方向：</strong>游戏动画、元宇宙内容、NFT
+                </div>
+                
+                <div class="detail-title">💼 就业建议</div>
+                <div class="detail-content">
+                    <strong>立即行动：</strong>学Maya或Unity，做个人作品
+                </div>
+                <div class="detail-content">
+                    <strong>证书建议：</strong>软件认证
+                </div>
+                <div class="detail-content">
+                    <strong>时间线：</strong>大二确定方向：2D/3D/游戏
+                </div>
+                
+                <div class="detail-title">🛤️ 学习路径</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>动画基础，练手绘</li>
+                    <li><strong>大二：</strong>学动画软件，做短片</li>
+                    <li><strong>大三：</strong>确定方向，做作品</li>
+                    <li><strong>大四：</strong>秋招，有成熟作品</li>
+                </ul>
+                
+                <div class="detail-title">⭐ 张雪峰点评</div>
+                <div class="pros-cons">
+                    <div class="pros-box">
+                        <strong style="color:#38ef7d;">✅ 优点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>能创作</li><li>游戏行业薪资高</li></ul>
+                    </div>
+                    <div class="cons-box">
+                        <strong style="color:#f5576c;">❌ 缺点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>加班多</li><li>需要持续学习</li></ul>
+                    </div>
+                </div>
+                <div class="summary-box">
+                    💬 总结：热爱动画、能吃苦的人适合
+                </div>
+            </div>
+        </div>
+    
+        <div class="major-card" id="card-130201" data-category="12 艺术学" onclick="toggleCard('130201')">
+            <div class="card-header">
+                <span class="category-icon">🎵</span>
+                <div>
+                    <div class="major-name">音乐表演</div>
+                    <div class="major-code">130201</div>
+                    <div class="difficulty-stars">难度：★★★★★</div>
+                </div>
+            </div>
+            
+            <div class="salary-tag">💰 不稳定，3000-30000元差距极大</div>
+            <span class="data-source-tag">暂无权威公开数据，仅供参考</span>
+            
+            <p style="margin-top:10px;font-size:0.9em;color:rgba(255,255,255,0.7);">
+                就业形势：就业率一般，竞争激烈
+            </p>
+            
+            <div class="detail-section hidden">
+                <div class="detail-title">📖 学什么</div>
+                <div class="detail-content">学习音乐表演专业技能</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>专业主课（钢琴/声乐/器乐）、乐理、视唱练耳</li>
+                    <li><strong>大二：</strong>专业主课、和声、作品分析</li>
+                    <li><strong>大三：</strong>专业主课、合唱/合奏、舞台表演</li>
+                    <li><strong>大四：</strong>毕业音乐会、艺术实践</li>
+                </ul>
+                
+                <div class="detail-title">👤 适合人群</div>
+                <div class="detail-content">
+                    <strong>特质：</strong>音乐天赋、舞台表现力、刻苦练习
+                </div>
+                <div class="detail-content"><strong>技能要求：</strong></div>
+                <div class="skill-tags"><span class="skill-tag">演奏/演唱能力</span><span class="skill-tag">音乐素养</span><span class="skill-tag">舞台经验</span></div>
+                <div class="detail-content" style="color:#ffc107;">
+                    ⚠️ 必须是真爱，否则坚持不下去
+                </div>
+                
+                <div class="detail-title">📈 前景展望</div>
+                <div class="detail-content">
+                    <strong>趋势：</strong>音乐教育、自媒体成为新出路
+                </div>
+                <div class="detail-content">
+                    <strong>热门去向：</strong>乐团、音乐教育、音乐自媒体
+                </div>
+                <div class="detail-content">
+                    <strong>新兴方向：</strong>音乐教育、音乐治疗、音乐版权
+                </div>
+                
+                <div class="detail-title">💼 就业建议</div>
+                <div class="detail-content">
+                    <strong>立即行动：</strong>多演出，积累舞台经验
+                </div>
+                <div class="detail-content">
+                    <strong>证书建议：</strong>教师资格证（想当老师）
+                </div>
+                <div class="detail-content">
+                    <strong>时间线：</strong>大学期间多演出
+                </div>
+                
+                <div class="detail-title">🛤️ 学习路径</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>专业主课，每天练习</li>
+                    <li><strong>大二：</strong>专业提升，参加比赛</li>
+                    <li><strong>大三：</strong>开始教学实践，尝试自媒体</li>
+                    <li><strong>大四：</strong>准备就业或考研</li>
+                </ul>
+                
+                <div class="detail-title">⭐ 张雪峰点评</div>
+                <div class="pros-cons">
+                    <div class="pros-box">
+                        <strong style="color:#38ef7d;">✅ 优点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>能从事热爱的事业</li><li>有艺术氛围</li></ul>
+                    </div>
+                    <div class="cons-box">
+                        <strong style="color:#f5576c;">❌ 缺点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>竞争激烈</li><li>收入不稳定</li></ul>
+                    </div>
+                </div>
+                <div class="summary-box">
+                    💬 总结：必须是真爱，否则尽早转行
+                </div>
+            </div>
+        </div>
+    
+        <div class="major-card" id="card-020301" data-category="02 经济学" onclick="toggleCard('020301')">
+            <div class="card-header">
+                <span class="category-icon">💹</span>
+                <div>
+                    <div class="major-name">金融学</div>
+                    <div class="major-code">020301</div>
+                    <div class="difficulty-stars">难度：★★★★★</div>
+                </div>
+            </div>
+            
+            <div class="salary-tag">💰 金融行业两极分化严重，头部机构应届30K+，基础岗位5K</div>
+            <span class="data-source-tag">暂无权威公开数据，仅供参考</span>
+            
+            <p style="margin-top:10px;font-size:0.9em;color:rgba(255,255,255,0.7);">
+                就业形势：就业率高，但头部机构竞争极其激烈
+            </p>
+            
+            <div class="detail-section hidden">
+                <div class="detail-title">📖 学什么</div>
+                <div class="detail-content">学习金融机构、金融市场和金融工具</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>微观经济学、宏观经济学、高等数学</li>
+                    <li><strong>大二：</strong>货币金融学、金融市场学、公司金融</li>
+                    <li><strong>大三：</strong>证券投资学、金融工程、风险管理</li>
+                    <li><strong>大四：</strong>毕业论文、金融机构实习</li>
+                </ul>
+                
+                <div class="detail-title">👤 适合人群</div>
+                <div class="detail-content">
+                    <strong>特质：</strong>数学好、对金融感兴趣、抗压能力强
+                </div>
+                <div class="detail-content"><strong>技能要求：</strong></div>
+                <div class="skill-tags"><span class="skill-tag">数学（必须精通）</span><span class="skill-tag">数据分析能力</span><span class="skill-tag">英语</span></div>
+                <div class="detail-content" style="color:#ffc107;">
+                    ⚠️ 头部机构竞争极其激烈，需要名校+证书+实习
+                </div>
+                
+                <div class="detail-title">📈 前景展望</div>
+                <div class="detail-content">
+                    <strong>趋势：</strong>2024年金融行业分化，头部机构难进
+                </div>
+                <div class="detail-content">
+                    <strong>热门去向：</strong>投行、券商、基金、银行总行
+                </div>
+                <div class="detail-content">
+                    <strong>新兴方向：</strong>量化投资、金融科技、财富管理
+                </div>
+                
+                <div class="detail-title">💼 就业建议</div>
+                <div class="detail-content">
+                    <strong>立即行动：</strong>必须考CFA/CPA，实习必须去头部机构
+                </div>
+                <div class="detail-content">
+                    <strong>证书建议：</strong>CFA、CPA、FRM
+                </div>
+                <div class="detail-content">
+                    <strong>时间线：</strong>大二开始准备CFA，大三实习必须头部
+                </div>
+                
+                <div class="detail-title">🛤️ 学习路径</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>金融基础课，学数学英语</li>
+                    <li><strong>大二：</strong>学CFA一级，找实习</li>
+                    <li><strong>大三：</strong>去头部机构实习，考证</li>
+                    <li><strong>大四：</strong>秋招，冲击头部</li>
+                </ul>
+                
+                <div class="detail-title">⭐ 张雪峰点评</div>
+                <div class="pros-cons">
+                    <div class="pros-box">
+                        <strong style="color:#38ef7d;">✅ 优点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>顶尖机构薪资极高</li><li>社会地位高</li></ul>
+                    </div>
+                    <div class="cons-box">
+                        <strong style="color:#f5576c;">❌ 缺点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>竞争极其激烈</li><li>头部难进</li><li>工作强度大</li></ul>
+                    </div>
+                </div>
+                <div class="summary-box">
+                    💬 总结：名校+证书+实习三件套，缺一不可
+                </div>
+            </div>
+        </div>
+    
+        <div class="major-card" id="card-020303" data-category="02 经济学" onclick="toggleCard('020303')">
+            <div class="card-header">
+                <span class="category-icon">🛡️</span>
+                <div>
+                    <div class="major-name">保险学</div>
+                    <div class="major-code">020303</div>
+                    <div class="difficulty-stars">难度：★★★☆☆</div>
+                </div>
+            </div>
+            
+            <div class="salary-tag">💰 起薪约5000-10000元，精算方向薪资高</div>
+            <span class="data-source-tag">暂无权威公开数据，仅供参考</span>
+            
+            <p style="margin-top:10px;font-size:0.9em;color:rgba(255,255,255,0.7);">
+                就业形势：就业率较高，保险行业发展稳健
+            </p>
+            
+            <div class="detail-section hidden">
+                <div class="detail-title">📖 学什么</div>
+                <div class="detail-content">学习保险理论和实务</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>保险学概论、经济学基础、数学</li>
+                    <li><strong>大二：</strong>人身保险、财产保险、保险法</li>
+                    <li><strong>大三：</strong>精算基础、风险管理、保险营销</li>
+                    <li><strong>大四：</strong>毕业论文、保险企业实习</li>
+                </ul>
+                
+                <div class="detail-title">👤 适合人群</div>
+                <div class="detail-content">
+                    <strong>特质：</strong>数学好、细心、有耐心
+                </div>
+                <div class="detail-content"><strong>技能要求：</strong></div>
+                <div class="skill-tags"><span class="skill-tag">精算能力</span><span class="skill-tag">数据分析能力</span><span class="skill-tag">沟通能力</span></div>
+                <div class="detail-content" style="color:#ffc107;">
+                    ⚠️ 精算师是金领，但考试极难
+                </div>
+                
+                <div class="detail-title">📈 前景展望</div>
+                <div class="detail-content">
+                    <strong>趋势：</strong>保险行业转型，健康险、养老险发展
+                </div>
+                <div class="detail-content">
+                    <strong>热门去向：</strong>保险公司、保险经纪、精算事务所
+                </div>
+                <div class="detail-content">
+                    <strong>新兴方向：</strong>健康险、养老险、保险科技
+                </div>
+                
+                <div class="detail-title">💼 就业建议</div>
+                <div class="detail-content">
+                    <strong>立即行动：</strong>如果走精算方向，必须考精算师
+                </div>
+                <div class="detail-content">
+                    <strong>证书建议：</strong>精算师（SOA/CAA）
+                </div>
+                <div class="detail-content">
+                    <strong>时间线：</strong>大三开始考精算
+                </div>
+                
+                <div class="detail-title">🛤️ 学习路径</div>
+                <ul class="year-list">
+                    <li><strong>大一：</strong>保险基础课+数学</li>
+                    <li><strong>大二：</strong>保险专业课，确定方向</li>
+                    <li><strong>大三：</strong>去保险公司实习</li>
+                    <li><strong>大四：</strong>秋招，精算方向继续考证</li>
+                </ul>
+                
+                <div class="detail-title">⭐ 张雪峰点评</div>
+                <div class="pros-cons">
+                    <div class="pros-box">
+                        <strong style="color:#38ef7d;">✅ 优点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>精算师薪资高</li><li>稳定</li></ul>
+                    </div>
+                    <div class="cons-box">
+                        <strong style="color:#f5576c;">❌ 缺点：</strong>
+                        <ul style="padding-left:15px;margin-top:5px;"><li>精算考试难</li><li>保险行业口碑一般</li></ul>
+                    </div>
+                </div>
+                <div class="summary-box">
+                    💬 总结：精算方向是金领，但需要通过极难的考试
+                </div>
+            </div>
+        </div>
+    
+        </div>
+        
+        <footer>
+            <p>专业星图 V2 | 数据来源：暂无权威公开数据，仅供参考</p>
+            <p style="margin-top:10px;">⚠️ 本网站所有薪资、就业率等数据均为定性描述，不提供具体数字</p>
+        </footer>
+    </div>
+    
+    <script>
+        let expandedCards = new Set();
+        
+        function toggleCard(code) {
+            const card = document.getElementById('card-' + code);
+            if (expandedCards.has(code)) {
+                expandedCards.delete(code);
+                card.classList.remove('expanded');
+            } else {
+                expandedCards.add(code);
+                card.classList.add('expanded');
+            }
+        }
+        
+        function filterMajors(category) {
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.filter === category) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            document.querySelectorAll('.major-card').forEach(card => {
+                if (category === 'all' || card.dataset.category === category) {
+                    card.classList.remove('hidden');
+                } else {
+                    card.classList.add('hidden');
+                }
+            });
+        }
+        
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => filterMajors(btn.dataset.filter));
+        });
+    </script>
+</body>
+</html>
