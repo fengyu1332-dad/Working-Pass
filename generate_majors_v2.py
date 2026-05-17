@@ -3694,8 +3694,25 @@ def generate_html() -> str:
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>专业星图 V2 - 真实、专业的大学生专业选择指南</title>
+    <title>专业星图 - 温暖、专业的大学专业选择指南</title>
+    <link href="https://fonts.googleapis.com/css2?family=Literata:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
+        :root {{
+            --surface: #FFF8F5;
+            --surface-dim: #E9D6CC;
+            --surface-container: #FFFFFF;
+            --surface-container-low: #FFF1EA;
+            --primary: #E67E22;
+            --primary-container: #FAD7B2;
+            --on-primary: #FFFFFF;
+            --secondary: #705A49;
+            --secondary-container: #EBE0D6;
+            --on-surface: #2C2621;
+            --on-surface-variant: #8B7E74;
+            --outline: #DED0C6;
+            --shadow: rgba(112, 90, 73, 0.05);
+        }}
+        
         * {{
             margin: 0;
             padding: 0;
@@ -3703,39 +3720,39 @@ def generate_html() -> str:
         }}
         
         body {{
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
-            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            font-family: "Inter", -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            background: var(--surface);
             min-height: 100vh;
-            color: #fff;
+            color: var(--on-surface);
             line-height: 1.8;
         }}
         
         .container {{
-            max-width: 1400px;
+            max-width: 1200px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 40px 20px;
         }}
         
         header {{
             text-align: center;
-            padding: 60px 20px;
-            background: rgba(255,255,255,0.05);
-            border-radius: 20px;
+            padding: 48px 40px;
+            background: var(--surface-container);
+            border-radius: 24px;
             margin-bottom: 40px;
-            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 24px var(--shadow);
         }}
         
         header h1 {{
-            font-size: 3em;
-            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 20px;
+            font-family: "Literata", serif;
+            font-size: 40px;
+            font-weight: 700;
+            color: var(--secondary);
+            margin-bottom: 16px;
         }}
         
         header p {{
-            font-size: 1.2em;
-            color: rgba(255,255,255,0.8);
+            font-size: 16px;
+            color: var(--on-surface-variant);
             max-width: 800px;
             margin: 0 auto;
         }}
@@ -3743,8 +3760,8 @@ def generate_html() -> str:
         .stats-banner {{
             display: flex;
             justify-content: center;
-            gap: 60px;
-            margin: 40px 0;
+            gap: 64px;
+            margin: 40px 0 24px;
             flex-wrap: wrap;
         }}
         
@@ -3753,30 +3770,35 @@ def generate_html() -> str:
         }}
         
         .stat-number {{
-            font-size: 2.5em;
-            font-weight: bold;
-            background: linear-gradient(90deg, #f093fb 0%, #f5576c 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            font-family: "Literata", serif;
+            font-size: 40px;
+            font-weight: 700;
+            color: var(--primary);
+            line-height: 1.2;
         }}
         
         .stat-label {{
-            color: rgba(255,255,255,0.6);
-            font-size: 0.9em;
+            color: var(--on-surface-variant);
+            font-size: 12px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }}
         
         .filter-section {{
-            background: rgba(255,255,255,0.05);
-            padding: 30px;
-            border-radius: 15px;
-            margin-bottom: 30px;
-            backdrop-filter: blur(10px);
+            background: var(--surface-container);
+            padding: 32px;
+            border-radius: 20px;
+            margin-bottom: 32px;
+            box-shadow: 0 4px 24px var(--shadow);
         }}
         
         .filter-title {{
-            font-size: 1.2em;
-            margin-bottom: 15px;
-            color: rgba(255,255,255,0.9);
+            font-family: "Literata", serif;
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--secondary);
         }}
         
         .filter-buttons {{
@@ -3787,173 +3809,199 @@ def generate_html() -> str:
         
         .filter-btn {{
             padding: 10px 20px;
-            border: none;
-            border-radius: 25px;
-            background: rgba(255,255,255,0.1);
-            color: #fff;
+            border: 1px solid var(--outline);
+            border-radius: 9999px;
+            background: transparent;
+            color: var(--secondary);
             cursor: pointer;
             transition: all 0.3s;
-            font-size: 0.95em;
+            font-size: 14px;
+            font-weight: 500;
         }}
         
         .filter-btn:hover {{
-            background: rgba(255,255,255,0.2);
+            background: var(--secondary-container);
             transform: translateY(-2px);
         }}
         
         .filter-btn.active {{
-            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            background: var(--primary);
+            color: var(--on-primary);
+            border-color: var(--primary);
         }}
         
         .majors-grid {{
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
-            gap: 25px;
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            gap: 24px;
         }}
         
         .major-card {{
-            background: rgba(255,255,255,0.05);
+            background: var(--surface-container);
             border-radius: 20px;
-            padding: 25px;
-            backdrop-filter: blur(10px);
+            padding: 28px;
             transition: all 0.3s;
             cursor: pointer;
-            border: 1px solid rgba(255,255,255,0.1);
+            border: 1px solid var(--outline);
+            box-shadow: 0 4px 24px var(--shadow);
         }}
         
         .major-card:hover {{
-            transform: translateY(-5px);
-            border-color: rgba(102, 126, 234, 0.5);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 40px var(--shadow);
         }}
         
         .card-header {{
             display: flex;
             align-items: center;
-            gap: 15px;
-            margin-bottom: 15px;
+            gap: 16px;
+            margin-bottom: 18px;
         }}
         
         .category-icon {{
-            font-size: 2.5em;
+            font-size: 32px;
+            background: var(--primary-container);
+            width: 56px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 16px;
         }}
         
         .major-name {{
-            font-size: 1.4em;
-            font-weight: bold;
+            font-family: "Literata", serif;
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--secondary);
         }}
         
         .major-code {{
-            font-size: 0.85em;
-            color: rgba(255,255,255,0.5);
+            font-size: 12px;
+            color: var(--on-surface-variant);
+            font-weight: 500;
+            margin-top: 4px;
         }}
         
         .difficulty-stars {{
-            margin-top: 5px;
-            color: #f5576c;
+            margin-top: 8px;
+            color: var(--primary);
         }}
         
         .salary-tag {{
             display: inline-block;
-            background: linear-gradient(90deg, #11998e 0%, #38ef7d 100%);
-            padding: 5px 15px;
-            border-radius: 15px;
-            font-size: 0.85em;
-            margin: 10px 0;
+            background: var(--primary-container);
+            color: var(--secondary);
+            padding: 6px 16px;
+            border-radius: 9999px;
+            font-size: 13px;
+            font-weight: 500;
+            margin: 12px 0;
         }}
         
         .data-source-tag {{
             display: inline-block;
-            background: rgba(255,193,7,0.2);
-            color: #ffc107;
-            padding: 3px 10px;
-            border-radius: 10px;
-            font-size: 0.75em;
+            background: var(--secondary-container);
+            color: var(--secondary);
+            padding: 4px 12px;
+            border-radius: 9999px;
+            font-size: 11px;
+            font-weight: 500;
             margin-left: 10px;
         }}
         
         .detail-section {{
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 1px solid rgba(255,255,255,0.1);
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--outline);
         }}
         
         .detail-title {{
-            font-size: 1em;
-            color: #667eea;
-            margin-bottom: 8px;
+            font-family: "Literata", serif;
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--secondary);
+            margin-bottom: 10px;
             display: flex;
             align-items: center;
             gap: 8px;
         }}
         
         .detail-content {{
-            font-size: 0.9em;
-            color: rgba(255,255,255,0.8);
-            margin-bottom: 10px;
+            font-size: 15px;
+            color: var(--on-surface);
+            margin-bottom: 12px;
         }}
         
         .year-list {{
             list-style: none;
-            padding-left: 15px;
+            padding-left: 0;
         }}
         
         .year-list li {{
-            margin: 5px 0;
+            margin: 6px 0;
             position: relative;
-            padding-left: 15px;
+            padding-left: 20px;
+            font-size: 14px;
+            color: var(--on-surface-variant);
         }}
         
         .year-list li::before {{
-            content: "▸";
+            content: "•";
             position: absolute;
             left: 0;
-            color: #667eea;
+            color: var(--primary);
+            font-weight: bold;
         }}
         
         .pros-cons {{
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 10px;
+            gap: 12px;
+            margin-top: 8px;
         }}
         
         .pros-box, .cons-box {{
-            padding: 10px;
-            border-radius: 10px;
-            font-size: 0.85em;
+            padding: 16px;
+            border-radius: 16px;
+            font-size: 14px;
         }}
         
         .pros-box {{
-            background: rgba(56, 239, 125, 0.1);
-            border-left: 3px solid #38ef7d;
+            background: #E8F5E9;
+            border-left: 3px solid #4CAF50;
         }}
         
         .cons-box {{
-            background: rgba(245, 87, 108, 0.1);
-            border-left: 3px solid #f5576c;
+            background: #FFEBEE;
+            border-left: 3px solid #F44336;
         }}
         
         .summary-box {{
-            background: rgba(102, 126, 234, 0.1);
-            padding: 15px;
-            border-radius: 10px;
-            margin-top: 15px;
-            font-style: italic;
-            color: rgba(255,255,255,0.9);
+            background: var(--secondary-container);
+            padding: 20px;
+            border-radius: 16px;
+            margin-top: 18px;
+            font-style: normal;
+            color: var(--on-surface);
+            font-size: 14px;
+            line-height: 1.7;
         }}
         
         .skill-tags {{
             display: flex;
             flex-wrap: wrap;
-            gap: 5px;
-            margin-top: 5px;
+            gap: 8px;
+            margin-top: 8px;
         }}
         
         .skill-tag {{
-            background: rgba(255,255,255,0.1);
-            padding: 3px 10px;
-            border-radius: 10px;
-            font-size: 0.8em;
+            background: var(--secondary-container);
+            padding: 4px 12px;
+            border-radius: 9999px;
+            font-size: 12px;
+            color: var(--secondary);
+            font-weight: 500;
         }}
         
         .hidden {{
@@ -3966,9 +4014,11 @@ def generate_html() -> str:
         
         footer {{
             text-align: center;
-            padding: 40px;
-            color: rgba(255,255,255,0.5);
-            font-size: 0.9em;
+            padding: 48px 20px;
+            color: var(--on-surface-variant);
+            font-size: 14px;
+            margin-top: 48px;
+            border-top: 1px solid var(--outline);
         }}
         
         @media (max-width: 768px) {{
@@ -3976,12 +4026,20 @@ def generate_html() -> str:
                 grid-template-columns: 1fr;
             }}
             
+            header {{
+                padding: 32px 24px;
+            }}
+            
             header h1 {{
-                font-size: 2em;
+                font-size: 28px;
             }}
             
             .stats-banner {{
-                gap: 30px;
+                gap: 40px;
+            }}
+            
+            .container {{
+                padding: 20px;
             }}
         }}
     </style>
@@ -3989,14 +4047,14 @@ def generate_html() -> str:
 <body>
     <div class="container">
         <header>
-            <h1>🎓 专业星图 V2</h1>
-            <p>真实、专业的大学生专业选择指南 - 基于2024年最新行业趋势<br>
-            <span style="font-size:0.8em;color:#ffc107;">⚠️ 本网站薪资数据均为定性描述，不提供具体数字，数据仅供参考</span></p>
+            <h1>专业星图</h1>
+            <p>温暖、专业的大学专业选择指南 · 帮助你找到最适合的专业<br>
+            <span style="font-size:0.85em;">⚠️ 本网站数据均为参考，建议结合自身情况选择</span></p>
             
             <div class="stats-banner">
                 <div class="stat-item">
                     <div class="stat-number">{total}</div>
-                    <div class="stat-label">精选专业</div>
+                    <div class="stat-label">专业收录</div>
                 </div>
                 <div class="stat-item">
                     <div class="stat-number">{categories}</div>
@@ -4018,8 +4076,8 @@ def generate_html() -> str:
         </div>
         
         <footer>
-            <p>专业星图 V2 | 数据来源：暂无权威公开数据，仅供参考</p>
-            <p style="margin-top:10px;">⚠️ 本网站所有薪资、就业率等数据均为定性描述，不提供具体数字</p>
+            <p>专业星图 · 温暖的专业指南</p>
+            <p style="margin-top:8px;font-size:13px;">数据仅供参考 · 请结合自身情况选择</p>
         </footer>
     </div>
     
