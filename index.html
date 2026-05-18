@@ -544,58 +544,46 @@
             document.getElementById('detailXuefengComment').textContent = major.xuefeng_comment || '暂无数据';
             
             const yearlyCourses = document.getElementById('detailYearlyCourses');
-            yearlyCourses.innerHTML = '';
-            if (major.yearly_courses) {
-                const courses = typeof major.yearly_courses === 'string' ? JSON.parse(major.yearly_courses) : major.yearly_courses;
-                for (const [year, items] of Object.entries(courses)) {
-                    yearlyCourses.innerHTML += `
-                        <ul class="year-list">
-                            <li><strong>${year}：</strong>${items.join('、')}</li>
-                        </ul>
-                    `;
+            if (yearlyCourses) {
+                yearlyCourses.innerHTML = '';
+                if (major.yearly_courses) {
+                    const courses = typeof major.yearly_courses === 'string' ? JSON.parse(major.yearly_courses) : major.yearly_courses;
+                    for (const [year, items] of Object.entries(courses)) {
+                        yearlyCourses.innerHTML += `
+                            <ul class="year-list">
+                                <li><strong>${year}：</strong>${items.join('、')}</li>
+                            </ul>
+                        `;
+                    }
                 }
             }
             
             const unis = major.top_universities ? 
                 (typeof major.top_universities === 'string' ? JSON.parse(major.top_universities) : major.top_universities) : {};
             
-            const domesticUnis = document.getElementById('detailDomesticUnis');
-            domesticUnis.innerHTML = '';
-            if (unis.domestic) {
-                unis.domestic.slice(0, 3).forEach(u => {
-                    domesticUnis.innerHTML += `<span class="uni-tag chinese">${u}</span>`;
-                });
-            }
-            
-            const internationalUnis = document.getElementById('detailInternationalUnis');
-            internationalUnis.innerHTML = '';
-            if (unis.international) {
-                unis.international.slice(0, 3).forEach(u => {
-                    internationalUnis.innerHTML += `<span class="uni-tag foreign">${u}</span>`;
-                });
-            }
-            
             const universities = document.getElementById('detailUniversities');
-            universities.innerHTML = '';
-            if (unis.domestic) {
-                universities.innerHTML += `
-                    <div class="uni-section">
-                        <p class="uni-label">🇨🇳 国内名校</p>
-                        <div class="uni-tags">
-                            ${unis.domestic.map(u => `<span class="uni-tag chinese">${u}</span>`).join('')}
+            if (universities) {
+                universities.innerHTML = '';
+                if (unis.domestic) {
+                    universities.innerHTML += `
+                        <div class="uni-section">
+                            <p class="uni-label">🇨🇳 国内名校</p>
+                            <div class="uni-tags">
+                                ${unis.domestic.map(u => `<span class="uni-tag chinese">${u}</span>`).join('')}
+                            </div>
                         </div>
-                    </div>
-                `;
-            }
-            if (unis.international) {
-                universities.innerHTML += `
-                    <div class="uni-section">
-                        <p class="uni-label">🌍 国际名校</p>
-                        <div class="uni-tags">
-                            ${unis.international.map(u => `<span class="uni-tag foreign">${u}</span>`).join('')}
+                    `;
+                }
+                if (unis.international) {
+                    universities.innerHTML += `
+                        <div class="uni-section">
+                            <p class="uni-label">🌍 国际名校</p>
+                            <div class="uni-tags">
+                                ${unis.international.map(u => `<span class="uni-tag foreign">${u}</span>`).join('')}
+                            </div>
                         </div>
-                    </div>
-                `;
+                    `;
+                }
             }
             
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
