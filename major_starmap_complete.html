@@ -315,7 +315,15 @@
         </div>
     </div>
     
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
+        // Supabase 配置
+        const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+        
+        // 初始化 Supabase 客户端
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
         // 专业数据
         const majorsData = [
 
@@ -4604,15 +4612,103 @@
             }
         }
         
-        // 订阅通知
-        function subscribeNotify() {
-            const email = document.getElementById('notify-email').value;
-            if (email && email.includes('@')) {
-                alert('✅ 订阅成功！我们会在深度分析报告上线时第一时间通知您！');
-                document.getElementById('notify-email').value = '';
-                closePreheatModal();
-            } else {
+        // 订阅通知 - 使用Supabase
+        async function subscribeNotify() {
+            const emailInput = document.getElementById('notify-email');
+            const email = emailInput.value.trim();
+            
+            // 验证邮箱格式
+            if (!email || !email.includes('@') || !email.includes('.')) {
                 alert('请输入有效的邮箱地址');
+                return;
+            }
+            
+            try {
+                // 检查是否已订阅
+                const { data: existingUser, error: checkError } = await supabase
+                    .from('subscribers')
+                    .select('email')
+                    .eq('email', email)
+                    .single();
+                
+                if (existingUser) {
+                    alert('该邮箱已订阅，感谢您的支持！');
+                    emailInput.value = '';
+                    return;
+                }
+                
+                // 插入新订阅
+                const { data, error } = await supabase
+                    .from('subscribers')
+                    .insert([
+                        { 
+                            email: email,
+                            subscribed_at: new Date().toISOString(),
+                            is_notified: false
+                        }
+                    ]);
+                
+                if (error) {
+                    if (error.code === '23505') { // 唯一约束冲突
+                        alert('该邮箱已订阅，感谢您的支持！');
+                    } else {
+                        console.error('订阅错误:', error);
+                        alert('订阅失败，请稍后重试。');
+                    }
+                } else {
+                    alert('✅ 订阅成功！我们会在深度分析报告上线时第一时间通知您！');
+                    emailInput.value = '';
+                    closePreheatModal();
+                }
+            } catch (error) {
+                console.error('订阅异常:', error);
+                alert('网络错误，请检查网络连接后重试。');
+            }
+        }
+        
+        // 本地存储降级方案（Supabase不可用时）
+        function subscribeNotifyFallback() {
+            const email = document.getElementById('notify-email').value.trim();
+            
+            if (!email || !email.includes('@') || !email.includes('.')) {
+                alert('请输入有效的邮箱地址');
+                return;
+            }
+            
+            // 从localStorage读取现有订阅
+            let subscribers = JSON.parse(localStorage.getItem('subscribers') || '[]');
+            
+            // 检查是否已订阅
+            if (subscribers.some(s => s.email === email)) {
+                alert('该邮箱已订阅，感谢您的支持！');
+                document.getElementById('notify-email').value = '';
+                return;
+            }
+            
+            // 添加新订阅
+            subscribers.push({
+                email: email,
+                time: new Date().toISOString()
+            });
+            
+            // 保存到localStorage
+            localStorage.setItem('subscribers', JSON.stringify(subscribers));
+            
+            alert('✅ 订阅成功！我们会在深度分析报告上线时第一时间通知您！');
+            document.getElementById('notify-email').value = '';
+            closePreheatModal();
+            
+            console.log('订阅数据已保存到本地（Supabase未配置）');
+        }
+        
+        // 智能选择订阅方式
+        async function smartSubscribe() {
+            // 检查Supabase是否已配置
+            if (SUPABASE_URL !== 'YOUR_SUPABASE_URL' && SUPABASE_URL !== '') {
+                await subscribeNotify();
+            } else {
+                // 降级到本地存储
+                subscribeNotifyFallback();
             }
         }
         
@@ -4630,7 +4726,7 @@
             // 订阅按钮事件
             const subscribeBtn = document.getElementById('subscribe-btn');
             if (subscribeBtn) {
-                subscribeBtn.addEventListener('click', subscribeNotify);
+                subscribeBtn.addEventListener('click', smartSubscribe);
             }
             
             // 回车键提交
@@ -4638,7 +4734,7 @@
             if (emailInput) {
                 emailInput.addEventListener('keypress', function(e) {
                     if (e.key === 'Enter') {
-                        subscribeNotify();
+                        smartSubscribe();
                     }
                 });
             }
