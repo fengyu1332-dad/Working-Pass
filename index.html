@@ -369,13 +369,8 @@
                     </div>
                     
                     <div class="detail-section">
-                        <h3 class="detail-title">🏛️ 国内TOP3</h3>
-                        <div class="uni-tags" id="detailDomesticUnis"></div>
-                    </div>
-                    
-                    <div class="detail-section">
-                        <h3 class="detail-title">🌍 国际TOP3</h3>
-                        <div class="uni-tags" id="detailInternationalUnis"></div>
+                        <h3 class="detail-title">💰 薪资范畴</h3>
+                        <p class="detail-content" id="detailSalaryRange">--</p>
                     </div>
                 </div>
                 
@@ -531,6 +526,7 @@
             document.getElementById('detailWhatYouLearn').textContent = major.what_you_learn || '暂无数据';
             document.getElementById('detailSuitable').textContent = major.suitable_for || '暂无数据';
             document.getElementById('detailCareerOutlook').textContent = major.career_outlook || '暂无数据';
+            document.getElementById('detailSalaryRange').textContent = '就业薪资范围：' + (major.salary_range || '暂无数据');
             document.getElementById('detailXuefengComment').textContent = major.xuefeng_comment || '暂无数据';
             
             const yearlyCourses = document.getElementById('detailYearlyCourses');
