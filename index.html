@@ -425,6 +425,7 @@
         
         async function fetchMajors() {
             try {
+                console.log('Fetching majors from Supabase...');
                 const response = await fetch(`${SUPABASE_URL}/rest/v1/majors?select=*`, {
                     headers: {
                         'apikey': SUPABASE_KEY,
@@ -432,13 +433,16 @@
                     }
                 });
                 
-                if (!response.ok) throw new Error('Failed to fetch');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
                 
                 majorsData = await response.json();
+                console.log('Fetched', majorsData.length, 'majors');
                 initializeUI();
             } catch (error) {
-                console.error('Error:', error);
-                document.getElementById('loading').innerHTML = '<p class="loading-text" style="color: #e53935;">加载失败，请刷新页面重试</p>';
+                console.error('Error fetching majors:', error);
+                document.getElementById('loading').innerHTML = `<p class="loading-text" style="color: #e53935;">加载失败: ${error.message}<br>请刷新页面重试</p>`;
             }
         }
         
@@ -476,24 +480,34 @@
             const grid = document.getElementById('majorsGrid');
             grid.innerHTML = '';
             
+            if (majors.length === 0) {
+                grid.innerHTML = '<p style="text-align:center;padding:40px;color:#8B7E74;">暂无匹配的专业</p>';
+                return;
+            }
+            
             majors.forEach(major => {
                 const card = document.createElement('div');
                 card.className = 'major-card';
+                card.dataset.code = major.code;
                 card.innerHTML = `
                     <div class="card-header">
                         <div class="category-icon">${major.category_icon || '📚'}</div>
                         <div>
                             <h3 class="major-name">${major.name}</h3>
                             <p class="major-code">${major.code}</p>
-                            <p class="difficulty-stars">${major.difficulty}</p>
+                            <p class="difficulty-stars">${major.difficulty || ''}</p>
                         </div>
                     </div>
-                    <span class="salary-tag">${major.salary_range}</span>
+                    <span class="salary-tag">${(major.salary_range || '薪资面议').replace('¥', '')}</span>
                     <p class="employment-desc">${(major.overview || '').substring(0, 60)}...</p>
                 `;
-                card.addEventListener('click', () => openModal(major));
+                card.addEventListener('click', () => {
+                    console.log('Card clicked:', major.name);
+                    openModal(major);
+                });
                 grid.appendChild(card);
             });
+            console.log('Displayed', majors.length, 'majors');
         }
         
         function filterMajors() {
