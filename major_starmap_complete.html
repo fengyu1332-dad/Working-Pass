@@ -315,14 +315,10 @@
         </div>
     </div>
     
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        // Supabase 配置
+        // Supabase 配置（请替换为您的实际密钥）
         const SUPABASE_URL = 'YOUR_SUPABASE_URL';
         const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
-        
-        // 初始化 Supabase 客户端
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         
         // 专业数据
         const majorsData = [
@@ -4625,7 +4621,7 @@
             
             try {
                 // 检查是否已订阅
-                const { data: existingUser, error: checkError } = await supabase
+                const { data: existingUser, error: checkError } = await window.supabaseClient
                     .from('subscribers')
                     .select('email')
                     .eq('email', email)
@@ -4638,7 +4634,7 @@
                 }
                 
                 // 插入新订阅
-                const { data, error } = await supabase
+                const { data, error } = await window.supabaseClient
                     .from('subscribers')
                     .insert([
                         { 
@@ -4704,7 +4700,7 @@
         // 智能选择订阅方式
         async function smartSubscribe() {
             // 检查Supabase是否已配置
-            if (SUPABASE_URL !== 'YOUR_SUPABASE_URL' && SUPABASE_URL !== '') {
+            if (typeof supabase !== 'undefined' && SUPABASE_URL !== 'YOUR_SUPABASE_URL' && SUPABASE_URL !== '') {
                 await subscribeNotify();
             } else {
                 // 降级到本地存储
@@ -4738,6 +4734,24 @@
                     }
                 });
             }
+        });
+        
+        // 初始化 Supabase（在页面加载后）
+        window.addEventListener('load', function() {
+            // 加载 Supabase SDK
+            const script = document.createElement('script');
+            script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+            script.onload = function() {
+                // 配置 Supabase
+                if (typeof supabase !== 'undefined') {
+                    window.supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                    console.log('✅ Supabase 初始化成功');
+                }
+            };
+            script.onerror = function() {
+                console.log('⚠️ Supabase SDK 加载失败，将使用本地存储');
+            };
+            document.head.appendChild(script);
         });
         
         // 绑定事件
