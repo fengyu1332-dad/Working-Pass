@@ -141,6 +141,121 @@ if start_idx and end_idx:
         .uni-section {{ margin-bottom: 12px; }}
         .uni-label {{ color: var(--secondary); }}
         .warning {{ color: #c05621 !important; }}
+        
+        /* CTA按钮样式 */
+        .cta-section { margin-top: 32px; text-align: center; }
+        .cta-button { 
+            background: linear-gradient(135deg, #E67E22 0%, #D35400 100%);
+            color: white;
+            border: none;
+            padding: 16px 48px;
+            border-radius: 9999px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 20px rgba(230, 126, 34, 0.4);
+        }
+        .cta-button:hover { 
+            transform: translateY(-3px); 
+            box-shadow: 0 6px 30px rgba(230, 126, 34, 0.5);
+        }
+        
+        /* 预热模态框 */
+        .preheat-modal { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: rgba(0, 0, 0, 0.6); 
+            display: none; 
+            align-items: center; 
+            justify-content: center; 
+            z-index: 10000; 
+            overflow-y: auto; 
+            padding: 20px; 
+        }
+        .preheat-modal.show { display: flex; }
+        .preheat-content { 
+            background: var(--surface-container); 
+            max-width: 600px; 
+            width: 100%; 
+            border-radius: 24px; 
+            padding: 48px; 
+            text-align: center;
+            position: relative;
+        }
+        .preheat-icon { font-size: 72px; margin-bottom: 24px; }
+        .preheat-title { 
+            font-family: "Literata", serif; 
+            font-size: 28px; 
+            font-weight: 700; 
+            color: var(--secondary); 
+            margin-bottom: 16px; 
+        }
+        .preheat-desc { 
+            font-size: 16px; 
+            color: var(--on-surface-variant); 
+            margin-bottom: 32px; 
+            line-height: 1.8;
+        }
+        .preheat-features { 
+            text-align: left; 
+            margin-bottom: 32px; 
+            padding-left: 20px;
+        }
+        .preheat-features li { 
+            margin: 12px 0; 
+            font-size: 15px; 
+            color: var(--on-surface);
+        }
+        .preheat-features li::before { 
+            content: "✅"; 
+            margin-right: 12px;
+        }
+        .preheat-email {
+            margin-bottom: 32px;
+        }
+        .preheat-email input {
+            padding: 14px 20px;
+            width: 70%;
+            border: 2px solid var(--outline);
+            border-radius: 12px 0 0 12px;
+            font-size: 16px;
+            outline: none;
+        }
+        .preheat-email button {
+            padding: 14px 24px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 0 12px 12px 0;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .preheat-email button:hover {
+            background: #D35400;
+        }
+        .preheat-close { 
+            position: absolute; 
+            top: 16px; 
+            right: 16px; 
+            background: var(--secondary-container); 
+            border: none; 
+            width: 40px; 
+            height: 40px; 
+            border-radius: 50%; 
+            font-size: 24px; 
+            cursor: pointer; 
+            color: var(--secondary); 
+        }
+        .preheat-close:hover { 
+            background: var(--primary); 
+            color: white; 
+        }
+        
         footer {{ text-align: center; padding: 48px 20px; color: var(--on-surface-variant); font-size: 14px; margin-top: 48px; border-top: 1px solid var(--outline); }}
         @media (max-width: 768px) {{ 
             .majors-grid {{ grid-template-columns: 1fr; }} 
@@ -205,6 +320,32 @@ if start_idx and end_idx:
     
     <!-- 模态框容器 -->
     <div id="modal-container"></div>
+    
+    <!-- 预热模态框 -->
+    <div id="preheat-modal" class="preheat-modal">
+        <div class="preheat-content">
+            <button class="preheat-close" onclick="closePreheatModal()">✕</button>
+            <div class="preheat-icon">🔮</div>
+            <h2 class="preheat-title">深度分析报告即将上线</h2>
+            <p class="preheat-desc">
+                我们正在全力打造专业的深度分析报告，为您提供更权威、更深度的专业选择指导。
+            </p>
+            <ul class="preheat-features">
+                <li>📊 权威就业数据（教育部/人社部数据支持）</li>
+                <li>🎯 个性化职业发展路径分析</li>
+                <li>👔 HR视角的市场需求解读</li>
+                <li>💡 张雪峰风格的硬核报考建议</li>
+                <li>📈 行业趋势深度分析</li>
+            </ul>
+            <div class="preheat-email">
+                <input type="email" id="notify-email" placeholder="输入邮箱，第一时间获取通知">
+                <button onclick="subscribeNotify()">订阅通知</button>
+            </div>
+            <p style="font-size: 13px; color: var(--on-surface-variant);">
+                预计上线时间：2026年6月 | 前1000名订阅用户享专属优惠
+            </p>
+        </div>
+    </div>
     
     <script>
         // 专业数据
@@ -286,6 +427,10 @@ if start_idx and end_idx:
                     </div>
                     <div class="summary-box">
                         💬 总结：{major['zhang_reviews'].get('summary', '')}
+                    </div>
+                    
+                    <div class="cta-section">
+                        <button class="cta-button" onclick="showPreheatModal()">🔥 获取深度分析报告</button>
                     </div>
                 `
             }}'''
@@ -405,6 +550,48 @@ if start_idx and end_idx:
             document.body.style.overflow = '';
             currentModalCode = null;
         }
+        
+        // 显示预热模态框
+        function showPreheatModal() {
+            const modal = document.getElementById('preheat-modal');
+            if (modal) {
+                modal.classList.add('show');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+        
+        // 关闭预热模态框
+        function closePreheatModal() {
+            const modal = document.getElementById('preheat-modal');
+            if (modal) {
+                modal.classList.remove('show');
+                document.body.style.overflow = '';
+            }
+        }
+        
+        // 订阅通知
+        function subscribeNotify() {
+            const email = document.getElementById('notify-email').value;
+            if (email && email.includes('@')) {
+                alert('✅ 订阅成功！我们会在深度分析报告上线时第一时间通知您！');
+                document.getElementById('notify-email').value = '';
+                closePreheatModal();
+            } else {
+                alert('请输入有效的邮箱地址');
+            }
+        }
+        
+        // 点击预热模态框背景关闭
+        document.addEventListener('DOMContentLoaded', function() {
+            const preheatModal = document.getElementById('preheat-modal');
+            if (preheatModal) {
+                preheatModal.addEventListener('click', function(e) {
+                    if (e.target === preheatModal) {
+                        closePreheatModal();
+                    }
+                });
+            }
+        });
         
         // 绑定事件
         function bindEvents() {
