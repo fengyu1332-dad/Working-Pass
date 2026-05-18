@@ -307,7 +307,7 @@
             </ul>
             <div class="preheat-email">
                 <input type="email" id="notify-email" placeholder="输入邮箱，第一时间获取通知">
-                <button onclick="subscribeNotify()">订阅通知</button>
+                <button id="subscribe-btn">订阅通知</button>
             </div>
             <p style="font-size: 13px; color: var(--on-surface-variant);">
                 预计上线时间：2026年6月 | 前1000名订阅用户享专属优惠
@@ -4623,6 +4623,22 @@
                 preheatModal.addEventListener('click', function(e) {
                     if (e.target === preheatModal) {
                         closePreheatModal();
+                    }
+                });
+            }
+            
+            // 订阅按钮事件
+            const subscribeBtn = document.getElementById('subscribe-btn');
+            if (subscribeBtn) {
+                subscribeBtn.addEventListener('click', subscribeNotify);
+            }
+            
+            // 回车键提交
+            const emailInput = document.getElementById('notify-email');
+            if (emailInput) {
+                emailInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        subscribeNotify();
                     }
                 });
             }
