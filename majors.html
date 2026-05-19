@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>专业星图 - 全部专业列表</title>
+    <link href="https://fonts.googleapis.com/css2?family=Literata:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --surface: #FFF8F5;
+            --surface-container: #FFFFFF;
+            --primary: #E67E22;
+            --primary-container: #FAD7B2;
+            --secondary: #705A49;
+            --secondary-container: #EBE0D6;
+            --on-surface: #2C2621;
+            --on-primary: #FFFFFF;
+            --on-surface-variant: #8B7E74;
+            --outline: #DED0C6;
+            --shadow: rgba(112, 90, 73, 0.05);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: "Inter", -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
+            background: var(--surface);
+            min-height: 100vh;
+            color: var(--on-surface);
+            line-height: 1.8;
+        }
+        .app-container { display: flex; min-height: 100vh; }
+        
+        .sidebar {
+            width: 300px;
+            background: var(--surface-container);
+            padding: 32px 24px;
+            border-right: 1px solid var(--outline);
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            flex-shrink: 0;
+        }
+        
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 32px;
+        }
+        
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--secondary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            padding: 10px 16px;
+            border-radius: 12px;
+            background: var(--secondary-container);
+            transition: all 0.3s;
+        }
+        .back-btn:hover { background: var(--primary); color: white; }
+        
+        .sidebar-title {
+            font-family: "Literata", serif;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--secondary);
+            margin-bottom: 24px;
+        }
+        
+        .filter-group { margin-bottom: 28px; }
+        .filter-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--secondary);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .filter-options { display: flex; flex-direction: column; gap: 8px; }
+        
+        .category-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+        .category-option:hover { background: var(--secondary-container); }
+        .category-option.active { background: var(--primary-container); }
+        .category-icon { font-size: 18px; }
+        
+        .difficulty-options { display: flex; gap: 8px; flex-wrap: wrap; }
+        .difficulty-btn {
+            padding: 8px 14px;
+            border: 2px solid var(--outline);
+            border-radius: 9999px;
+            background: transparent;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        .difficulty-btn:hover { background: var(--secondary-container); }
+        .difficulty-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+        
+        .salary-options { display: flex; flex-direction: column; gap: 8px; }
+        .salary-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+        .salary-option:hover { background: var(--secondary-container); }
+        .salary-option.active { background: var(--primary-container); }
+        
+        .reset-btn {
+            width: 100%;
+            padding: 12px;
+            background: var(--secondary-container);
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--secondary);
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 16px;
+        }
+        .reset-btn:hover { background: var(--secondary); color: white; }
+        
+        .main-content { flex: 1; padding: 32px 40px; }
+        
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        
+        .results-count {
+            font-family: "Literata", serif;
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--secondary);
+        }
+        
+        .view-controls {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        
+        .view-toggle {
+            display: flex;
+            background: var(--secondary-container);
+            border-radius: 12px;
+            padding: 4px;
+        }
+        
+        .view-btn {
+            padding: 8px 14px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-size: 14px;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+        .view-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .sort-select {
+            padding: 10px 16px;
+            border: 2px solid var(--outline);
+            border-radius: 12px;
+            font-size: 14px;
+            background: var(--surface-container);
+            cursor: pointer;
+        }
+        
+        .search-section {
+            background: var(--surface-container);
+            padding: 20px 24px;
+            border-radius: 20px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 24px var(--shadow);
+        }
+        
+        .search-box {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        
+        .search-input {
+            flex: 1;
+            padding: 14px 20px;
+            border: 2px solid var(--outline);
+            border-radius: 16px;
+            font-size: 16px;
+            outline: none;
+            background: #FFF1EA;
+        }
+        .search-input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(230, 126, 34, 0.1); }
+        
+        .search-icon { font-size: 24px; color: var(--secondary); }
+        
+        .majors-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+            gap: 24px;
+        }
+        
+        .majors-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        
+        .major-card {
+            background: var(--surface-container);
+            border-radius: 20px;
+            padding: 28px;
+            cursor: pointer;
+            border: 2px solid var(--outline);
+            box-shadow: 0 4px 24px var(--shadow);
+            transition: all 0.3s;
+        }
+        .major-card:hover { transform: translateY(-4px); box-shadow: 0 8px 40px var(--shadow); border-color: var(--primary); }
+        
+        .major-list-item {
+            background: var(--surface-container);
+            border-radius: 16px;
+            padding: 20px 24px;
+            cursor: pointer;
+            border: 2px solid var(--outline);
+            box-shadow: 0 2px 12px var(--shadow);
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .major-list-item:hover { transform: translateY(-2px); box-shadow: 0 4px 20px var(--shadow); border-color: var(--primary); }
+        
+        .card-header { display: flex; align-items: center; gap: 16px; margin-bottom: 18px; }
+        .list-item-left { display: flex; align-items: center; gap: 16px; flex: 1; }
+        .list-item-right { text-align: right; flex-shrink: 0; }
+        
+        .category-icon { font-size: 48px; background: var(--primary-container); width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; border-radius: 16px; flex-shrink: 0; }
+        .list-icon { font-size: 36px; background: var(--primary-container); width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; border-radius: 12px; flex-shrink: 0; }
+        
+        .major-name { font-family: "Literata", serif; font-size: 22px; font-weight: 600; color: var(--secondary); }
+        .list-name { font-family: "Literata", serif; font-size: 18px; font-weight: 600; color: var(--secondary); }
+        
+        .major-code { font-size: 12px; color: var(--on-surface-variant); font-weight: 500; margin-top: 4px; }
+        .list-code { font-size: 12px; color: var(--on-surface-variant); font-weight: 500; }
+        
+        .difficulty-stars { margin-top: 8px; color: var(--primary); font-size: 14px; }
+        .list-difficulty { color: var(--primary); font-size: 14px; }
+        
+        .salary-tag { display: inline-block; background: var(--primary-container); color: var(--secondary); padding: 6px 16px; border-radius: 9999px; font-size: 13px; font-weight: 500; margin: 12px 0; }
+        .list-salary { display: inline-block; background: var(--primary-container); color: var(--secondary); padding: 6px 14px; border-radius: 9999px; font-size: 13px; font-weight: 500; }
+        
+        .employment-desc { margin-top: 10px; font-size: 0.9em; color: var(--on-surface-variant); }
+        .list-category { font-size: 13px; color: var(--on-surface-variant); margin-top: 4px; }
+        
+        .loading-section { text-align: center; padding: 60px 20px; }
+        .loading-spinner { width: 48px; height: 48px; border: 4px solid var(--outline); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .loading-text { color: var(--on-surface-variant); font-size: 16px; }
+        
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); display: none; align-items: center; justify-content: center; z-index: 9999; overflow-y: auto; padding: 20px; }
+        .modal.show { display: flex; }
+        .modal-content { background: var(--surface-container); max-width: 900px; width: 100%; max-height: 90vh; overflow-y: auto; border-radius: 24px; box-shadow: 0 8px 48px rgba(0, 0, 0, 0.1); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 24px; border-bottom: 1px solid var(--outline); position: sticky; top: 0; background: var(--surface-container); z-index: 10; }
+        .modal-title { display: flex; align-items: center; gap: 16px; }
+        .modal-title .category-icon { font-size: 48px; width: 80px; height: 80px; }
+        .modal-title h2 { font-family: "Literata", serif; font-size: 28px; font-weight: 700; color: var(--secondary); margin: 0; }
+        .modal-title .modal-category { font-size: 14px; color: var(--on-surface-variant); margin-bottom: 4px; }
+        .modal-close { background: var(--secondary-container); border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 24px; cursor: pointer; color: var(--secondary); transition: all 0.3s; }
+        .modal-close:hover { background: var(--primary); color: white; }
+        .modal-body { padding: 32px; }
+        
+        .tab-buttons { display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap; }
+        .tab-btn { padding: 10px 20px; border: 2px solid var(--outline); border-radius: 9999px; background: transparent; color: var(--secondary); cursor: pointer; font-size: 14px; font-weight: 500; transition: all 0.3s; }
+        .tab-btn:hover { background: var(--secondary-container); }
+        .tab-btn.active { background: var(--primary); color: var(--on-primary); border-color: var(--primary); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        
+        .detail-section { margin-bottom: 24px; }
+        .detail-title { font-family: "Literata", serif; font-size: 18px; font-weight: 600; color: var(--secondary); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        .detail-content { font-size: 15px; color: var(--on-surface); margin-bottom: 10px; line-height: 1.8; }
+        .year-list { list-style: none; padding-left: 0; }
+        .year-list li { margin: 10px 0; position: relative; padding-left: 24px; font-size: 14px; color: var(--on-surface-variant); }
+        .year-list li::before { content: "•"; position: absolute; left: 0; color: var(--primary); font-weight: bold; font-size: 18px; }
+        
+        .info-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+        .info-card { background: var(--secondary-container); padding: 16px; border-radius: 16px; text-align: center; }
+        .info-card-label { font-size: 12px; color: var(--on-surface-variant); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+        .info-card-value { font-family: "Literata", serif; font-size: 16px; font-weight: 600; color: var(--secondary); }
+        
+        .summary-box { background: var(--secondary-container); padding: 20px; border-radius: 16px; margin-top: 20px; color: var(--on-surface); font-size: 14px; line-height: 1.8; }
+        
+        .cta-section { margin-top: 32px; text-align: center; }
+        .cta-button { 
+            background: linear-gradient(135deg, #E67E22 0%, #D35400 100%);
+            color: white;
+            border: none;
+            padding: 16px 48px;
+            border-radius: 9999px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 20px rgba(230, 126, 34, 0.4);
+        }
+        .cta-button:hover { 
+            transform: translateY(-3px); 
+            box-shadow: 0 6px 30px rgba(230, 126, 34, 0.5);
+        }
+        
+        .preheat-modal { 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: rgba(0, 0, 0, 0.6); 
+            display: none; 
+            align-items: center; 
+            justify-content: center; 
+            z-index: 10000; 
+            overflow-y: auto; 
+            padding: 20px; 
+        }
+        .preheat-modal.show { display: flex; }
+        .preheat-content { 
+            background: var(--surface-container); 
+            max-width: 600px; 
+            width: 100%; 
+            border-radius: 24px; 
+            padding: 48px; 
+            text-align: center;
+            position: relative;
+        }
+        .preheat-icon { font-size: 72px; margin-bottom: 24px; }
+        .preheat-title { 
+            font-family: "Literata", serif; 
+            font-size: 28px; 
+            font-weight: 700; 
+            color: var(--secondary); 
+            margin-bottom: 16px; 
+        }
+        .preheat-desc { 
+            font-size: 16px; 
+            color: var(--on-surface-variant); 
+            margin-bottom: 32px; 
+            line-height: 1.8;
+        }
+        .preheat-features { 
+            text-align: left; 
+            margin-bottom: 32px; 
+            padding-left: 20px;
+        }
+        .preheat-features li { 
+            margin: 12px 0; 
+            font-size: 15px; 
+            color: var(--on-surface);
+        }
+        .preheat-features li::before {
+            content: "✅";
+            margin-right: 12px;
+        }
+        
+        .uni-section { margin-bottom: 16px; }
+        .uni-label { color: var(--secondary); font-weight: 600; margin-bottom: 8px; }
+        .uni-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+        .uni-tag { padding: 6px 14px; border-radius: 9999px; font-size: 13px; font-weight: 500; }
+        .uni-tag.chinese { background: #fff3e0; color: #e65100; border: 1px solid #ffcc80; }
+        .uni-tag.foreign { background: #e3f2fd; color: #1565c0; border: 1px solid #90caf9; }
+        
+        .preheat-close { 
+            position: absolute; 
+            top: 16px; 
+            right: 16px; 
+            background: var(--secondary-container); 
+            border: none; 
+            width: 40px; 
+            height: 40px; 
+            border-radius: 50%; 
+            font-size: 24px; 
+            cursor: pointer; 
+            color: var(--secondary);
+        }
+        .preheat-close:hover { background: var(--primary); color: white; }
+        
+        footer { text-align: center; padding: 48px 20px; color: var(--on-surface-variant); font-size: 14px; margin-top: 48px; border-top: 1px solid var(--outline); }
+        
+        @media (max-width: 1024px) {
+            .app-container { flex-direction: column; }
+            .sidebar { width: 100%; height: auto; position: static; border-right: none; border-bottom: 1px solid var(--outline); }
+            .main-content { padding: 24px; }
+        }
+        
+        @media (max-width: 768px) { 
+            .majors-grid { grid-template-columns: 1fr; } 
+            .info-grid { grid-template-columns: repeat(2, 1fr); }
+            .modal { padding: 10px; }
+            .modal-content { max-height: 95vh; }
+            .modal-header { padding: 16px; }
+            .modal-title .category-icon { width: 60px; height: 60px; font-size: 36px; }
+            .modal-title h2 { font-size: 22px; }
+            .top-bar { flex-direction: column; gap: 16px; align-items: flex-start; }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="index.html" class="back-btn">← 返回首页</a>
+            </div>
+            
+            <h2 class="sidebar-title">🔍 筛选条件</h2>
+            
+            <div class="filter-group">
+                <div class="filter-label">学科门类</div>
+                <div class="filter-options" id="categoryFilters">
+                    <div class="category-option active" data-category="all">
+                        <span class="category-icon">📖</span>
+                        <span>全部学科</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="filter-group">
+                <div class="filter-label">学习难度</div>
+                <div class="difficulty-options" id="difficultyFilters">
+                    <button class="difficulty-btn active" data-difficulty="all">全部</button>
+                    <button class="difficulty-btn" data-difficulty="1">⭐</button>
+                    <button class="difficulty-btn" data-difficulty="2">⭐⭐</button>
+                    <button class="difficulty-btn" data-difficulty="3">⭐⭐⭐</button>
+                    <button class="difficulty-btn" data-difficulty="4">⭐⭐⭐⭐</button>
+                    <button class="difficulty-btn" data-difficulty="5">⭐⭐⭐⭐⭐</button>
+                </div>
+            </div>
+            
+            <div class="filter-group">
+                <div class="filter-label">薪资范围</div>
+                <div class="salary-options" id="salaryFilters">
+                    <div class="salary-option active" data-salary="all">
+                        <span>全部薪资</span>
+                    </div>
+                    <div class="salary-option" data-salary="10k">
+                        <span>10k以下</span>
+                    </div>
+                    <div class="salary-option" data-salary="20k">
+                        <span>10k-20k</span>
+                    </div>
+                    <div class="salary-option" data-salary="30k">
+                        <span>20k-30k</span>
+                    </div>
+                    <div class="salary-option" data-salary="above">
+                        <span>30k以上</span>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="reset-btn" id="resetFilters">🔄 重置筛选</button>
+        </aside>
+        
+        <main class="main-content">
+            <div class="top-bar">
+                <div class="results-count" id="resultsCount">-- 个专业</div>
+                <div class="view-controls">
+                    <select class="sort-select" id="sortSelect">
+                        <option value="name">按名称排序</option>
+                        <option value="salary">按薪资排序</option>
+                        <option value="difficulty">按难度排序</option>
+                    </select>
+                    <div class="view-toggle">
+                        <button class="view-btn active" data-view="grid">网格视图</button>
+                        <button class="view-btn" data-view="list">列表视图</button>
+                    </div>
+                </div>
+            </div>
+            
+            <section class="search-section">
+                <div class="search-box">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" class="search-input" id="searchInput" placeholder="搜索专业名称、学科门类...">
+                </div>
+            </section>
+            
+            <div id="loading" class="loading-section">
+                <div class="loading-spinner"></div>
+                <p class="loading-text">正在加载专业数据...</p>
+            </div>
+            
+            <div class="majors-grid" id="majorsGrid" style="display: none;">
+            </div>
+            
+            <div class="majors-list" id="majorsList" style="display: none;">
+            </div>
+            
+            <footer>
+                <p>专业星图 · 温暖的专业指南</p>
+                <p style="margin-top:8px;font-size:13px;">数据来源：专业星图数据库 · 请结合自身情况选择</p>
+            </footer>
+        </main>
+    </div>
+    
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <div class="category-icon" id="modalIcon">📚</div>
+                    <div>
+                        <p class="modal-category" id="modalCategory">--</p>
+                        <h2 id="modalTitle">--</h2>
+                    </div>
+                </div>
+                <button class="modal-close" id="closeModal">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="tab-buttons">
+                    <button class="tab-btn active" data-tab="overview">专业概况</button>
+                    <button class="tab-btn" data-tab="courses">课程安排</button>
+                    <button class="tab-btn" data-tab="careers">就业前景</button>
+                    <button class="tab-btn" data-tab="review">雪峰点评</button>
+                </div>
+                
+                <div id="overviewTab" class="tab-content active">
+                    <div class="info-grid">
+                        <div class="info-card">
+                            <p class="info-card-label">学科门类</p>
+                            <p class="info-card-value" id="infoCategory">--</p>
+                        </div>
+                        <div class="info-card">
+                            <p class="info-card-label">专业代码</p>
+                            <p class="info-card-value" id="infoCode">--</p>
+                        </div>
+                        <div class="info-card">
+                            <p class="info-card-label">学习难度</p>
+                            <p class="info-card-value" id="infoDifficulty">--</p>
+                        </div>
+                        <div class="info-card">
+                            <p class="info-card-label">薪资范围</p>
+                            <p class="info-card-value" id="infoSalary">--</p>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <h3 class="detail-title">📋 专业概述</h3>
+                        <p class="detail-content" id="detailOverview">--</p>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <h3 class="detail-title">📚 你将学到</h3>
+                        <p class="detail-content" id="detailWhatYouLearn">--</p>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <h3 class="detail-title">👤 适合人群</h3>
+                        <p class="detail-content" id="detailSuitable">--</p>
+                    </div>
+                </div>
+                
+                <div id="coursesTab" class="tab-content">
+                    <div class="detail-section">
+                        <h3 class="detail-title">📅 四年课程安排</h3>
+                        <div id="detailYearlyCourses"></div>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <h3 class="detail-title">🏛️ 名校推荐</h3>
+                        <div id="detailUniversities"></div>
+                    </div>
+                </div>
+                
+                <div id="careersTab" class="tab-content">
+                    <div class="detail-section">
+                        <h3 class="detail-title">🚀 前景展望</h3>
+                        <p class="detail-content" id="detailCareerOutlook">--</p>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <h3 class="detail-title">💰 薪资范畴</h3>
+                        <p class="detail-content" id="detailSalaryRange">--</p>
+                    </div>
+                </div>
+                
+                <div id="reviewTab" class="tab-content">
+                    <div class="detail-section">
+                        <h3 class="detail-title">🔥 雪峰点评</h3>
+                        <div class="summary-box" style="background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%); border-left: 4px solid #e65100; padding: 24px; border-radius: 16px;">
+                            <p class="detail-content" id="detailXuefengComment" style="font-size: 15px; line-height: 1.9; color: #5d4037;">--</p>
+                        </div>
+                    </div>
+                    
+                    <div class="cta-section">
+                        <button class="cta-button" onclick="showPreheatModal()">🔥 获取深度分析报告</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="preheatModal" class="preheat-modal">
+        <div class="preheat-content">
+            <button class="preheat-close" onclick="closePreheatModal()">✕</button>
+            <div class="preheat-icon">🔮</div>
+            <h2 class="preheat-title">深度分析报告即将上线</h2>
+            <p class="preheat-desc">
+                我们正在全力打造专业的深度分析报告，为您提供更权威、更深度的专业选择指导。
+            </p>
+            <ul class="preheat-features">
+                <li>📊 权威就业数据（教育部/人社部数据支持）</li>
+                <li>🎯 个性化职业发展路径分析</li>
+                <li>👔 HR视角的市场需求解读</li>
+                <li>💡 张雪峰风格的硬核报考建议</li>
+                <li>📈 行业趋势深度分析</li>
+            </ul>
+            <p style="font-size: 13px; color: var(--on-surface-variant);">
+                预计上线时间：2026年7月
+            </p>
+        </div>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://djteatwxjlnbjylynvjh.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRqdGVhdHd4amxuYmp5bHludmpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwODUwOTMsImV4cCI6MjA5NDY2MTA5M30.P6IJW2noTImzeNXtfKsmjJBMp9AJBTw1LamYTdtyd_4';
+        
+        let majorsData = [];
+        let currentMajor = null;
+        let currentView = 'grid';
+        let currentFilters = {
+            category: 'all',
+            difficulty: 'all',
+            salary: 'all',
+            search: ''
+        };
+        let currentSort = 'name';
+        
+        async function fetchMajors() {
+            try {
+                console.log('Fetching majors from Supabase...');
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/majors?select=*`, {
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                majorsData = await response.json();
+                console.log('Fetched', majorsData.length, 'majors');
+                initializeUI();
+            } catch (error) {
+                console.error('Error fetching majors:', error);
+                document.getElementById('loading').innerHTML = `<p class="loading-text" style="color: #e53935;">加载失败: ${error.message}<br>请刷新页面重试</p>`;
+            }
+        }
+        
+        function initializeUI() {
+            document.getElementById('loading').style.display = 'none';
+            
+            const categories = [...new Set(majorsData.map(m => m.category))];
+            document.getElementById('resultsCount').textContent = `${majorsData.length} 个专业`;
+            
+            const categoryMap = {
+                '01': '🎓', '02': '💰', '03': '⚖️', '04': '📚',
+                '05': '📖', '06': '📜', '07': '🔢', '08': '💻',
+                '09': '🌾', '10': '🩺', '11': '📋', '12': '🎨',
+                '13': '🎭'
+            };
+            
+            const categoryFilters = document.getElementById('categoryFilters');
+            categories.forEach(cat => {
+                const code = cat.split(' ')[0];
+                const icon = categoryMap[code] || '📚';
+                const option = document.createElement('div');
+                option.className = 'category-option';
+                option.dataset.category = cat;
+                option.innerHTML = `
+                    <span class="category-icon">${icon}</span>
+                    <span>${cat}</span>
+                `;
+                categoryFilters.appendChild(option);
+            });
+            
+            applyFiltersAndSort();
+        }
+        
+        function applyFiltersAndSort() {
+            let filtered = [...majorsData];
+            
+            if (currentFilters.search) {
+                const searchTerm = currentFilters.search.toLowerCase();
+                filtered = filtered.filter(m => 
+                    m.name.toLowerCase().includes(searchTerm) || 
+                    m.category.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            if (currentFilters.category !== 'all') {
+                filtered = filtered.filter(m => m.category === currentFilters.category);
+            }
+            
+            if (currentFilters.difficulty !== 'all') {
+                const targetStars = parseInt(currentFilters.difficulty);
+                filtered = filtered.filter(m => (m.difficulty || '').length >= targetStars && (m.difficulty || '').length <= targetStars);
+            }
+            
+            if (currentFilters.salary !== 'all') {
+                const salaryText = (m.salary_range || '').toLowerCase();
+                if (currentFilters.salary === '10k') {
+                    filtered = filtered.filter(m => salaryText.includes('10') && !salaryText.includes('15') && !salaryText.includes('20'));
+                } else if (currentFilters.salary === '20k') {
+                    filtered = filtered.filter(m => salaryText.includes('15') || salaryText.includes('20'));
+                } else if (currentFilters.salary === '30k') {
+                    filtered = filtered.filter(m => salaryText.includes('25') || salaryText.includes('30'));
+                } else if (currentFilters.salary === 'above') {
+                    filtered = filtered.filter(m => salaryText.includes('35') || salaryText.includes('40') || salaryText.includes('50'));
+                }
+            }
+            
+            if (currentSort === 'name') {
+                filtered.sort((a, b) => a.name.localeCompare(b.name, 'zh-CN'));
+            } else if (currentSort === 'salary') {
+                filtered.sort((a, b) => {
+                    const salaryA = parseFloat((a.salary_range || '0').replace(/[^0-9.]/g, ''));
+                    const salaryB = parseFloat((b.salary_range || '0').replace(/[^0-9.]/g, ''));
+                    return salaryB - salaryA;
+                });
+            } else if (currentSort === 'difficulty') {
+                filtered.sort((a, b) => (b.difficulty || '').length - (a.difficulty || '').length);
+            }
+            
+            document.getElementById('resultsCount').textContent = `${filtered.length} 个专业`;
+            displayMajors(filtered);
+        }
+        
+        function displayMajors(majors) {
+            const grid = document.getElementById('majorsGrid');
+            const list = document.getElementById('majorsList');
+            
+            grid.innerHTML = '';
+            list.innerHTML = '';
+            
+            if (majors.length === 0) {
+                const emptyMsg = '<p style="text-align:center;padding:60px;color:#8B7E74;font-size:16px;">暂无匹配的专业</p>';
+                grid.innerHTML = emptyMsg;
+                list.innerHTML = emptyMsg;
+            } else {
+                majors.forEach(major => {
+                    const gridCard = createGridCard(major);
+                    const listItem = createListItem(major);
+                    grid.appendChild(gridCard);
+                    list.appendChild(listItem);
+                });
+            }
+            
+            if (currentView === 'grid') {
+                grid.style.display = 'grid';
+                list.style.display = 'none';
+            } else {
+                grid.style.display = 'none';
+                list.style.display = 'flex';
+            }
+        }
+        
+        function createGridCard(major) {
+            const card = document.createElement('div');
+            card.className = 'major-card';
+            card.dataset.code = major.code;
+            card.innerHTML = `
+                <div class="card-header">
+                    <div class="category-icon">${major.category_icon || '📚'}</div>
+                    <div>
+                        <h3 class="major-name">${major.name}</h3>
+                        <p class="major-code">${major.code}</p>
+                        <p class="difficulty-stars">${major.difficulty || ''}</p>
+                    </div>
+                </div>
+                <span class="salary-tag">${(major.salary_range || '薪资面议').replace('¥', '')}</span>
+                <p class="employment-desc">${(major.overview || '').substring(0, 60)}...</p>
+            `;
+            card.addEventListener('click', () => openModal(major));
+            return card;
+        }
+        
+        function createListItem(major) {
+            const item = document.createElement('div');
+            item.className = 'major-list-item';
+            item.dataset.code = major.code;
+            item.innerHTML = `
+                <div class="list-item-left">
+                    <div class="list-icon">${major.category_icon || '📚'}</div>
+                    <div>
+                        <h3 class="list-name">${major.name}</h3>
+                        <p class="list-code">${major.code}</p>
+                        <p class="list-category">${major.category}</p>
+                    </div>
+                </div>
+                <div class="list-item-right">
+                    <span class="list-salary">${(major.salary_range || '薪资面议').replace('¥', '')}</span>
+                    <p class="list-difficulty">${major.difficulty || ''}</p>
+                </div>
+            `;
+            item.addEventListener('click', () => openModal(major));
+            return item;
+        }
+        
+        function openModal(major) {
+            currentMajor = major;
+            document.getElementById('modalIcon').textContent = major.category_icon || '📚';
+            document.getElementById('modalCategory').textContent = major.category;
+            document.getElementById('modalTitle').textContent = major.name;
+            
+            document.getElementById('infoCategory').textContent = major.category;
+            document.getElementById('infoCode').textContent = major.code;
+            document.getElementById('infoDifficulty').textContent = major.difficulty;
+            document.getElementById('infoSalary').textContent = major.salary_range;
+            
+            document.getElementById('detailOverview').textContent = major.overview || '暂无数据';
+            document.getElementById('detailWhatYouLearn').textContent = major.what_you_learn || '暂无数据';
+            document.getElementById('detailSuitable').textContent = major.suitable_for || '暂无数据';
+            document.getElementById('detailCareerOutlook').textContent = major.career_outlook || '暂无数据';
+            document.getElementById('detailSalaryRange').textContent = '就业薪资范围：' + (major.salary_range || '暂无数据');
+            document.getElementById('detailXuefengComment').textContent = major.xuefeng_comment || '暂无数据';
+            
+            const yearlyCourses = document.getElementById('detailYearlyCourses');
+            if (yearlyCourses) {
+                yearlyCourses.innerHTML = '';
+                if (major.yearly_courses) {
+                    const courses = typeof major.yearly_courses === 'string' ? JSON.parse(major.yearly_courses) : major.yearly_courses;
+                    for (const [year, items] of Object.entries(courses)) {
+                        yearlyCourses.innerHTML += `
+                            <ul class="year-list">
+                                <li><strong>${year}：</strong>${items.join('、')}</li>
+                            </ul>
+                        `;
+                    }
+                }
+            }
+            
+            const unis = major.top_universities ? 
+                (typeof major.top_universities === 'string' ? JSON.parse(major.top_universities) : major.top_universities) : {};
+            
+            const universities = document.getElementById('detailUniversities');
+            if (universities) {
+                universities.innerHTML = '';
+                if (unis.domestic) {
+                    universities.innerHTML += `
+                        <div class="uni-section">
+                            <p class="uni-label">🇨🇳 国内名校</p>
+                            <div class="uni-tags">
+                                ${unis.domestic.map(u => `<span class="uni-tag chinese">${u}</span>`).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+                if (unis.international) {
+                    universities.innerHTML += `
+                        <div class="uni-section">
+                            <p class="uni-label">🌍 国际名校</p>
+                            <div class="uni-tags">
+                                ${unis.international.map(u => `<span class="uni-tag foreign">${u}</span>`).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+            
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelector('[data-tab="overview"]').classList.add('active');
+            document.getElementById('overviewTab').classList.add('active');
+            
+            document.getElementById('modal').classList.add('show');
+        }
+        
+        function closeModal() {
+            document.getElementById('modal').classList.remove('show');
+            currentMajor = null;
+        }
+        
+        function showPreheatModal() {
+            document.getElementById('preheatModal').classList.add('show');
+        }
+        
+        function closePreheatModal() {
+            document.getElementById('preheatModal').classList.remove('show');
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchMajors();
+            
+            document.getElementById('searchInput').addEventListener('input', (e) => {
+                currentFilters.search = e.target.value;
+                applyFiltersAndSort();
+            });
+            
+            document.getElementById('categoryFilters').addEventListener('click', (e) => {
+                const option = e.target.closest('.category-option');
+                if (option) {
+                    document.querySelectorAll('#categoryFilters .category-option').forEach(o => o.classList.remove('active'));
+                    option.classList.add('active');
+                    currentFilters.category = option.dataset.category;
+                    applyFiltersAndSort();
+                }
+            });
+            
+            document.getElementById('difficultyFilters').addEventListener('click', (e) => {
+                if (e.target.classList.contains('difficulty-btn')) {
+                    document.querySelectorAll('#difficultyFilters .difficulty-btn').forEach(b => b.classList.remove('active'));
+                    e.target.classList.add('active');
+                    currentFilters.difficulty = e.target.dataset.difficulty;
+                    applyFiltersAndSort();
+                }
+            });
+            
+            document.getElementById('salaryFilters').addEventListener('click', (e) => {
+                const option = e.target.closest('.salary-option');
+                if (option) {
+                    document.querySelectorAll('#salaryFilters .salary-option').forEach(o => o.classList.remove('active'));
+                    option.classList.add('active');
+                    currentFilters.salary = option.dataset.salary;
+                    applyFiltersAndSort();
+                }
+            });
+            
+            document.getElementById('resetFilters').addEventListener('click', () => {
+                currentFilters = { category: 'all', difficulty: 'all', salary: 'all', search: '' };
+                document.getElementById('searchInput').value = '';
+                document.querySelectorAll('#categoryFilters .category-option').forEach(o => o.classList.remove('active'));
+                document.querySelector('#categoryFilters .category-option[data-category="all"]').classList.add('active');
+                document.querySelectorAll('#difficultyFilters .difficulty-btn').forEach(b => b.classList.remove('active'));
+                document.querySelector('#difficultyFilters .difficulty-btn[data-difficulty="all"]').classList.add('active');
+                document.querySelectorAll('#salaryFilters .salary-option').forEach(o => o.classList.remove('active'));
+                document.querySelector('#salaryFilters .salary-option[data-salary="all"]').classList.add('active');
+                applyFiltersAndSort();
+            });
+            
+            document.getElementById('sortSelect').addEventListener('change', (e) => {
+                currentSort = e.target.value;
+                applyFiltersAndSort();
+            });
+            
+            document.querySelectorAll('.view-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentView = btn.dataset.view;
+                    applyFiltersAndSort();
+                });
+            });
+            
+            document.getElementById('closeModal').addEventListener('click', closeModal);
+            
+            document.getElementById('modal').addEventListener('click', (e) => {
+                if (e.target === document.getElementById('modal')) closeModal();
+            });
+            
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+                    btn.classList.add('active');
+                    document.getElementById(btn.dataset.tab + 'Tab').classList.add('active');
+                });
+            });
+            
+            document.getElementById('preheatModal').addEventListener('click', (e) => {
+                if (e.target === document.getElementById('preheatModal')) closePreheatModal();
+            });
+        });
+    </script>
+</body>
+</html>
