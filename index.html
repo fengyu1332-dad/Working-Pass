@@ -138,23 +138,25 @@
         .featured-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 24px;
+            gap: 20px;
         }
         
         .featured-card {
             background: var(--surface-container);
-            border-radius: 24px;
-            padding: 32px;
+            border-radius: 20px;
+            padding: 24px;
             cursor: pointer;
             border: 2px solid var(--outline);
-            box-shadow: 0 4px 24px var(--shadow);
+            box-shadow: 0 4px 20px var(--shadow);
             transition: all 0.3s;
             position: relative;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
         .featured-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 12px 48px rgba(112, 90, 73, 0.12);
+            transform: translateY(-6px);
+            box-shadow: 0 10px 40px rgba(112, 90, 73, 0.1);
             border-color: var(--primary);
         }
         .featured-card::before {
@@ -163,72 +165,93 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 6px;
+            height: 5px;
             background: linear-gradient(90deg, var(--primary), #FFA726);
         }
         
         .card-badge {
             position: absolute;
-            top: 16px;
-            right: 16px;
+            top: 12px;
+            right: 12px;
             background: linear-gradient(135deg, #FF7043, #FFA726);
             color: white;
-            padding: 6px 14px;
+            padding: 5px 12px;
             border-radius: 9999px;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 600;
+            z-index: 10;
         }
         
         .featured-header {
             display: flex;
-            align-items: center;
-            gap: 18px;
-            margin-bottom: 20px;
+            align-items: flex-start;
+            gap: 14px;
+            margin-bottom: 16px;
+            padding-right: 80px;
         }
         .featured-icon {
-            font-size: 56px;
+            font-size: 48px;
             background: var(--primary-container);
-            width: 96px;
-            height: 96px;
+            width: 80px;
+            height: 80px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 20px;
+            border-radius: 16px;
             flex-shrink: 0;
+        }
+        .featured-info {
+            flex: 1;
+            min-width: 0;
         }
         .featured-name {
             font-family: "Literata", serif;
-            font-size: 24px;
+            font-size: 20px;
             font-weight: 700;
             color: var(--secondary);
-            margin-bottom: 4px;
+            margin-bottom: 3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
         .featured-code {
-            font-size: 13px;
+            font-size: 12px;
             color: var(--on-surface-variant);
             font-weight: 500;
         }
         .featured-difficulty {
-            margin-top: 8px;
+            margin-top: 6px;
             color: var(--primary);
-            font-size: 15px;
+            font-size: 13px;
+        }
+        
+        .featured-body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
         }
         
         .featured-salary {
             display: inline-block;
             background: linear-gradient(135deg, var(--primary-container), #FFE0B2);
             color: var(--secondary);
-            padding: 10px 20px;
+            padding: 8px 16px;
             border-radius: 9999px;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
-            margin: 16px 0;
+            margin-bottom: 12px;
+            align-self: flex-start;
         }
         
         .featured-preview {
-            font-size: 14px;
+            font-size: 13px;
             color: var(--on-surface-variant);
-            line-height: 1.7;
+            line-height: 1.6;
+            flex: 1;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
         
         .loading-section { text-align: center; padding: 80px 20px; }
@@ -689,15 +712,15 @@
         let currentMajor = null;
         
         const featuredMajorCodes = [
-            '080901', '080701', '100201', '020301',
-            '081301', '080601', '050301', '120202',
-            '081001', '080801', '070101', '101101'
+            '080901', '080701', '100201',
+            '081301', '080601', '050301',
+            '081001', '080801', '070101'
         ];
         
         const badges = [
-            '🔥 老师推荐', '💰 高薪专业', '📈 热门方向', '🎯 前景广阔',
-            '🌟 特色专业', '💡 新兴行业', '🔥 老师推荐', '💰 高薪专业',
-            '📈 热门方向', '🎯 前景广阔', '🌟 特色专业', '💡 新兴行业'
+            '🔥 老师推荐', '💰 高薪专业', '📈 热门方向',
+            '🎯 前景广阔', '🌟 特色专业', '💡 新兴行业',
+            '🚀 潜力无限', '💼 就业无忧', '🎓 名校首选'
         ];
         
         async function fetchMajors() {
@@ -753,14 +776,16 @@
                     <div class="card-badge">${badges[index]}</div>
                     <div class="featured-header">
                         <div class="featured-icon">${major.category_icon || '📚'}</div>
-                        <div>
+                        <div class="featured-info">
                             <h3 class="featured-name">${major.name}</h3>
                             <p class="featured-code">${major.code}</p>
                             <p class="featured-difficulty">${major.difficulty || ''}</p>
                         </div>
                     </div>
-                    <span class="featured-salary">${(major.salary_range || '薪资面议').replace('¥', '')}</span>
-                    <p class="featured-preview">${(major.overview || '').substring(0, 85)}...</p>
+                    <div class="featured-body">
+                        <span class="featured-salary">${(major.salary_range || '薪资面议').replace('¥', '')}</span>
+                        <p class="featured-preview">${(major.overview || '').substring(0, 80)}...</p>
+                    </div>
                 `;
                 card.addEventListener('click', () => openModal(major));
                 grid.appendChild(card);
