@@ -606,7 +606,7 @@
                     <button class="tab-btn active" data-tab="overview">专业概况</button>
                     <button class="tab-btn" data-tab="courses">课程安排</button>
                     <button class="tab-btn" data-tab="careers">就业前景</button>
-                    <button class="tab-btn" data-tab="review">雪峰点评</button>
+                    <button class="tab-btn" data-tab="review">⭐ 雪峰点评</button>
                 </div>
                 
                 <div id="overviewTab" class="tab-content active">
@@ -712,6 +712,19 @@
         let majorsData = [];
         let currentMajor = null;
         
+        function formatXuefengComment(comment) {
+            if (!comment) return '';
+            let html = comment;
+            html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+            html = html.replace(/\n\n/g, '</p><p>');
+            html = html.replace(/\n/g, '<br>');
+            html = html.replace(/^\- /gm, '<span style="display:inline-block;width:16px;">•</span>');
+            html = html.replace(/^\d+\.\s/gm, '<span style="display:inline-block;width:24px;font-weight:bold;">$&</span>');
+            html = '<p>' + html + '</p>';
+            html = html.replace(/<p><\/p>/g, '');
+            return html;
+        }
+        
         const featuredMajorCodes = [
             '080901', '080701', '100201K',
             '081301', '080601', '050303',
@@ -809,7 +822,7 @@
             document.getElementById('detailSuitable').textContent = major.suitable_for || '暂无数据';
             document.getElementById('detailCareerOutlook').textContent = major.career_outlook || '暂无数据';
             document.getElementById('detailSalaryRange').textContent = '就业薪资范围：' + (major.salary_range || '暂无数据');
-            document.getElementById('detailXuefengComment').textContent = major.xuefeng_comment || '暂无数据';
+            document.getElementById('detailXuefengComment').innerHTML = formatXuefengComment(major.xuefeng_comment) || '暂无数据';
             
             const yearlyCourses = document.getElementById('detailYearlyCourses');
             if (yearlyCourses) {
