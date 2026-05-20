@@ -27,6 +27,83 @@
             color: var(--on-surface);
             line-height: 1.8;
         }
+        
+        .top-nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .nav-logo {
+            font-family: "Literata", serif;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--secondary);
+            text-decoration: none;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+        
+        .nav-link {
+            color: var(--on-surface-variant);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s;
+        }
+        
+        .nav-link:hover {
+            color: var(--primary);
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary-container);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+        
+        .user-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--secondary);
+        }
+        
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 14px;
+            border-radius: 12px;
+        }
+        
+        .btn-primary-sm {
+            background: var(--primary);
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary-sm:hover {
+            background: #D35400;
+            transform: translateY(-1px);
+        }
+        
         .app-container { display: flex; min-height: 100vh; }
         
         .sidebar {
@@ -460,6 +537,13 @@
     </style>
 </head>
 <body>
+    <div class="top-nav">
+        <a href="index.html" class="nav-logo">专业星图</a>
+        <div id="navUserArea" class="nav-links">
+            <!-- User area will be populated by JavaScript -->
+        </div>
+    </div>
+    
     <div class="app-container">
         <aside class="sidebar">
             <div class="sidebar-header">
@@ -673,6 +757,8 @@
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/auth.js"></script>
     <script>
         const SUPABASE_URL = 'https://djteatwxjlnbjylynvjh.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRqdGVhdHd4amxuYmp5bHludmpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwODUwOTMsImV4cCI6MjA5NDY2MTA5M30.P6IJW2noTImzeNXtfKsmjJBMp9AJBTw1LamYTdtyd_4';
@@ -680,6 +766,7 @@
         let majorsData = [];
         let currentMajor = null;
         let currentView = 'grid';
+        let currentUser = null;
         let currentFilters = {
             category: 'all',
             difficulty: 'all',
@@ -699,6 +786,35 @@
             html = '<p>' + html + '</p>';
             html = html.replace(/<p><\/p>/g, '');
             return html;
+        }
+        
+        async function updateUserArea() {
+            const userArea = document.getElementById('navUserArea');
+            const user = await auth.getCurrentUser();
+            currentUser = user;
+            
+            if (user) {
+                const phone = user.phone || user.email || '用户';
+                const displayName = phone.length > 11 ? phone.slice(0, 11) : phone;
+                
+                userArea.innerHTML = `
+                    <div class="user-info">
+                        <div class="user-avatar">👤</div>
+                        <span class="user-name">${displayName}</span>
+                        <button class="btn-sm btn-primary-sm" id="logoutBtn">退出</button>
+                    </div>
+                `;
+                
+                document.getElementById('logoutBtn').addEventListener('click', async () => {
+                    await auth.logout();
+                    updateUserArea();
+                });
+            } else {
+                userArea.innerHTML = `
+                    <a href="login.html" class="nav-link">登录</a>
+                    <a href="register.html" class="btn-sm btn-primary-sm" style="text-decoration: none;">注册</a>
+                `;
+            }
         }
         
         async function fetchMajors() {
@@ -958,6 +1074,8 @@
         }
         
         document.addEventListener('DOMContentLoaded', () => {
+            auth.initSupabase();
+            updateUserArea();
             fetchMajors();
             
             document.getElementById('searchInput').addEventListener('input', (e) => {

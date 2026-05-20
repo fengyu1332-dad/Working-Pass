@@ -1,0 +1,223 @@
+
+&lt;!DOCTYPE html&gt;
+&lt;html lang="zh-CN"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+  &lt;title&gt;个人中心 - 专业星图&lt;/title&gt;
+  &lt;link rel="stylesheet" href="/css/common.css"&gt;
+  &lt;style&gt;
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+    }
+    
+    .stat-card {
+      text-align: center;
+      padding: 32px 24px;
+    }
+    
+    .stat-value {
+      font-size: 48px;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 8px;
+    }
+    
+    .stat-label {
+      font-size: 16px;
+      color: var(--on-surface-variant);
+    }
+    
+    .action-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 20px;
+      background: var(--surface-container);
+      border: 2px solid var(--outline);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-decoration: none;
+      color: var(--on-surface);
+    }
+    
+    .action-btn:hover {
+      border-color: var(--primary);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px var(--shadow);
+    }
+    
+    .action-icon {
+      font-size: 32px;
+    }
+    
+    .action-text {
+      text-align: left;
+    }
+    
+    .action-title {
+      font-weight: 600;
+      color: var(--secondary);
+      font-size: 16px;
+    }
+    
+    .action-desc {
+      font-size: 14px;
+      color: var(--on-surface-variant);
+    }
+    
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+    
+    .user-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      color: white;
+      font-weight: 700;
+    }
+    
+    .user-details h2 {
+      font-size: 24px;
+      color: var(--secondary);
+      margin-bottom: 4px;
+    }
+    
+    .user-details p {
+      color: var(--on-surface-variant);
+    }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div class="container"&gt;
+    &lt;nav class="nav"&gt;
+      &lt;a href="/" class="nav-logo"&gt;专业星图&lt;/a&gt;
+      &lt;div class="nav-links"&gt;
+        &lt;a href="/user/reports.html" class="nav-link"&gt;浏览报告&lt;/a&gt;
+        &lt;a href="/user/orders.html" class="nav-link"&gt;历史记录&lt;/a&gt;
+        &lt;a href="#" id="logoutBtn" class="nav-link"&gt;退出&lt;/a&gt;
+      &lt;/div&gt;
+    &lt;/nav&gt;
+
+    &lt;h1 class="page-title"&gt;个人中心&lt;/h1&gt;
+
+    &lt;div class="card user-info"&gt;
+      &lt;div class="user-avatar" id="userAvatar"&gt;U&lt;/div&gt;
+      &lt;div class="user-details"&gt;
+        &lt;h2 id="userName"&gt;用户&lt;/h2&gt;
+        &lt;p id="userPhone"&gt;加载中...&lt;/p&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div class="dashboard-grid"&gt;
+      &lt;div class="card stat-card"&gt;
+        &lt;div class="stat-value" id="pointsBalance"&gt;0&lt;/div&gt;
+        &lt;div class="stat-label"&gt;点数余额&lt;/div&gt;
+      &lt;/div&gt;
+      
+      &lt;div class="card stat-card"&gt;
+        &lt;div class="stat-value" id="totalDownloads"&gt;0&lt;/div&gt;
+        &lt;div class="stat-label"&gt;下载次数&lt;/div&gt;
+      &lt;/div&gt;
+      
+      &lt;div class="card stat-card"&gt;
+        &lt;div class="stat-value" id="totalOrders"&gt;0&lt;/div&gt;
+        &lt;div class="stat-label"&gt;订单数量&lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;h2 class="page-title" style="font-size: 24px; margin-top: 48px;"&gt;快捷操作&lt;/h2&gt;
+    &lt;div class="dashboard-grid"&gt;
+      &lt;a href="/user/purchase.html" class="action-btn"&gt;
+        &lt;div class="action-icon"&gt;💎&lt;/div&gt;
+        &lt;div class="action-text"&gt;
+          &lt;div class="action-title"&gt;购买点数&lt;/div&gt;
+          &lt;div class="action-desc"&gt;充值点数，解锁更多报告&lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/a&gt;
+      
+      &lt;a href="/user/reports.html" class="action-btn"&gt;
+        &lt;div class="action-icon"&gt;📚&lt;/div&gt;
+        &lt;div class="action-text"&gt;
+          &lt;div class="action-title"&gt;浏览报告&lt;/div&gt;
+          &lt;div class="action-desc"&gt;查看所有专业深度报告&lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/a&gt;
+      
+      &lt;a href="/user/orders.html" class="action-btn"&gt;
+        &lt;div class="action-icon"&gt;📋&lt;/div&gt;
+        &lt;div class="action-text"&gt;
+          &lt;div class="action-title"&gt;历史记录&lt;/div&gt;
+          &lt;div class="action-desc"&gt;查看订单和下载记录&lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/a&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"&gt;&lt;/script&gt;
+  &lt;script src="/js/auth.js"&gt;&lt;/script&gt;
+  &lt;script&gt;
+    (async function() {
+      window.auth.initSupabase();
+      
+      const isLoggedIn = await window.auth.checkAuthAndRedirect();
+      if (!isLoggedIn) return;
+      
+      const profile = await window.auth.getUserProfile();
+      if (profile) {
+        document.getElementById('pointsBalance').textContent = profile.points_balance || 0;
+        document.getElementById('userPhone').textContent = profile.phone || '未设置手机号';
+        document.getElementById('userName').textContent = profile.phone ? profile.phone.slice(0, 3) + '****' + profile.phone.slice(-4) : '用户';
+        document.getElementById('userAvatar').textContent = (profile.phone || 'U')[0].toUpperCase();
+        
+        await loadUserStats(profile.id);
+      }
+      
+      document.getElementById('logoutBtn').addEventListener('click', async (e) =&gt; {
+        e.preventDefault();
+        try {
+          await window.auth.logout();
+        } catch (error) {
+          window.auth.showToast('退出失败', 'error');
+        }
+      });
+    })();
+    
+    async function loadUserStats(userId) {
+      const sb = window.auth.getSupabase();
+      if (!sb) return;
+      
+      try {
+        const { data: orders } = await sb
+          .from('orders')
+          .select('id', { count: 'exact' })
+          .eq('user_id', userId)
+          .eq('status', 'paid');
+        document.getElementById('totalOrders').textContent = orders ? orders.length : 0;
+        
+        const { data: downloads } = await sb
+          .from('download_records')
+          .select('id', { count: 'exact' })
+          .eq('user_id', userId);
+        document.getElementById('totalDownloads').textContent = downloads ? downloads.length : 0;
+      } catch (error) {
+        console.error('Load stats error:', error);
+      }
+    }
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+

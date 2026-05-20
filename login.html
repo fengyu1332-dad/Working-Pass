@@ -1,0 +1,349 @@
+
+&lt;!DOCTYPE html&gt;
+&lt;html lang="zh-CN"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+    &lt;title&gt;登录 - 专业星图&lt;/title&gt;
+    &lt;link rel="stylesheet" href="css/common.css"&gt;
+    &lt;link href="https://fonts.googleapis.com/css2?family=Literata:wght@600;700&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"&gt;
+    &lt;style&gt;
+        :root {
+            --surface: #FFF8F5;
+            --surface-container: #FFFFFF;
+            --primary: #E67E22;
+            --primary-container: #FAD7B2;
+            --secondary: #705A49;
+            --secondary-container: #EBE0D6;
+            --on-surface: #2C2621;
+            --on-primary: #FFFFFF;
+            --on-surface-variant: #8B7E74;
+            --outline: #DED0C6;
+            --shadow: rgba(112, 90, 73, 0.05);
+        }
+        
+        body {
+            font-family: "Inter", -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
+            background: var(--surface);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .login-container {
+            max-width: 480px;
+            width: 100%;
+        }
+        
+        .logo-section {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .logo-title {
+            font-family: "Literata", serif;
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--secondary);
+            margin-bottom: 8px;
+        }
+        
+        .logo-subtitle {
+            color: var(--on-surface-variant);
+            font-size: 14px;
+        }
+        
+        .login-card {
+            background: var(--surface-container);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 4px 24px var(--shadow);
+        }
+        
+        .form-group {
+            margin-bottom: 24px;
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--secondary);
+            margin-bottom: 8px;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--outline);
+            border-radius: 16px;
+            font-size: 16px;
+            background: var(--surface);
+            color: var(--on-surface);
+            outline: none;
+            transition: all 0.3s;
+            box-sizing: border-box;
+        }
+        
+        .form-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(230, 126, 34, 0.1);
+        }
+        
+        .btn-primary {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #E67E22 0%, #D35400 100%);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(230, 126, 34, 0.4);
+        }
+        
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 24px 0;
+        }
+        
+        .divider-line {
+            flex: 1;
+            height: 1px;
+            background: var(--outline);
+        }
+        
+        .divider-text {
+            padding: 0 16px;
+            color: var(--on-surface-variant);
+            font-size: 14px;
+        }
+        
+        .btn-wechat {
+            width: 100%;
+            padding: 14px;
+            background: #07C160;
+            color: white;
+            border: none;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .btn-wechat:hover {
+            background: #06AD56;
+            transform: translateY(-2px);
+        }
+        
+        .link-section {
+            text-align: center;
+            margin-top: 24px;
+        }
+        
+        .link-text {
+            color: var(--on-surface-variant);
+            font-size: 14px;
+        }
+        
+        .link {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .link:hover {
+            text-decoration: underline;
+        }
+        
+        .error-message {
+            background: #FFEBEE;
+            color: #C62828;
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+        
+        .error-message.show {
+            display: block;
+        }
+        
+        .success-message {
+            background: #E8F5E9;
+            color: #2E7D32;
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+        
+        .success-message.show {
+            display: block;
+        }
+        
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--on-surface-variant);
+            text-decoration: none;
+            font-size: 14px;
+            margin-bottom: 20px;
+            transition: color 0.3s;
+        }
+        
+        .back-link:hover {
+            color: var(--primary);
+        }
+        
+        @media (max-width: 768px) {
+            .login-card {
+                padding: 32px 24px;
+            }
+            
+            .logo-title {
+                font-size: 28px;
+            }
+        }
+    &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;div class="login-container"&gt;
+        &lt;a href="index.html" class="back-link"&gt;
+            &lt;span&gt;←&lt;/span&gt; 返回首页
+        &lt;/a&gt;
+        
+        &lt;div class="logo-section"&gt;
+            &lt;h1 class="logo-title"&gt;专业星图&lt;/h1&gt;
+            &lt;p class="logo-subtitle"&gt;温暖、专业的大学专业选择指南&lt;/p&gt;
+        &lt;/div&gt;
+        
+        &lt;div class="login-card"&gt;
+            &lt;div id="errorMessage" class="error-message"&gt;&lt;/div&gt;
+            &lt;div id="successMessage" class="success-message"&gt;&lt;/div&gt;
+            
+            &lt;form id="loginForm"&gt;
+                &lt;div class="form-group"&gt;
+                    &lt;label class="form-label" for="phone"&gt;手机号&lt;/label&gt;
+                    &lt;input type="tel" id="phone" class="form-input" placeholder="请输入手机号" required&gt;
+                &lt;/div&gt;
+                
+                &lt;div class="form-group"&gt;
+                    &lt;label class="form-label" for="password"&gt;密码&lt;/label&gt;
+                    &lt;input type="password" id="password" class="form-input" placeholder="请输入密码" required&gt;
+                &lt;/div&gt;
+                
+                &lt;button type="submit" class="btn-primary" id="loginBtn"&gt;登录&lt;/button&gt;
+            &lt;/form&gt;
+            
+            &lt;div class="divider"&gt;
+                &lt;div class="divider-line"&gt;&lt;/div&gt;
+                &lt;span class="divider-text"&gt;或&lt;/span&gt;
+                &lt;div class="divider-line"&gt;&lt;/div&gt;
+            &lt;/div&gt;
+            
+            &lt;button class="btn-wechat" id="wechatLoginBtn"&gt;
+                &lt;span&gt;💬&lt;/span&gt; 微信登录
+            &lt;/button&gt;
+            
+            &lt;div class="link-section"&gt;
+                &lt;span class="link-text"&gt;还没有账号？&lt;/span&gt;
+                &lt;a href="register.html" class="link"&gt;立即注册&lt;/a&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"&gt;&lt;/script&gt;
+    &lt;script src="js/auth.js"&gt;&lt;/script&gt;
+    &lt;script&gt;
+        document.addEventListener('DOMContentLoaded', () =&gt; {
+            const loginForm = document.getElementById('loginForm');
+            const loginBtn = document.getElementById('loginBtn');
+            const errorMessage = document.getElementById('errorMessage');
+            const successMessage = document.getElementById('successMessage');
+            const wechatLoginBtn = document.getElementById('wechatLoginBtn');
+            
+            function showError(message) {
+                errorMessage.textContent = message;
+                errorMessage.classList.add('show');
+                successMessage.classList.remove('show');
+            }
+            
+            function showSuccess(message) {
+                successMessage.textContent = message;
+                successMessage.classList.add('show');
+                errorMessage.classList.remove('show');
+            }
+            
+            function clearMessages() {
+                errorMessage.classList.remove('show');
+                successMessage.classList.remove('show');
+            }
+            
+            loginForm.addEventListener('submit', async (e) =&gt; {
+                e.preventDefault();
+                clearMessages();
+                
+                const phone = document.getElementById('phone').value.trim();
+                const password = document.getElementById('password').value;
+                
+                if (!phone || !password) {
+                    showError('请填写手机号和密码');
+                    return;
+                }
+                
+                loginBtn.disabled = true;
+                loginBtn.textContent = '登录中...';
+                
+                try {
+                    await auth.loginWithPhone(phone, password);
+                    showSuccess('登录成功！即将跳转...');
+                    
+                    setTimeout(() =&gt; {
+                        window.location.href = 'index.html';
+                    }, 1000);
+                } catch (error) {
+                    console.error('Login error:', error);
+                    showError(error.message || '登录失败，请检查手机号和密码');
+                } finally {
+                    loginBtn.disabled = false;
+                    loginBtn.textContent = '登录';
+                }
+            });
+            
+            wechatLoginBtn.addEventListener('click', () =&gt; {
+                alert('微信登录功能即将上线，敬请期待！');
+            });
+            
+            auth.checkAuthState(async (session) =&gt; {
+                if (session) {
+                    window.location.href = 'index.html';
+                }
+            });
+        });
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理后台 - 专业星图</title>
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+    <div class="admin-layout">
+        <!-- 侧边栏 -->
+        <div class="admin-sidebar">
+            <div style="padding: 0 24px; margin-bottom: 24px;">
+                <div class="admin-logo" style="font-size: 20px; font-weight: 700; color: var(--secondary);">
+                    专业星图
+                </div>
+                <div style="font-size: 14px; color: var(--on-surface-variant); margin-top: 4px;">
+                    管理后台
+                </div>
+            </div>
+            <nav class="admin-sidebar-nav">
+                <a href="/admin/index.html" class="admin-nav-item active">
+                    📊 数据概览
+                </a>
+                <a href="/admin/users.html" class="admin-nav-item">
+                    👥 用户管理
+                </a>
+                <a href="/admin/reports.html" class="admin-nav-item">
+                    📚 报告管理
+                </a>
+            </nav>
+            <div style="margin-top: auto; padding: 0 24px; border-top: 1px solid var(--outline); margin-top: 24px; padding-top: 24px;">
+                <a href="/user/dashboard.html" class="admin-nav-item">
+                    ← 返回用户端
+                </a>
+                <a href="#" id="logoutBtn" class="admin-nav-item" style="color: var(--error);">
+                    退出登录
+                </a>
+            </div>
+        </div>
+
+        <!-- 内容区域 -->
+        <div class="admin-content">
+            <h1 style="font-size: 28px; color: var(--secondary); margin-bottom: 24px;">
+                数据概览
+            </h1>
+
+            <!-- 统计卡片 -->
+            <div class="admin-stats-grid">
+                <div class="admin-stat-card">
+                    <div class="admin-stat-value" id="totalUsers">0</div>
+                    <div class="admin-stat-label">总用户数</div>
+                </div>
+                <div class="admin-stat-card">
+                    <div class="admin-stat-value" id="totalOrders">0</div>
+                    <div class="admin-stat-label">总订单数</div>
+                </div>
+                <div class="admin-stat-card">
+                    <div class="admin-stat-value" id="totalDownloads">0</div>
+                    <div class="admin-stat-label">总下载次数</div>
+                </div>
+                <div class="admin-stat-card">
+                    <div class="admin-stat-value" id="totalReports">0</div>
+                    <div class="admin-stat-label">报告数量</div>
+                </div>
+            </div>
+
+            <!-- 热门报告 -->
+            <div class="admin-section">
+                <h2 class="admin-section-title">热门报告 TOP 5</h2>
+                <table class="admin-table" id="topReportsTable">
+                    <thead>
+                        <tr>
+                            <th>专业代码</th>
+                            <th>专业名称</th>
+                            <th>下载次数</th>
+                        </tr>
+                    </thead>
+                    <tbody id="topReportsBody">
+                        <!-- 数据将通过 JS 加载 -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { checkAuthAndRedirect, logout, isAdmin, showToast } from '/js/auth.js'
+        import { supabase } from '/js/supabase-client.js'
+
+        // 检查登录和管理员状态
+        const isLoggedIn = await checkAuthAndRedirect()
+        if (!isLoggedIn) {
+            // 已经被重定向
+        }
+
+        // 检查是否是管理员
+        if (!await isAdmin()) {
+            showToast('无权访问管理后台', 'error')
+            window.location.href = '/user/dashboard.html'
+        }
+
+        // 加载统计数据
+        async function loadStats() {
+            // 这是模拟数据，实际项目中需要通过聚合查询
+            // 这里为了简化直接获取所有数据
+            
+            try {
+                // 用户数
+                const { data: users } = await supabase.from('user_profiles').select('id', { count: 'exact' })
+                document.getElementById('totalUsers').textContent = users.length
+                
+                // 报告数
+                const { data: reports } = await supabase.from('reports').select('id', { count: 'exact' })
+                document.getElementById('totalReports').textContent = reports.length
+                
+                // 订单数
+                const { data: orders } = await supabase.from('orders').select('id', { count: 'exact' })
+                document.getElementById('totalOrders').textContent = orders.length
+                
+                // 下载次数
+                const { data: downloads } = await supabase.from('download_records').select('id', { count: 'exact' })
+                document.getElementById('totalDownloads').textContent = downloads.length
+                
+                // 热门报告
+                const { data: topReports } = await supabase
+                    .from('reports')
+                    .select('major_code, major_name, download_count')
+                    .order('download_count', { ascending: false })
+                    .limit(5)
+                
+                const tbody = document.getElementById('topReportsBody')
+                if (!topReports || topReports.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; padding: 48px; color: var(--on-surface-variant);">暂无报告</td></tr>'
+                    return
+                }
+                
+                tbody.innerHTML = topReports.map(r => `
+                    <tr>
+                        <td>${r.major_code}</td>
+                        <td>${r.major_name}</td>
+                        <td>${r.download_count}</td>
+                    </tr>
+                `).join('')
+            } catch (error) {
+                console.error('加载统计失败:', error)
+                showToast('加载统计数据失败', 'error')
+            }
+        }
+
+        // 退出登录
+        document.getElementById('logoutBtn').addEventListener('click', (e) => {
+            e.preventDefault()
+            logout()
+        })
+
+        // 初始化
+        loadStats()
+    </script>
+</body>
+</html>

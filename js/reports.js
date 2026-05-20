@@ -1,0 +1,120 @@
+
+async function getReports(category = null, search = null) {
+  const sb = window.auth ? window.auth.getSupabase() : null;
+  if (!sb) throw new Error('Supabase not initialized');
+  
+  let query = sb
+    .from('reports')
+    .select('*')
+    .eq('status', 'published');
+  
+  if (category) {
+    query = query.eq('category', category);
+  }
+  
+  if (search) {
+    query = query.or(`major_name.ilike.%${search}%,major_code.ilike.%${search}%,category.ilike.%${search}%`);
+  }
+  
+  const { data, error } = await query.order('major_name');
+  
+  if (error) throw error;
+  return data;
+}
+
+async function getReport(reportId) {
+  const sb = window.auth ? window.auth.getSupabase() : null;
+  if (!sb) throw new Error('Supabase not initialized');
+  
+  const { data, error } = await sb
+    .from('reports')
+    .select('*')
+    .eq('id', reportId)
+    .single();
+  
+  if (error) throw error;
+  return data;
+}
+
+async function downloadReport(reportId) {
+  const sb = window.auth ? window.auth.getSupabase() : null;
+  if (!sb) throw new Error('Supabase not initialized');
+  
+  const user = await window.auth.getCurrentUser();
+  if (!user) throw new Error('User not logged in');
+  
+  const profile = await window.auth.getUserProfile();
+  if (!profile || profile.points_balance &lt; 1) {
+    throw new Error('点数不足，请先充值');
+  }
+  
+  const { data: report } = await sb
+    .from('reports')
+    .select('*')
+    .eq('id', reportId)
+    .single();
+  
+  if (!report) throw new Error('Report not found');
+  
+  const { data: existingRecord } = await sb
+    .from('download_records')
+    .select('*')
+    .eq('user_id', user.id)
+    .eq('report_id', reportId)
+    .maybeSingle();
+  
+  if (existingRecord) {
+    return report.full_content || report.preview_content || '';
+  }
+  
+  await sb
+    .from('user_profiles')
+    .update({
+      points_balance: profile.points_balance - 1
+    })
+    .eq('id', user.id);
+  
+  await sb
+    .from('download_records')
+    .insert({
+      user_id: user.id,
+      report_id: reportId,
+      points_spent: 1
+    });
+  
+  await sb
+    .from('reports')
+    .update({
+      download_count: (report.download_count || 0) + 1
+    })
+    .eq('id', reportId);
+  
+  return report.full_content || report.preview_content || '';
+}
+
+async function checkDownloaded(reportId) {
+  const sb = window.auth ? window.auth.getSupabase() : null;
+  if (!sb) return false;
+  
+  const user = await window.auth.getCurrentUser();
+  if (!user) return false;
+  
+  const { data } = await sb
+    .from('download_records')
+    .select('id')
+    .eq('user_id', user.id)
+    .eq('report_id', reportId)
+    .maybeSingle();
+  
+  return !!data;
+}
+
+if (typeof window) {
+  window.reports = {
+    getReports,
+    getReport,
+    downloadReport,
+    checkDownloaded
+  };
+}
+

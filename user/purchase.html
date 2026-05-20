@@ -1,0 +1,274 @@
+
+&lt;!DOCTYPE html&gt;
+&lt;html lang="zh-CN"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+  &lt;title&gt;购买点数 - 专业星图&lt;/title&gt;
+  &lt;link rel="stylesheet" href="/css/common.css"&gt;
+  &lt;style&gt;
+    .packages-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+    }
+    
+    .package-card {
+      background: var(--surface-container);
+      border: 2px solid var(--outline);
+      border-radius: 16px;
+      padding: 32px 24px;
+      text-align: center;
+      transition: all 0.3s;
+      cursor: pointer;
+      position: relative;
+    }
+    
+    .package-card:hover {
+      border-color: var(--primary);
+      transform: translateY(-4px);
+      box-shadow: 0 8px 32px var(--shadow);
+    }
+    
+    .package-card.featured {
+      border-color: var(--primary);
+      background: linear-gradient(135deg, var(--primary-container), var(--surface-container));
+    }
+    
+    .package-badge {
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--primary);
+      color: white;
+      padding: 4px 16px;
+      border-radius: 20px;
+      font-size: 14px;
+      font-weight: 600;
+    }
+    
+    .package-points {
+      font-size: 48px;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 4px;
+    }
+    
+    .package-unit {
+      font-size: 18px;
+      color: var(--on-surface-variant);
+      margin-bottom: 24px;
+    }
+    
+    .package-price {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--secondary);
+      margin-bottom: 8px;
+    }
+    
+    .package-original-price {
+      font-size: 16px;
+      color: var(--on-surface-variant);
+      text-decoration: line-through;
+      margin-bottom: 24px;
+    }
+    
+    .package-desc {
+      color: var(--on-surface-variant);
+      margin-bottom: 24px;
+      line-height: 1.6;
+    }
+    
+    .balance-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 24px;
+      background: var(--primary-container);
+      border-radius: 12px;
+      margin-bottom: 32px;
+    }
+    
+    .balance-label {
+      font-size: 16px;
+      color: var(--secondary);
+    }
+    
+    .balance-value {
+      font-size: 36px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div class="container"&gt;
+    &lt;nav class="nav"&gt;
+      &lt;a href="/" class="nav-logo"&gt;专业星图&lt;/a&gt;
+      &lt;div class="nav-links"&gt;
+        &lt;a href="/user/dashboard.html" class="nav-link"&gt;个人中心&lt;/a&gt;
+        &lt;a href="/user/reports.html" class="nav-link"&gt;浏览报告&lt;/a&gt;
+        &lt;a href="#" id="logoutBtn" class="nav-link"&gt;退出&lt;/a&gt;
+      &lt;/div&gt;
+    &lt;/nav&gt;
+
+    &lt;h1 class="page-title"&gt;购买点数&lt;/h1&gt;
+    &lt;p class="page-subtitle"&gt;选择合适的套餐，解锁更多专业深度报告&lt;/p&gt;
+
+    &lt;div class="balance-card"&gt;
+      &lt;div&gt;
+        &lt;div class="balance-label"&gt;当前点数余额&lt;/div&gt;
+        &lt;div class="balance-value" id="currentBalance"&gt;0&lt;/div&gt;
+      &lt;/div&gt;
+      &lt;div style="font-size: 48px;"&gt;💎&lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div class="packages-grid" id="packagesGrid"&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;div class="modal" id="paymentModal"&gt;
+    &lt;div class="modal-content" style="max-width: 500px;"&gt;
+      &lt;div class="modal-header"&gt;
+        &lt;h2 class="modal-title"&gt;确认购买&lt;/h2&gt;
+        &lt;button class="modal-close" onclick="closeModal()"&gt;&amp;times;&lt;/button&gt;
+      &lt;/div&gt;
+      &lt;div id="modalContent"&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"&gt;&lt;/script&gt;
+  &lt;script src="/js/auth.js"&gt;&lt;/script&gt;
+  &lt;script src="/js/payments.js"&gt;&lt;/script&gt;
+  &lt;script&gt;
+    let currentPackages = [];
+    let selectedPackage = null;
+    
+    (async function() {
+      window.auth.initSupabase();
+      
+      const isLoggedIn = await window.auth.checkAuthAndRedirect();
+      if (!isLoggedIn) return;
+      
+      const profile = await window.auth.getUserProfile();
+      if (profile) {
+        document.getElementById('currentBalance').textContent = profile.points_balance || 0;
+      }
+      
+      await loadPackages();
+      
+      document.getElementById('logoutBtn').addEventListener('click', async (e) =&gt; {
+        e.preventDefault();
+        try {
+          await window.auth.logout();
+        } catch (error) {
+          window.auth.showToast('退出失败', 'error');
+        }
+      });
+    })();
+    
+    async function loadPackages() {
+      try {
+        let packages = await window.payments.getPointPackages();
+        
+        if (!packages || packages.length === 0) {
+          packages = [
+            { id: 1, name: '新手包', points: 10, price: 9.9, original_price: 19.9, description: '适合初次体验，解锁10份报告', featured: false, active: true },
+            { id: 2, name: '进阶包', points: 50, price: 39.9, original_price: 79.9, description: '适合深入了解，解锁50份报告', featured: true, active: true },
+            { id: 3, name: '专业包', points: 200, price: 129.9, original_price: 299.9, description: '适合专业研究，解锁200份报告', featured: false, active: true }
+          ];
+        }
+        
+        currentPackages = packages;
+        renderPackages(packages);
+      } catch (error) {
+        console.error('Load packages error:', error);
+        window.auth.showToast('加载套餐失败', 'error');
+      }
+    }
+    
+    function renderPackages(packages) {
+      const grid = document.getElementById('packagesGrid');
+      grid.innerHTML = packages.map(pkg =&gt; `
+        &lt;div class="package-card ${pkg.featured ? 'featured' : ''}" onclick="selectPackage(${pkg.id})"&gt;
+          ${pkg.featured ? '&lt;div class="package-badge"&gt;推荐&lt;/div&gt;' : ''}
+          &lt;div class="package-points"&gt;${pkg.points}&lt;/div&gt;
+          &lt;div class="package-unit"&gt;点数&lt;/div&gt;
+          &lt;div class="package-price"&gt;¥${pkg.price}&lt;/div&gt;
+          ${pkg.original_price ? `&lt;div class="package-original-price"&gt;¥${pkg.original_price}&lt;/div&gt;` : ''}
+          &lt;div class="package-desc"&gt;${pkg.description || '解锁专业深度报告'}&lt;/div&gt;
+          &lt;button class="btn btn-primary" style="width: 100%;"&gt;立即购买&lt;/button&gt;
+        &lt;/div&gt;
+      `).join('');
+    }
+    
+    function selectPackage(packageId) {
+      selectedPackage = currentPackages.find(p =&gt; p.id === packageId);
+      if (!selectedPackage) return;
+      
+      const modal = document.getElementById('paymentModal');
+      const content = document.getElementById('modalContent');
+      
+      content.innerHTML = `
+        &lt;div style="text-align: center; padding: 20px 0;"&gt;
+          &lt;div style="font-size: 48px; margin-bottom: 16px;"&gt;💎&lt;/div&gt;
+          &lt;h3 style="font-size: 24px; color: var(--secondary); margin-bottom: 8px;"&gt;${selectedPackage.name}&lt;/h3&gt;
+          &lt;p style="color: var(--on-surface-variant); margin-bottom: 24px;"&gt;${selectedPackage.description || ''}&lt;/p&gt;
+          
+          &lt;div style="background: var(--surface-container-low); padding: 24px; border-radius: 12px; margin-bottom: 24px;"&gt;
+            &lt;div style="font-size: 36px; font-weight: 700; color: var(--primary);"&gt;${selectedPackage.points} 点数&lt;/div&gt;
+            &lt;div style="font-size: 24px; color: var(--secondary); margin-top: 8px;"&gt;¥${selectedPackage.price}&lt;/div&gt;
+          &lt;/div&gt;
+          
+          &lt;div class="form-actions" style="flex-direction: column;"&gt;
+            &lt;button class="btn btn-primary" style="width: 100%;" onclick="confirmPurchase()"&gt;
+              确认支付
+            &lt;/button&gt;
+            &lt;button class="btn btn-outline" style="width: 100%;" onclick="closeModal()"&gt;
+              取消
+            &lt;/button&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      `;
+      
+      modal.classList.add('active');
+    }
+    
+    async function confirmPurchase() {
+      if (!selectedPackage) return;
+      
+      try {
+        window.auth.showToast('处理中...', 'success');
+        
+        const order = await window.payments.createOrder(selectedPackage.id);
+        
+        await window.payments.completeOrder(order.id);
+        
+        closeModal();
+        window.auth.showToast('购买成功！点数已到账', 'success');
+        
+        const profile = await window.auth.getUserProfile();
+        if (profile) {
+          document.getElementById('currentBalance').textContent = profile.points_balance || 0;
+        }
+        
+        setTimeout(() =&gt; {
+          window.location.href = '/user/dashboard.html';
+        }, 1500);
+      } catch (error) {
+        console.error('Purchase error:', error);
+        window.auth.showToast(error.message || '购买失败', 'error');
+      }
+    }
+    
+    function closeModal() {
+      document.getElementById('paymentModal').classList.remove('active');
+      selectedPackage = null;
+    }
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+

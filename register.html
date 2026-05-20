@@ -1,0 +1,428 @@
+
+&lt;!DOCTYPE html&gt;
+&lt;html lang="zh-CN"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+    &lt;title&gt;注册 - 专业星图&lt;/title&gt;
+    &lt;link rel="stylesheet" href="css/common.css"&gt;
+    &lt;link href="https://fonts.googleapis.com/css2?family=Literata:wght@600;700&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"&gt;
+    &lt;style&gt;
+        :root {
+            --surface: #FFF8F5;
+            --surface-container: #FFFFFF;
+            --primary: #E67E22;
+            --primary-container: #FAD7B2;
+            --secondary: #705A49;
+            --secondary-container: #EBE0D6;
+            --on-surface: #2C2621;
+            --on-primary: #FFFFFF;
+            --on-surface-variant: #8B7E74;
+            --outline: #DED0C6;
+            --shadow: rgba(112, 90, 73, 0.05);
+        }
+        
+        body {
+            font-family: "Inter", -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
+            background: var(--surface);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .register-container {
+            max-width: 480px;
+            width: 100%;
+        }
+        
+        .logo-section {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .logo-title {
+            font-family: "Literata", serif;
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--secondary);
+            margin-bottom: 8px;
+        }
+        
+        .logo-subtitle {
+            color: var(--on-surface-variant);
+            font-size: 14px;
+        }
+        
+        .register-card {
+            background: var(--surface-container);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 4px 24px var(--shadow);
+        }
+        
+        .form-group {
+            margin-bottom: 24px;
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--secondary);
+            margin-bottom: 8px;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid var(--outline);
+            border-radius: 16px;
+            font-size: 16px;
+            background: var(--surface);
+            color: var(--on-surface);
+            outline: none;
+            transition: all 0.3s;
+            box-sizing: border-box;
+        }
+        
+        .form-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(230, 126, 34, 0.1);
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .form-row .form-input {
+            flex: 1;
+        }
+        
+        .btn-send-code {
+            padding: 14px 20px;
+            background: var(--secondary-container);
+            color: var(--secondary);
+            border: none;
+            border-radius: 16px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+        
+        .btn-send-code:hover:not(:disabled) {
+            background: var(--outline);
+        }
+        
+        .btn-send-code:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        
+        .btn-primary {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #E67E22 0%, #D35400 100%);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(230, 126, 34, 0.4);
+        }
+        
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .terms-section {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            margin-bottom: 24px;
+            font-size: 14px;
+        }
+        
+        .terms-checkbox {
+            width: 18px;
+            height: 18px;
+            margin-top: 2px;
+            cursor: pointer;
+        }
+        
+        .terms-text {
+            color: var(--on-surface-variant);
+            line-height: 1.6;
+        }
+        
+        .terms-link {
+            color: var(--primary);
+            text-decoration: none;
+        }
+        
+        .terms-link:hover {
+            text-decoration: underline;
+        }
+        
+        .link-section {
+            text-align: center;
+            margin-top: 24px;
+        }
+        
+        .link-text {
+            color: var(--on-surface-variant);
+            font-size: 14px;
+        }
+        
+        .link {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .link:hover {
+            text-decoration: underline;
+        }
+        
+        .error-message {
+            background: #FFEBEE;
+            color: #C62828;
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+        
+        .error-message.show {
+            display: block;
+        }
+        
+        .success-message {
+            background: #E8F5E9;
+            color: #2E7D32;
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            display: none;
+        }
+        
+        .success-message.show {
+            display: block;
+        }
+        
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--on-surface-variant);
+            text-decoration: none;
+            font-size: 14px;
+            margin-bottom: 20px;
+            transition: color 0.3s;
+        }
+        
+        .back-link:hover {
+            color: var(--primary);
+        }
+        
+        @media (max-width: 768px) {
+            .register-card {
+                padding: 32px 24px;
+            }
+            
+            .logo-title {
+                font-size: 28px;
+            }
+            
+            .form-row {
+                flex-direction: column;
+            }
+        }
+    &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;div class="register-container"&gt;
+        &lt;a href="index.html" class="back-link"&gt;
+            &lt;span&gt;←&lt;/span&gt; 返回首页
+        &lt;/a&gt;
+        
+        &lt;div class="logo-section"&gt;
+            &lt;h1 class="logo-title"&gt;专业星图&lt;/h1&gt;
+            &lt;p class="logo-subtitle"&gt;温暖、专业的大学专业选择指南&lt;/p&gt;
+        &lt;/div&gt;
+        
+        &lt;div class="register-card"&gt;
+            &lt;div id="errorMessage" class="error-message"&gt;&lt;/div&gt;
+            &lt;div id="successMessage" class="success-message"&gt;&lt;/div&gt;
+            
+            &lt;form id="registerForm"&gt;
+                &lt;div class="form-group"&gt;
+                    &lt;label class="form-label" for="phone"&gt;手机号&lt;/label&gt;
+                    &lt;input type="tel" id="phone" class="form-input" placeholder="请输入手机号" required&gt;
+                &lt;/div&gt;
+                
+                &lt;div class="form-group"&gt;
+                    &lt;label class="form-label"&gt;验证码&lt;/label&gt;
+                    &lt;div class="form-row"&gt;
+                        &lt;input type="text" id="verifyCode" class="form-input" placeholder="请输入验证码" required&gt;
+                        &lt;button type="button" class="btn-send-code" id="sendCodeBtn"&gt;获取验证码&lt;/button&gt;
+                    &lt;/div&gt;
+                &lt;/div&gt;
+                
+                &lt;div class="form-group"&gt;
+                    &lt;label class="form-label" for="password"&gt;密码&lt;/label&gt;
+                    &lt;input type="password" id="password" class="form-input" placeholder="请设置密码（至少6位）" required minlength="6"&gt;
+                &lt;/div&gt;
+                
+                &lt;div class="form-group"&gt;
+                    &lt;label class="form-label" for="confirmPassword"&gt;确认密码&lt;/label&gt;
+                    &lt;input type="password" id="confirmPassword" class="form-input" placeholder="请再次输入密码" required&gt;
+                &lt;/div&gt;
+                
+                &lt;div class="terms-section"&gt;
+                    &lt;input type="checkbox" id="terms" class="terms-checkbox" required&gt;
+                    &lt;label for="terms" class="terms-text"&gt;
+                        我已阅读并同意 &lt;a href="#" class="terms-link"&gt;《用户协议》&lt;/a&gt; 和 &lt;a href="#" class="terms-link"&gt;《隐私政策》&lt;/a&gt;
+                    &lt;/label&gt;
+                &lt;/div&gt;
+                
+                &lt;button type="submit" class="btn-primary" id="registerBtn"&gt;注册&lt;/button&gt;
+            &lt;/form&gt;
+            
+            &lt;div class="link-section"&gt;
+                &lt;span class="link-text"&gt;已有账号？&lt;/span&gt;
+                &lt;a href="login.html" class="link"&gt;立即登录&lt;/a&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"&gt;&lt;/script&gt;
+    &lt;script src="js/auth.js"&gt;&lt;/script&gt;
+    &lt;script&gt;
+        document.addEventListener('DOMContentLoaded', () =&gt; {
+            const registerForm = document.getElementById('registerForm');
+            const registerBtn = document.getElementById('registerBtn');
+            const sendCodeBtn = document.getElementById('sendCodeBtn');
+            const errorMessage = document.getElementById('errorMessage');
+            const successMessage = document.getElementById('successMessage');
+            let countdown = 0;
+            let countdownTimer = null;
+            
+            function showError(message) {
+                errorMessage.textContent = message;
+                errorMessage.classList.add('show');
+                successMessage.classList.remove('show');
+            }
+            
+            function showSuccess(message) {
+                successMessage.textContent = message;
+                successMessage.classList.add('show');
+                errorMessage.classList.remove('show');
+            }
+            
+            function clearMessages() {
+                errorMessage.classList.remove('show');
+                successMessage.classList.remove('show');
+            }
+            
+            function startCountdown() {
+                countdown = 60;
+                sendCodeBtn.disabled = true;
+                sendCodeBtn.textContent = `${countdown}秒后重试`;
+                
+                countdownTimer = setInterval(() =&gt; {
+                    countdown--;
+                    if (countdown &lt;= 0) {
+                        clearInterval(countdownTimer);
+                        sendCodeBtn.disabled = false;
+                        sendCodeBtn.textContent = '获取验证码';
+                    } else {
+                        sendCodeBtn.textContent = `${countdown}秒后重试`;
+                    }
+                }, 1000);
+            }
+            
+            sendCodeBtn.addEventListener('click', () =&gt; {
+                const phone = document.getElementById('phone').value.trim();
+                if (!phone) {
+                    showError('请先输入手机号');
+                    return;
+                }
+                
+                clearMessages();
+                startCountdown();
+                showSuccess('验证码已发送！请查看短信（演示环境，任意6位数字均可）');
+            });
+            
+            registerForm.addEventListener('submit', async (e) =&gt; {
+                e.preventDefault();
+                clearMessages();
+                
+                const phone = document.getElementById('phone').value.trim();
+                const verifyCode = document.getElementById('verifyCode').value.trim();
+                const password = document.getElementById('password').value;
+                const confirmPassword = document.getElementById('confirmPassword').value;
+                const termsChecked = document.getElementById('terms').checked;
+                
+                if (!phone || !verifyCode || !password || !confirmPassword) {
+                    showError('请填写所有必填项');
+                    return;
+                }
+                
+                if (password !== confirmPassword) {
+                    showError('两次输入的密码不一致');
+                    return;
+                }
+                
+                if (password.length &lt; 6) {
+                    showError('密码长度至少为6位');
+                    return;
+                }
+                
+                if (!termsChecked) {
+                    showError('请同意用户协议和隐私政策');
+                    return;
+                }
+                
+                registerBtn.disabled = true;
+                registerBtn.textContent = '注册中...';
+                
+                try {
+                    await auth.registerWithPhone(phone, password);
+                    showSuccess('注册成功！即将跳转...');
+                    
+                    setTimeout(() =&gt; {
+                        window.location.href = 'index.html';
+                    }, 1500);
+                } catch (error) {
+                    console.error('Registration error:', error);
+                    showError(error.message || '注册失败，请稍后重试');
+                } finally {
+                    registerBtn.disabled = false;
+                    registerBtn.textContent = '注册';
+                }
+            });
+            
+            auth.checkAuthState(async (session) =&gt; {
+                if (session) {
+                    window.location.href = 'index.html';
+                }
+            });
+        });
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;

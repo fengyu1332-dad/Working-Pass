@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用户管理 - 专业星图</title>
+    <link rel="stylesheet" href="/css/common.css">
+    <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+    <div class="admin-layout">
+        <!-- 侧边栏 -->
+        <div class="admin-sidebar">
+            <div style="padding: 0 24px; margin-bottom: 24px;">
+                <div class="admin-logo" style="font-size: 20px; font-weight: 700; color: var(--secondary);">
+                    专业星图
+                </div>
+                <div style="font-size: 14px; color: var(--on-surface-variant); margin-top: 4px;">
+                    管理后台
+                </div>
+            </div>
+            <nav class="admin-sidebar-nav">
+                <a href="/admin/index.html" class="admin-nav-item">
+                    📊 数据概览
+                </a>
+                <a href="/admin/users.html" class="admin-nav-item active">
+                    👥 用户管理
+                </a>
+                <a href="/admin/reports.html" class="admin-nav-item">
+                    📚 报告管理
+                </a>
+            </nav>
+            <div style="margin-top: auto; padding: 0 24px; border-top: 1px solid var(--outline); margin-top: 24px; padding-top: 24px;">
+                <a href="/user/dashboard.html" class="admin-nav-item">
+                    ← 返回用户端
+                </a>
+                <a href="#" id="logoutBtn" class="admin-nav-item" style="color: var(--error);">
+                    退出登录
+                </a>
+            </div>
+        </div>
+
+        <!-- 内容区域 -->
+        <div class="admin-content">
+            <h1 style="font-size: 28px; color: var(--secondary); margin-bottom: 24px;">
+                用户管理
+            </h1>
+
+            <div class="admin-section">
+                <table class="admin-table" id="usersTable">
+                    <thead>
+                        <tr>
+                            <th>用户ID</th>
+                            <th>手机号</th>
+                            <th>当前点数</th>
+                            <th>角色</th>
+                            <th>注册时间</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTableBody">
+                        <!-- 数据将通过 JS 加载 -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- 调整点数模态框 -->
+    <div class="modal" id="pointsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">调整用户点数</h2>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+
+            <div id="modalContent">
+                <form id="pointsForm">
+                    <div class="form-group">
+                        <label class="form-label">用户</label>
+                        <div id="modalUserName" style="margin-bottom: 8px; color: var(--secondary); font-weight: 600;"></div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">调整方式</label>
+                        <select id="adjustType" class="form-input">
+                            <option value="add">增加点数</option>
+                            <option value="set">设置点数</option>
+                            <option value="deduct">扣减点数</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">数量</label>
+                        <input type="number" id="adjustAmount" class="form-input" min="1" required>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeModal()">取消</button>
+                        <button type="submit" class="btn btn-primary">确认</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { checkAuthAndRedirect, logout, isAdmin, showToast } from '/js/auth.js'
+        import { supabase } from '/js/supabase-client.js'
+
+        let currentUserId = null
+
+        // 检查登录和管理员状态
+        await checkAuthAndRedirect()
+        if (!await isAdmin()) {
+            showToast('无权访问管理后台', 'error')
+            window.location.href = '/user/dashboard.html'
+        }
+
+        // 加载用户列表
+        async function loadUsers() {
+            try {
+                const { data: users } = await supabase
+                    .from('user_profiles')
+                    .select('*')
+                    .order('created_at', { ascending: false })
+
+                const tbody = document.getElementById('usersTableBody')
+                
+                if (!users || users.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding: 48px; color: var(--on-surface-variant);">
+                                暂无用户
+                            </td>
+                        </tr>
+                    `
+                    return
+                }
+
+                tbody.innerHTML = users.map(user => `
+                    <tr>
+                        <td>${user.id}</td>
+                        <td>${user.phone || '未设置'}</td>
+                        <td>${user.points_balance}</td>
+                        <td>${user.role === 'admin' ? '管理员' : '用户'}</td>
+                        <td>${new Date(user.created_at).toLocaleString('zh-CN')}</td>
+                        <td>
+                            <button class="btn btn-primary btn-sm" onclick="openPointsModal('${user.id}', '${user.phone || '未设置'}', ${user.points_balance})">
+                                调整点数
+                            </button>
+                        </td>
+                    </tr>
+                `).join('')
+            } catch (error) {
+                console.error('加载用户列表失败:', error)
+                showToast('加载用户列表失败', 'error')
+            }
+        }
+
+        // 打开调整点数模态框
+        function openPointsModal(userId, userPhone, currentPoints) {
+            currentUserId = userId
+            document.getElementById('modalUserName').textContent = 
+                `${userPhone} (当前点数: ${currentPoints})`
+            document.getElementById('pointsModal').classList.add('active')
+        }
+
+        // 调整点数
+        document.getElementById('pointsForm').addEventListener('submit', async (e) => {
+            e.preventDefault()
+            
+            const adjustType = document.getElementById('adjustType').value
+            const amount = parseInt(document.getElementById('adjustAmount').value)
+
+            if (!currentUserId || !amount) {
+                return
+            }
+
+            try {
+                // 获取当前用户点数
+                const { data: user } = await supabase
+                    .from('user_profiles')
+                    .select('points_balance')
+                    .eq('id', currentUserId)
+                    .single()
+
+                let newPoints
+                if (adjustType === 'add') {
+                    newPoints = user.points_balance + amount
+                } else if (adjustType === 'set') {
+                    newPoints = amount
+                } else if (adjustType === 'deduct') {
+                    newPoints = user.points_balance - amount
+                }
+
+                // 更新点数
+                await supabase
+                    .from('user_profiles')
+                    .update({ points_balance: newPoints })
+                    .eq('id', currentUserId)
+
+                showToast('点数调整成功', 'success')
+                closeModal()
+                loadUsers()
+            } catch (error) {
+                showToast('调整失败', 'error')
+            }
+        })
+
+        // 关闭模态框
+        function closeModal() {
+            document.getElementById('pointsModal').classList.remove('active')
+            document.getElementById('pointsForm').reset()
+            currentUserId = null
+        }
+
+        // 退出登录
+        document.getElementById('logoutBtn').addEventListener('click', (e) => {
+            e.preventDefault()
+            logout()
+        })
+
+        // 初始化
+        loadUsers()
+    </script>
+</body>
+</html>
