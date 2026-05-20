@@ -125,6 +125,25 @@
             box-shadow: 0 6px 30px rgba(230, 126, 34, 0.5);
         }
         
+        /* 登录按钮样式 */
+        .login-btn {
+            display: inline-block;
+            padding: 12px 32px;
+            background: linear-gradient(135deg, #E67E22 0%, #D35400 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 9999px;
+            font-size: 15px;
+            font-weight: 600;
+            box-shadow: 0 4px 20px rgba(230, 126, 34, 0.4);
+            transition: all 0.3s;
+            margin-top: 16px;
+        }
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(230, 126, 34, 0.5);
+        }
+        
         /* 预热模态框 */
         .preheat-modal { 
             position: fixed; 
@@ -249,6 +268,7 @@
                     <div class="stat-label">学科门类</div>
                 </div>
             </div>
+            <a href="/login.html" class="login-btn">登录 / 注册</a>
         </header>
         
         <section class="search-section">
