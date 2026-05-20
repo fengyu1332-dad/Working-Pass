@@ -1,17 +1,21 @@
 
--- 专业星图 - 数据库初始化脚本
--- 版本：v1.0
+-- 专业星图 - 数据库初始化脚本（修复版）
+-- 版本：v1.1
 -- 日期：2026-05-20
 
 -- 创建用户扩展信息表
 CREATE TABLE IF NOT EXISTS user_profiles (
     id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
     phone VARCHAR(20) UNIQUE,
-    points_balance INTEGER DEFAULT 0 CHECK (points_balance &gt;= 0),
-    role VARCHAR(20) DEFAULT 'user' CHECK (role IN ('user', 'admin')),
+    points_balance INTEGER DEFAULT 0,
+    role VARCHAR(20) DEFAULT 'user',
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
+
+-- 添加约束（分开定义）
+ALTER TABLE user_profiles ADD CONSTRAINT IF NOT EXISTS user_profiles_points_check CHECK (points_balance &gt;= 0);
+ALTER TABLE user_profiles ADD CONSTRAINT IF NOT EXISTS user_profiles_role_check CHECK (role IN ('user', 'admin'));
 
 -- 创建报告表
 CREATE TABLE IF NOT EXISTS reports (
@@ -21,24 +25,29 @@ CREATE TABLE IF NOT EXISTS reports (
     category VARCHAR(50) NOT NULL,
     preview_content TEXT,
     full_content TEXT,
-    status VARCHAR(20) DEFAULT 'draft' CHECK (status IN ('draft', 'published', 'archived')),
+    status VARCHAR(20) DEFAULT 'draft',
     download_count INTEGER DEFAULT 0,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
+
+ALTER TABLE reports ADD CONSTRAINT IF NOT EXISTS reports_status_check CHECK (status IN ('draft', 'published', 'archived'));
 
 -- 创建点数套餐表
 CREATE TABLE IF NOT EXISTS point_packages (
     id SERIAL PRIMARY KEY,
     name VARCHAR(50) NOT NULL,
     description TEXT,
-    points INTEGER NOT NULL CHECK (points &gt; 0),
-    price DECIMAL(10, 2) NOT NULL CHECK (price &gt;= 0),
+    points INTEGER NOT NULL,
+    price DECIMAL(10, 2) NOT NULL,
     is_active BOOLEAN DEFAULT true,
     sort_order INTEGER DEFAULT 0,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
+
+ALTER TABLE point_packages ADD CONSTRAINT IF NOT EXISTS point_packages_points_check CHECK (points &gt; 0);
+ALTER TABLE point_packages ADD CONSTRAINT IF NOT EXISTS point_packages_price_check CHECK (price &gt;= 0);
 
 -- 创建订单表
 CREATE TABLE IF NOT EXISTS orders (
@@ -47,12 +56,14 @@ CREATE TABLE IF NOT EXISTS orders (
     package_id INTEGER NOT NULL REFERENCES point_packages(id),
     amount DECIMAL(10, 2) NOT NULL,
     points INTEGER NOT NULL,
-    status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'paid', 'cancelled', 'refunded')),
+    status VARCHAR(20) DEFAULT 'pending',
     payment_method VARCHAR(20) DEFAULT 'mock',
     paid_at TIMESTAMP WITH TIME ZONE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     expires_at TIMESTAMP WITH TIME ZONE
 );
+
+ALTER TABLE orders ADD CONSTRAINT IF NOT EXISTS orders_status_check CHECK (status IN ('pending', 'paid', 'cancelled', 'refunded'));
 
 -- 创建下载记录表
 CREATE TABLE IF NOT EXISTS download_records (
@@ -176,24 +187,49 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- 为所有需要的表添加触发器
-CREATE TRIGGER update_user_profiles_modtime
-BEFORE UPDATE ON user_profiles
-FOR EACH ROW EXECUTE FUNCTION update_modified_column();
+-- 为所有需要的表添加触发器（使用 IF NOT EXISTS 防止重复错误）
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_trigger
+        WHERE tgname = 'update_user_profiles_modtime'
+    ) THEN
+        CREATE TRIGGER update_user_profiles_modtime
+        BEFORE UPDATE ON user_profiles
+        FOR EACH ROW EXECUTE FUNCTION update_modified_column();
+    END IF;
+END $$;
 
-CREATE TRIGGER update_reports_modtime
-BEFORE UPDATE ON reports
-FOR EACH ROW EXECUTE FUNCTION update_modified_column();
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_trigger
+        WHERE tgname = 'update_reports_modtime'
+    ) THEN
+        CREATE TRIGGER update_reports_modtime
+        BEFORE UPDATE ON reports
+        FOR EACH ROW EXECUTE FUNCTION update_modified_column();
+    END IF;
+END $$;
 
-CREATE TRIGGER update_packages_modtime
-BEFORE UPDATE ON point_packages
-FOR EACH ROW EXECUTE FUNCTION update_modified_column();
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_trigger
+        WHERE tgname = 'update_packages_modtime'
+    ) THEN
+        CREATE TRIGGER update_packages_modtime
+        BEFORE UPDATE ON point_packages
+        FOR EACH ROW EXECUTE FUNCTION update_modified_column();
+    END IF;
+END $$;
 
--- 插入默认点数套餐数据
+-- 插入默认点数套餐数据（安全方式）
 INSERT INTO point_packages (name, description, points, price, sort_order) VALUES
 ('体验套餐', '尝试下载1份报告', 1, 1.00, 1),
 ('基础套餐', '适合普通需求', 10, 9.90, 2),
 ('推荐套餐', '性价比最高，购买最多', 20, 18.90, 3),
 ('畅享套餐', '满足深度调研需求', 50, 39.90, 4),
 ('尊享套餐', '专业调研，长期使用', 100, 69.90, 5)
-ON CONFLICT (id) DO NOTHING;
+ON CONFLICT DO NOTHING;
+
