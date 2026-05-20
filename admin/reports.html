@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>报告管理 - 管理后台</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background-color: #f5f5f5;
+        }
+        .header {
+            background: #fff;
+            padding: 0 30px;
+            height: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header h1 {
+            font-size: 20px;
+            color: #ff6b35;
+        }
+        .logout-btn {
+            padding: 8px 20px;
+            background: #fff;
+            border: 1px solid #ff6b35;
+            color: #ff6b35;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        .logout-btn:hover {
+            background: #ff6b35;
+            color: #fff;
+        }
+        .nav {
+            background: #fff;
+            padding: 0 30px;
+            display: flex;
+            gap: 30px;
+            border-bottom: 1px solid #eee;
+        }
+        .nav a {
+            padding: 15px 0;
+            color: #666;
+            text-decoration: none;
+            font-size: 15px;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s;
+        }
+        .nav a:hover,
+        .nav a.active {
+            color: #ff6b35;
+            border-bottom-color: #ff6b35;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+        .section {
+            background: #fff;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .section h2 {
+            font-size: 18px;
+            color: #333;
+        }
+        .btn {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        .btn-primary {
+            background: #ff6b35;
+            color: #fff;
+        }
+        .btn-primary:hover {
+            background: #e55a2b;
+        }
+        .btn-danger {
+            background: #f44336;
+            color: #fff;
+        }
+        .btn-danger:hover {
+            background: #d32f2f;
+        }
+        .btn-small {
+            padding: 5px 12px;
+            font-size: 13px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th {
+            background: #fafafa;
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 500;
+            color: #666;
+            font-size: 14px;
+        }
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #f0f0f0;
+            color: #333;
+            font-size: 14px;
+        }
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+        .badge-published { background: #e8f5e9; color: #388e3c; }
+        .badge-draft { background: #fff3e0; color: #f57c00; }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal.show {
+            display: flex;
+        }
+        .modal-content {
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            width: 500px;
+            max-width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal-content h3 {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #666;
+            font-size: 14px;
+        }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        .modal-btns {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .btn-cancel {
+            padding: 8px 20px;
+            background: #fff;
+            border: 1px solid #ddd;
+            color: #666;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .btn-confirm {
+            padding: 8px 20px;
+            background: #ff6b35;
+            border: none;
+            color: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>⚙️ 管理后台</h1>
+        <button class="logout-btn" onclick="logout()">退出登录</button>
+    </header>
+    <nav class="nav">
+        <a href="index.html">仪表板</a>
+        <a href="users.html">用户管理</a>
+        <a href="reports.html" class="active">报告管理</a>
+        <a href="orders.html">订单管理</a>
+        <a href="packages.html">套餐管理</a>
+    </nav>
+    <div class="container">
+        <div class="section">
+            <div class="section-header">
+                <h2>报告列表</h2>
+                <button class="btn btn-primary" onclick="openReportModal()">新增报告</button>
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>专业名称</th>
+                        <th>代码</th>
+                        <th>学科门类</th>
+                        <th>状态</th>
+                        <th>下载次数</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody id="reportTable"></tbody>
+            </table>
+        </div>
+    </div>
+    <div class="modal" id="reportModal">
+        <div class="modal-content">
+            <h3 id="modalTitle">新增报告</h3>
+            <div class="form-group">
+                <label>专业代码</label>
+                <input type="text" id="reportCode" placeholder="请输入专业代码">
+            </div>
+            <div class="form-group">
+                <label>专业名称</label>
+                <input type="text" id="reportName" placeholder="请输入专业名称">
+            </div>
+            <div class="form-group">
+                <label>学科门类</label>
+                <input type="text" id="reportCategory" placeholder="请输入学科门类">
+            </div>
+            <div class="form-group">
+                <label>报告内容</label>
+                <textarea id="reportContent" placeholder="请输入报告内容"></textarea>
+            </div>
+            <div class="form-group">
+                <label>状态</label>
+                <select id="reportStatus">
+                    <option value="draft">草稿</option>
+                    <option value="published">已发布</option>
+                </select>
+            </div>
+            <div class="modal-btns">
+                <button class="btn-cancel" onclick="closeModal()">取消</button>
+                <button class="btn-confirm" onclick="saveReport()">保存</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        let editingReportId = null;
+        function checkAdminAuth() {
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            if (!user.token || user.role !== 'admin') {
+                window.location.href = '../login.html';
+                return false;
+            }
+            return true;
+        }
+        function logout() {
+            localStorage.removeItem('user');
+            window.location.href = '../login.html';
+        }
+        function loadReports() {
+            if (!checkAdminAuth()) return;
+            const reports = JSON.parse(localStorage.getItem('reports') || '[]');
+            const tbody = document.getElementById('reportTable');
+            if (reports.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#999;">暂无报告数据</td></tr>';
+                return;
+            }
+            tbody.innerHTML = reports.map(report => `
+                <tr>
+                    <td>${report.name}</td>
+                    <td>${report.code}</td>
+                    <td>${report.category}</td>
+                    <td><span class="badge ${report.status === 'published' ? 'badge-published' : 'badge-draft'}">${report.status === 'published' ? '已发布' : '草稿'}</span></td>
+                    <td>${report.downloads || 0}</td>
+                    <td>
+                        <button class="btn btn-primary btn-small" onclick="editReport('${report.id}')">编辑</button>
+                        <button class="btn btn-danger btn-small" onclick="deleteReport('${report.id}')">删除</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+        function openReportModal() {
+            editingReportId = null;
+            document.getElementById('modalTitle').textContent = '新增报告';
+            document.getElementById('reportCode').value = '';
+            document.getElementById('reportName').value = '';
+            document.getElementById('reportCategory').value = '';
+            document.getElementById('reportContent').value = '';
+            document.getElementById('reportStatus').value = 'draft';
+            document.getElementById('reportModal').classList.add('show');
+        }
+        function editReport(id) {
+            const reports = JSON.parse(localStorage.getItem('reports') || '[]');
+            const report = reports.find(r => r.id === id);
+            if (report) {
+                editingReportId = id;
+                document.getElementById('modalTitle').textContent = '编辑报告';
+                document.getElementById('reportCode').value = report.code;
+                document.getElementById('reportName').value = report.name;
+                document.getElementById('reportCategory').value = report.category;
+                document.getElementById('reportContent').value = report.content || '';
+                document.getElementById('reportStatus').value = report.status;
+                document.getElementById('reportModal').classList.add('show');
+            }
+        }
+        function closeModal() {
+            document.getElementById('reportModal').classList.remove('show');
+            editingReportId = null;
+        }
+        function saveReport() {
+            const code = document.getElementById('reportCode').value.trim();
+            const name = document.getElementById('reportName').value.trim();
+            const category = document.getElementById('reportCategory').value.trim();
+            const content = document.getElementById('reportContent').value.trim();
+            const status = document.getElementById('reportStatus').value;
+            if (!code || !name || !category) {
+                alert('请填写必填项');
+                return;
+            }
+            let reports = JSON.parse(localStorage.getItem('reports') || '[]');
+            if (editingReportId) {
+                const index = reports.findIndex(r => r.id === editingReportId);
+                if (index !== -1) {
+                    reports[index] = { ...reports[index], code, name, category, content, status };
+                }
+            } else {
+                reports.push({
+                    id: 'report_' + Date.now(),
+                    code,
+                    name,
+                    category,
+                    content,
+                    status,
+                    downloads: 0,
+                    createTime: new Date().toLocaleString('zh-CN')
+                });
+            }
+            localStorage.setItem('reports', JSON.stringify(reports));
+            loadReports();
+            closeModal();
+        }
+        function deleteReport(id) {
+            if (!confirm('确定要删除该报告吗？')) return;
+            let reports = JSON.parse(localStorage.getItem('reports') || '[]');
+            reports = reports.filter(r => r.id !== id);
+            localStorage.setItem('reports', JSON.stringify(reports));
+            loadReports();
+        }
+        document.addEventListener('DOMContentLoaded', loadReports);
+    </script>
+</body>
+</html>

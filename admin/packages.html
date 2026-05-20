@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>套餐管理 - 管理后台</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background-color: #f5f5f5;
+        }
+        .header {
+            background: #fff;
+            padding: 0 30px;
+            height: 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header h1 {
+            font-size: 20px;
+            color: #ff6b35;
+        }
+        .logout-btn {
+            padding: 8px 20px;
+            background: #fff;
+            border: 1px solid #ff6b35;
+            color: #ff6b35;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        .logout-btn:hover {
+            background: #ff6b35;
+            color: #fff;
+        }
+        .nav {
+            background: #fff;
+            padding: 0 30px;
+            display: flex;
+            gap: 30px;
+            border-bottom: 1px solid #eee;
+        }
+        .nav a {
+            padding: 15px 0;
+            color: #666;
+            text-decoration: none;
+            font-size: 15px;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s;
+        }
+        .nav a:hover,
+        .nav a.active {
+            color: #ff6b35;
+            border-bottom-color: #ff6b35;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+        .section {
+            background: #fff;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .section h2 {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .package-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        .package-card {
+            background: linear-gradient(135deg, #ff6b35 0%, #ff8f65 100%);
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            color: #fff;
+            position: relative;
+            overflow: hidden;
+        }
+        .package-card.offline {
+            background: linear-gradient(135deg, #9e9e9e 0%, #bdbdbd 100%);
+        }
+        .package-card::before {
+            content: '';
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 100px;
+            height: 100px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+        }
+        .package-name {
+            font-size: 16px;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+        .package-points {
+            font-size: 42px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .package-points span {
+            font-size: 18px;
+        }
+        .package-price {
+            font-size: 20px;
+            margin-bottom: 15px;
+            opacity: 0.9;
+        }
+        .toggle-btn {
+            padding: 8px 20px;
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.5);
+            color: #fff;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s;
+        }
+        .toggle-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        .offline .toggle-btn {
+            background: rgba(0,0,0,0.2);
+            border-color: rgba(0,0,0,0.3);
+        }
+        .offline .toggle-btn:hover {
+            background: rgba(0,0,0,0.3);
+        }
+        @media (max-width: 768px) {
+            .package-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        @media (max-width: 480px) {
+            .package-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>⚙️ 管理后台</h1>
+        <button class="logout-btn" onclick="logout()">退出登录</button>
+    </header>
+    <nav class="nav">
+        <a href="index.html">仪表板</a>
+        <a href="users.html">用户管理</a>
+        <a href="reports.html">报告管理</a>
+        <a href="orders.html">订单管理</a>
+        <a href="packages.html" class="active">套餐管理</a>
+    </nav>
+    <div class="container">
+        <div class="section">
+            <h2>套餐列表</h2>
+            <div class="package-grid" id="packageGrid"></div>
+        </div>
+    </div>
+    <script>
+        function checkAdminAuth() {
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            if (!user.token || user.role !== 'admin') {
+                window.location.href = '../login.html';
+                return false;
+            }
+            return true;
+        }
+        function logout() {
+            localStorage.removeItem('user');
+            window.location.href = '../login.html';
+        }
+        function loadPackages() {
+            if (!checkAdminAuth()) return;
+            let packages = JSON.parse(localStorage.getItem('packages') || '[]');
+            if (packages.length === 0) {
+                packages = [
+                    { id: 'pkg_1', name: '基础套餐', points: 1, price: 1, status: 'online' },
+                    { id: 'pkg_10', name: '标准套餐', points: 10, price: 8, status: 'online' },
+                    { id: 'pkg_20', name: '超值套餐', points: 20, price: 15, status: 'online' },
+                    { id: 'pkg_50', name: '豪华套餐', points: 50, price: 35, status: 'online' },
+                    { id: 'pkg_100', name: '至尊套餐', points: 100, price: 60, status: 'online' }
+                ];
+                localStorage.setItem('packages', JSON.stringify(packages));
+            }
+            const grid = document.getElementById('packageGrid');
+            grid.innerHTML = packages.map(pkg => `
+                <div class="package-card ${pkg.status === 'offline' ? 'offline' : ''}">
+                    <div class="package-name">${pkg.name}</div>
+                    <div class="package-points">${pkg.points}<span>点</span></div>
+                    <div class="package-price">¥${pkg.price}</div>
+                    <button class="toggle-btn" onclick="togglePackage('${pkg.id}')">
+                        ${pkg.status === 'online' ? '下架' : '上架'}
+                    </button>
+                </div>
+            `).join('');
+        }
+        function togglePackage(id) {
+            let packages = JSON.parse(localStorage.getItem('packages') || '[]');
+            const pkg = packages.find(p => p.id === id);
+            if (pkg) {
+                pkg.status = pkg.status === 'online' ? 'offline' : 'online';
+                localStorage.setItem('packages', JSON.stringify(packages));
+                loadPackages();
+            }
+        }
+        document.addEventListener('DOMContentLoaded', loadPackages);
+    </script>
+</body>
+</html>
