@@ -1,13 +1,12 @@
 
-&lt;!DOCTYPE html&gt;
-&lt;html lang="zh-CN"&gt;
-&lt;head&gt;
-    &lt;meta charset="UTF-8"&gt;
-    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
-    &lt;title&gt;登录 - 专业星图&lt;/title&gt;
-    &lt;link rel="stylesheet" href="css/common.css"&gt;
-    &lt;link href="https://fonts.googleapis.com/css2?family=Literata:wght@600;700&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"&gt;
-    &lt;style&gt;
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录 - 专业星图</title>
+    <link href="https://fonts.googleapis.com/css2?family=Literata:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
         :root {
             --surface: #FFF8F5;
             --surface-container: #FFFFFF;
@@ -20,6 +19,12 @@
             --on-surface-variant: #8B7E74;
             --outline: #DED0C6;
             --shadow: rgba(112, 90, 73, 0.05);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
         
         body {
@@ -43,7 +48,7 @@
         }
         
         .logo-title {
-            font-family: "Literata", serif;
+            font-family: 'Literata', serif;
             font-size: 36px;
             font-weight: 700;
             color: var(--secondary);
@@ -84,7 +89,6 @@
             color: var(--on-surface);
             outline: none;
             transition: all 0.3s;
-            box-sizing: border-box;
         }
         
         .form-input:focus {
@@ -228,58 +232,59 @@
                 font-size: 28px;
             }
         }
-    &lt;/style&gt;
-&lt;/head&gt;
-&lt;body&gt;
-    &lt;div class="login-container"&gt;
-        &lt;a href="index.html" class="back-link"&gt;
-            &lt;span&gt;←&lt;/span&gt; 返回首页
-        &lt;/a&gt;
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <a href="index.html" class="back-link">
+            <span>←</span> 返回首页
+        </a>
         
-        &lt;div class="logo-section"&gt;
-            &lt;h1 class="logo-title"&gt;专业星图&lt;/h1&gt;
-            &lt;p class="logo-subtitle"&gt;温暖、专业的大学专业选择指南&lt;/p&gt;
-        &lt;/div&gt;
+        <div class="logo-section">
+            <h1 class="logo-title">专业星图</h1>
+            <p class="logo-subtitle">温暖、专业的大学专业选择指南</p>
+        </div>
         
-        &lt;div class="login-card"&gt;
-            &lt;div id="errorMessage" class="error-message"&gt;&lt;/div&gt;
-            &lt;div id="successMessage" class="success-message"&gt;&lt;/div&gt;
+        <div class="login-card">
+            <div id="errorMessage" class="error-message"></div>
+            <div id="successMessage" class="success-message"></div>
             
-            &lt;form id="loginForm"&gt;
-                &lt;div class="form-group"&gt;
-                    &lt;label class="form-label" for="phone"&gt;手机号&lt;/label&gt;
-                    &lt;input type="tel" id="phone" class="form-input" placeholder="请输入手机号" required&gt;
-                &lt;/div&gt;
+            <form id="loginForm">
+                <div class="form-group">
+                    <label class="form-label" for="phone">手机号</label>
+                    <input type="tel" id="phone" class="form-input" placeholder="请输入手机号" required>
+                </div>
                 
-                &lt;div class="form-group"&gt;
-                    &lt;label class="form-label" for="password"&gt;密码&lt;/label&gt;
-                    &lt;input type="password" id="password" class="form-input" placeholder="请输入密码" required&gt;
-                &lt;/div&gt;
+                <div class="form-group">
+                    <label class="form-label" for="password">密码</label>
+                    <input type="password" id="password" class="form-input" placeholder="请输入密码" required>
+                </div>
                 
-                &lt;button type="submit" class="btn-primary" id="loginBtn"&gt;登录&lt;/button&gt;
-            &lt;/form&gt;
+                <button type="submit" class="btn-primary" id="loginBtn">登录</button>
+            </form>
             
-            &lt;div class="divider"&gt;
-                &lt;div class="divider-line"&gt;&lt;/div&gt;
-                &lt;span class="divider-text"&gt;或&lt;/span&gt;
-                &lt;div class="divider-line"&gt;&lt;/div&gt;
-            &lt;/div&gt;
+            <div class="divider">
+                <div class="divider-line"></div>
+                <span class="divider-text">或</span>
+                <div class="divider-line"></div>
+            </div>
             
-            &lt;button class="btn-wechat" id="wechatLoginBtn"&gt;
-                &lt;span&gt;💬&lt;/span&gt; 微信登录
-            &lt;/button&gt;
+            <button class="btn-wechat" id="wechatLoginBtn">
+                <span>💬</span> 微信登录
+            </button>
             
-            &lt;div class="link-section"&gt;
-                &lt;span class="link-text"&gt;还没有账号？&lt;/span&gt;
-                &lt;a href="register.html" class="link"&gt;立即注册&lt;/a&gt;
-            &lt;/div&gt;
-        &lt;/div&gt;
-    &lt;/div&gt;
-
-    &lt;script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"&gt;&lt;/script&gt;
-    &lt;script src="js/auth.js"&gt;&lt;/script&gt;
-    &lt;script&gt;
-        document.addEventListener('DOMContentLoaded', () =&gt; {
+            <div class="link-section">
+                <span class="link-text">还没有账号？</span>
+                <a href="register.html" class="link">立即注册</a>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase-client.js"></script>
+    <script src="js/auth.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
             const loginForm = document.getElementById('loginForm');
             const loginBtn = document.getElementById('loginBtn');
             const errorMessage = document.getElementById('errorMessage');
@@ -303,7 +308,7 @@
                 successMessage.classList.remove('show');
             }
             
-            loginForm.addEventListener('submit', async (e) =&gt; {
+            loginForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 clearMessages();
                 
@@ -321,8 +326,7 @@
                 try {
                     await auth.loginWithPhone(phone, password);
                     showSuccess('登录成功！即将跳转...');
-                    
-                    setTimeout(() =&gt; {
+                    setTimeout(() => {
                         window.location.href = 'index.html';
                     }, 1000);
                 } catch (error) {
@@ -334,16 +338,16 @@
                 }
             });
             
-            wechatLoginBtn.addEventListener('click', () =&gt; {
+            wechatLoginBtn.addEventListener('click', () => {
                 alert('微信登录功能即将上线，敬请期待！');
             });
             
-            auth.checkAuthState(async (session) =&gt; {
+            auth.checkAuthState(async (session) => {
                 if (session) {
                     window.location.href = 'index.html';
                 }
             });
         });
-    &lt;/script&gt;
-&lt;/body&gt;
-&lt;/html&gt;
+    </script>
+</body>
+</html>
