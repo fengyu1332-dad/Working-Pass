@@ -126,6 +126,47 @@ class AnthropicClient(BaseLLMClient):
         return self._retry_on_failure(_call_api)
 
 
+class DeepSeekClient(BaseLLMClient):
+    """DeepSeek客户端（与OpenAI API兼容）"""
+    
+    def __init__(self, api_key: str, model: str = "deepseek-chat", **kwargs):
+        super().__init__(api_key, model, **kwargs)
+        self.base_url = kwargs.get("base_url", "https://api.deepseek.com/v1")
+    
+    def generate(self, prompt: str, system_prompt: Optional[str] = None, **kwargs) -> str:
+        """调用DeepSeek API生成文本"""
+        import requests
+        
+        messages = []
+        if system_prompt:
+            messages.append({"role": "system", "content": system_prompt})
+        messages.append({"role": "user", "content": prompt})
+        
+        headers = {
+            "Authorization": f"Bearer {self.api_key}",
+            "Content-Type": "application/json"
+        }
+        
+        data = {
+            "model": self.model,
+            "messages": messages,
+            "temperature": kwargs.get("temperature", self.temperature),
+            "max_tokens": kwargs.get("max_tokens", self.max_tokens)
+        }
+        
+        def _call_api():
+            response = requests.post(
+                f"{self.base_url}/chat/completions",
+                headers=headers,
+                json=data,
+                timeout=self.timeout
+            )
+            response.raise_for_status()
+            return response.json()["choices"][0]["message"]["content"]
+        
+        return self._retry_on_failure(_call_api)
+
+
 class BaiduClient(BaseLLMClient):
     """百度文心一言客户端"""
     
@@ -190,6 +231,8 @@ class LLMFactory:
                 cls._clients[cache_key] = OpenAIClient(**kwargs)
             elif provider == "anthropic":
                 cls._clients[cache_key] = AnthropicClient(**kwargs)
+            elif provider == "deepseek":
+                cls._clients[cache_key] = DeepSeekClient(**kwargs)
             elif provider == "baidu":
                 cls._clients[cache_key] = BaiduClient(**kwargs)
             else:
@@ -205,6 +248,12 @@ def get_default_client() -> BaseLLMClient:
             "openai",
             api_key=os.getenv("OPENAI_API_KEY"),
             model=os.getenv("OPENAI_MODEL", "gpt-4")
+        )
+    elif os.getenv("DEEPSEEK_API_KEY"):
+        return LLMFactory.get_client(
+            "deepseek",
+            api_key=os.getenv("DEEPSEEK_API_KEY"),
+            model=os.getenv("DEEPSEEK_MODEL", "deepseek-chat")
         )
     elif os.getenv("ANTHROPIC_API_KEY"):
         return LLMFactory.get_client(
@@ -252,5 +301,6 @@ if __name__ == "__main__":
     print("LLM API客户端工厂")
     print("支持的提供商：")
     print("1. OpenAI (GPT-4, GPT-3.5)")
-    print("2. Anthropic (Claude 3)")
-    print("3. 百度文心一言")
+    print("2. DeepSeek (deepseek-chat, deepseek-r1)")
+    print("3. Anthropic (Claude 3)")
+    print("4. 百度文心一言")

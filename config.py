@@ -13,6 +13,7 @@ class LLMProvider(Enum):
     """LLM提供商"""
     OPENAI = "openai"
     ANTHROPIC = "anthropic"
+    DEEPSEEK = "deepseek"
     BAIDU = "baidu"
     ALIBABA = "alibaba"
     LOCAL = "local"
@@ -96,6 +97,10 @@ def load_config_from_env() -> SystemConfig:
         config.llm.provider = LLMProvider.OPENAI
         config.llm.api_key = os.getenv("OPENAI_API_KEY")
         config.llm.model = os.getenv("OPENAI_MODEL", "gpt-4")
+    elif os.getenv("DEEPSEEK_API_KEY"):
+        config.llm.provider = LLMProvider.DEEPSEEK
+        config.llm.api_key = os.getenv("DEEPSEEK_API_KEY")
+        config.llm.model = os.getenv("DEEPSEEK_MODEL", "deepseek-chat")
     elif os.getenv("ANTHROPIC_API_KEY"):
         config.llm.provider = LLMProvider.ANTHROPIC
         config.llm.api_key = os.getenv("ANTHROPIC_API_KEY")

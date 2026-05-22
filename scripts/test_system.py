@@ -118,15 +118,17 @@ def test_llm_client():
         
         # 检查是否有API密钥
         has_openai = bool(os.getenv("OPENAI_API_KEY"))
+        has_deepseek = bool(os.getenv("DEEPSEEK_API_KEY"))
         has_anthropic = bool(os.getenv("ANTHROPIC_API_KEY"))
         
         print(f"  API密钥状态:")
         print(f"     - OpenAI: {'✅ 已配置' if has_openai else '⚠️ 未配置'}")
+        print(f"     - DeepSeek: {'✅ 已配置' if has_deepseek else '⚠️ 未配置'}")
         print(f"     - Anthropic: {'✅ 已配置' if has_anthropic else '⚠️ 未配置'}")
         
-        if not (has_openai or has_anthropic):
+        if not (has_openai or has_deepseek or has_anthropic):
             print(f"\n  ⚠️ 警告: 没有配置任何LLM API密钥")
-            print(f"     请在 .env 文件中配置 OPENAI_API_KEY 或 ANTHROPIC_API_KEY")
+            print(f"     请在 .env 文件中配置 OPENAI_API_KEY, DEEPSEEK_API_KEY 或 ANTHROPIC_API_KEY")
             return False
         
         # 尝试创建客户端
@@ -137,6 +139,13 @@ def test_llm_client():
                 model="gpt-3.5-turbo"  # 使用便宜的模型测试
             )
             print(f"  ✅ OpenAI客户端创建成功")
+        elif has_deepseek:
+            client = LLMFactory.get_client(
+                "deepseek",
+                api_key=os.getenv("DEEPSEEK_API_KEY"),
+                model="deepseek-chat"
+            )
+            print(f"  ✅ DeepSeek客户端创建成功")
         else:
             client = LLMFactory.get_client(
                 "anthropic",
