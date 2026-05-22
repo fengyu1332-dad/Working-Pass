@@ -1,12 +1,12 @@
 
-&lt;!DOCTYPE html&gt;
-&lt;html lang="zh-CN"&gt;
-&lt;head&gt;
-  &lt;meta charset="UTF-8"&gt;
-  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
-  &lt;title&gt;报告浏览 - 专业星图&lt;/title&gt;
-  &lt;link rel="stylesheet" href="/css/common.css"&gt;
-  &lt;style&gt;
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>报告浏览 - 专业星图</title>
+  <link rel="stylesheet" href="/css/common.css">
+  <style>
     .search-bar {
       display: flex;
       gap: 12px;
@@ -108,46 +108,46 @@
       font-size: 14px;
       margin-left: 12px;
     }
-  &lt;/style&gt;
-&lt;/head&gt;
-&lt;body&gt;
-  &lt;div class="container"&gt;
-    &lt;nav class="nav"&gt;
-      &lt;a href="/" class="nav-logo"&gt;专业星图&lt;/a&gt;
-      &lt;div class="nav-links"&gt;
-        &lt;a href="/user/dashboard.html" class="nav-link"&gt;个人中心&lt;/a&gt;
-        &lt;a href="/user/orders.html" class="nav-link"&gt;历史记录&lt;/a&gt;
-        &lt;a href="#" id="logoutBtn" class="nav-link"&gt;退出&lt;/a&gt;
-      &lt;/div&gt;
-    &lt;/nav&gt;
+  </style>
+</head>
+<body>
+  <div class="container">
+    <nav class="nav">
+      <a href="/" class="nav-logo">专业星图</a>
+      <div class="nav-links">
+        <a href="/user/dashboard.html" class="nav-link">个人中心</a>
+        <a href="/user/orders.html" class="nav-link">历史记录</a>
+        <a href="#" id="logoutBtn" class="nav-link">退出</a>
+      </div>
+    </nav>
 
-    &lt;h1 class="page-title"&gt;专业深度报告&lt;/h1&gt;
-    &lt;p class="page-subtitle"&gt;探索各个专业的详细分析报告&lt;/p&gt;
+    <h1 class="page-title">专业深度报告</h1>
+    <p class="page-subtitle">探索各个专业的详细分析报告</p>
 
-    &lt;div class="search-bar"&gt;
-      &lt;input type="text" id="searchInput" class="form-input" placeholder="搜索专业名称或代码..."&gt;
-      &lt;button class="btn btn-primary" onclick="searchReports()"&gt;搜索&lt;/button&gt;
-    &lt;/div&gt;
+    <div class="search-bar">
+      <input type="text" id="searchInput" class="form-input" placeholder="搜索专业名称或代码...">
+      <button class="btn btn-primary" onclick="searchReports()">搜索</button>
+    </div>
 
-    &lt;div class="reports-grid" id="reportsGrid"&gt;
-    &lt;/div&gt;
-  &lt;/div&gt;
+    <div class="reports-grid" id="reportsGrid">
+    </div>
+  </div>
 
-  &lt;div class="modal" id="reportModal"&gt;
-    &lt;div class="modal-content report-detail"&gt;
-      &lt;div class="modal-header"&gt;
-        &lt;h2 class="modal-title" id="modalTitle"&gt;报告详情&lt;/h2&gt;
-        &lt;button class="modal-close" onclick="closeModal()"&gt;&amp;times;&lt;/button&gt;
-      &lt;/div&gt;
-      &lt;div id="modalContent"&gt;
-      &lt;/div&gt;
-    &lt;/div&gt;
-  &lt;/div&gt;
+  <div class="modal" id="reportModal">
+    <div class="modal-content report-detail">
+      <div class="modal-header">
+        <h2 class="modal-title" id="modalTitle">报告详情</h2>
+        <button class="modal-close" onclick="closeModal()">&amp;times;</button>
+      </div>
+      <div id="modalContent">
+      </div>
+    </div>
+  </div>
 
-  &lt;script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"&gt;&lt;/script&gt;
-  &lt;script src="/js/auth.js"&gt;&lt;/script&gt;
-  &lt;script src="/js/reports.js"&gt;&lt;/script&gt;
-  &lt;script&gt;
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/reports.js"></script>
+  <script>
     let currentReports = [];
     let currentProfile = null;
     let downloadedReports = new Set();
@@ -162,7 +162,7 @@
       
       await loadReports();
       
-      document.getElementById('logoutBtn').addEventListener('click', async (e) =&gt; {
+      document.getElementById('logoutBtn').addEventListener('click', async (e) => {
         e.preventDefault();
         try {
           await window.auth.logout();
@@ -208,29 +208,29 @@
       
       if (reports.length === 0) {
         grid.innerHTML = `
-          &lt;div style="grid-column: 1/-1; text-align: center; padding: 60px; color: var(--on-surface-variant);"&gt;
+          <div style="grid-column: 1/-1; text-align: center; padding: 60px; color: var(--on-surface-variant);">
             暂无报告数据
-          &lt;/div&gt;
+          </div>
         `;
         return;
       }
       
-      grid.innerHTML = reports.map(report =&gt; `
-        &lt;div class="card report-card" onclick="showReportDetail(${report.id})"&gt;
-          &lt;div class="report-code"&gt;${report.major_code}&lt;/div&gt;
-          &lt;div class="report-title"&gt;
+      grid.innerHTML = reports.map(report => `
+        <div class="card report-card" onclick="showReportDetail(${report.id})">
+          <div class="report-code">${report.major_code}</div>
+          <div class="report-title">
             ${report.major_name}
-            ${downloadedReports.has(report.id) ? '&lt;span class="downloaded-badge"&gt;✓ 已下载&lt;/span&gt;' : ''}
-          &lt;/div&gt;
-          &lt;div style="color: var(--on-surface-variant); font-size: 14px; margin-bottom: 8px;"&gt;${report.category}&lt;/div&gt;
-          &lt;div style="color: var(--on-surface-variant); font-size: 14px; line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;"&gt;
+            ${downloadedReports.has(report.id) ? '<span class="downloaded-badge">✓ 已下载</span>' : ''}
+          </div>
+          <div style="color: var(--on-surface-variant); font-size: 14px; margin-bottom: 8px;">${report.category}</div>
+          <div style="color: var(--on-surface-variant); font-size: 14px; line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
             ${report.preview_content || ''}
-          &lt;/div&gt;
-          &lt;div class="report-meta"&gt;
-            &lt;span&gt;下载 ${report.download_count || 0} 次&lt;/span&gt;
-            &lt;span&gt;消耗 1 点&lt;/span&gt;
-          &lt;/div&gt;
-        &lt;/div&gt;
+          </div>
+          <div class="report-meta">
+            <span>下载 ${report.download_count || 0} 次</span>
+            <span>消耗 1 点</span>
+          </div>
+        </div>
       `).join('');
     }
     
@@ -240,7 +240,7 @@
     }
     
     async function showReportDetail(reportId) {
-      const report = currentReports.find(r =&gt; r.id === reportId);
+      const report = currentReports.find(r => r.id === reportId);
       if (!report) return;
       
       const modal = document.getElementById('reportModal');
@@ -253,38 +253,38 @@
       
       if (isDownloaded) {
         content.innerHTML = `
-          &lt;div class="report-code"&gt;${report.major_code}&lt;/div&gt;
-          &lt;div style="color: var(--on-surface-variant); margin-bottom: 16px;"&gt;${report.category}&lt;/div&gt;
-          &lt;div class="report-full"&gt;${report.full_content || report.preview_content || '暂无内容'}&lt;/div&gt;
-          &lt;div style="text-align: center;"&gt;
-            &lt;button class="btn btn-secondary" onclick="closeModal()"&gt;关闭&lt;/button&gt;
-          &lt;/div&gt;
+          <div class="report-code">${report.major_code}</div>
+          <div style="color: var(--on-surface-variant); margin-bottom: 16px;">${report.category}</div>
+          <div class="report-full">${report.full_content || report.preview_content || '暂无内容'}</div>
+          <div style="text-align: center;">
+            <button class="btn btn-secondary" onclick="closeModal()">关闭</button>
+          </div>
         `;
       } else {
         content.innerHTML = `
-          &lt;div class="report-code"&gt;${report.major_code}&lt;/div&gt;
-          &lt;div style="color: var(--on-surface-variant); margin-bottom: 16px;"&gt;${report.category}&lt;/div&gt;
+          <div class="report-code">${report.major_code}</div>
+          <div style="color: var(--on-surface-variant); margin-bottom: 16px;">${report.category}</div>
           
-          &lt;div class="report-preview"&gt;
-            &lt;div style="font-weight: 600; margin-bottom: 12px; color: var(--secondary);"&gt;👁️ 免费预览&lt;/div&gt;
+          <div class="report-preview">
+            <div style="font-weight: 600; margin-bottom: 12px; color: var(--secondary);">👁️ 免费预览</div>
             ${report.preview_content || '暂无预览内容'}
-          &lt;/div&gt;
+          </div>
           
-          &lt;div class="report-locked"&gt;
-            &lt;div class="report-locked-icon"&gt;🔒&lt;/div&gt;
-            &lt;div style="font-size: 18px; font-weight: 600; margin-bottom: 8px;"&gt;解锁完整报告&lt;/div&gt;
-            &lt;div style="color: var(--on-surface-variant); margin-bottom: 24px;"&gt;
-              您的点数: &lt;span style="color: var(--primary); font-weight: 700; font-size: 24px;"&gt;${currentProfile?.points_balance || 0}&lt;/span&gt;
-            &lt;/div&gt;
-            &lt;button class="btn btn-primary" onclick="downloadReportWrapper(${report.id})"&gt;
+          <div class="report-locked">
+            <div class="report-locked-icon">🔒</div>
+            <div style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">解锁完整报告</div>
+            <div style="color: var(--on-surface-variant); margin-bottom: 24px;">
+              您的点数: <span style="color: var(--primary); font-weight: 700; font-size: 24px;">${currentProfile?.points_balance || 0}</span>
+            </div>
+            <button class="btn btn-primary" onclick="downloadReportWrapper(${report.id})">
               消耗 1 点下载完整报告
-            &lt;/button&gt;
-            ${(currentProfile?.points_balance || 0) &lt; 1 ? `
-              &lt;div style="margin-top: 16px;"&gt;
-                &lt;a href="/user/purchase.html" style="color: var(--primary); text-decoration: none; font-weight: 600;"&gt;点数不足？去充值 →&lt;/a&gt;
-              &lt;/div&gt;
+            </button>
+            ${(currentProfile?.points_balance || 0) < 1 ? `
+              <div style="margin-top: 16px;">
+                <a href="/user/purchase.html" style="color: var(--primary); text-decoration: none; font-weight: 600;">点数不足？去充值 →</a>
+              </div>
             ` : ''}
-          &lt;/div&gt;
+          </div>
         `;
       }
       
@@ -319,7 +319,7 @@
         searchReports();
       }
     });
-  &lt;/script&gt;
-&lt;/body&gt;
-&lt;/html&gt;
+  </script>
+</body>
+</html>
 

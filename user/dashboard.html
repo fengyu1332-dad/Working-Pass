@@ -1,12 +1,12 @@
 
-&lt;!DOCTYPE html&gt;
-&lt;html lang="zh-CN"&gt;
-&lt;head&gt;
-  &lt;meta charset="UTF-8"&gt;
-  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
-  &lt;title&gt;个人中心 - 专业星图&lt;/title&gt;
-  &lt;link rel="stylesheet" href="/css/common.css"&gt;
-  &lt;style&gt;
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>个人中心 - 专业星图</title>
+  <link rel="stylesheet" href="/css/common.css">
+  <style>
     .dashboard-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -99,77 +99,77 @@
     .user-details p {
       color: var(--on-surface-variant);
     }
-  &lt;/style&gt;
-&lt;/head&gt;
-&lt;body&gt;
-  &lt;div class="container"&gt;
-    &lt;nav class="nav"&gt;
-      &lt;a href="/" class="nav-logo"&gt;专业星图&lt;/a&gt;
-      &lt;div class="nav-links"&gt;
-        &lt;a href="/user/reports.html" class="nav-link"&gt;浏览报告&lt;/a&gt;
-        &lt;a href="/user/orders.html" class="nav-link"&gt;历史记录&lt;/a&gt;
-        &lt;a href="#" id="logoutBtn" class="nav-link"&gt;退出&lt;/a&gt;
-      &lt;/div&gt;
-    &lt;/nav&gt;
+  </style>
+</head>
+<body>
+  <div class="container">
+    <nav class="nav">
+      <a href="/" class="nav-logo">专业星图</a>
+      <div class="nav-links">
+        <a href="/user/reports.html" class="nav-link">浏览报告</a>
+        <a href="/user/orders.html" class="nav-link">历史记录</a>
+        <a href="#" id="logoutBtn" class="nav-link">退出</a>
+      </div>
+    </nav>
 
-    &lt;h1 class="page-title"&gt;个人中心&lt;/h1&gt;
+    <h1 class="page-title">个人中心</h1>
 
-    &lt;div class="card user-info"&gt;
-      &lt;div class="user-avatar" id="userAvatar"&gt;U&lt;/div&gt;
-      &lt;div class="user-details"&gt;
-        &lt;h2 id="userName"&gt;用户&lt;/h2&gt;
-        &lt;p id="userPhone"&gt;加载中...&lt;/p&gt;
-      &lt;/div&gt;
-    &lt;/div&gt;
+    <div class="card user-info">
+      <div class="user-avatar" id="userAvatar">U</div>
+      <div class="user-details">
+        <h2 id="userName">用户</h2>
+        <p id="userPhone">加载中...</p>
+      </div>
+    </div>
 
-    &lt;div class="dashboard-grid"&gt;
-      &lt;div class="card stat-card"&gt;
-        &lt;div class="stat-value" id="pointsBalance"&gt;0&lt;/div&gt;
-        &lt;div class="stat-label"&gt;点数余额&lt;/div&gt;
-      &lt;/div&gt;
+    <div class="dashboard-grid">
+      <div class="card stat-card">
+        <div class="stat-value" id="pointsBalance">0</div>
+        <div class="stat-label">点数余额</div>
+      </div>
       
-      &lt;div class="card stat-card"&gt;
-        &lt;div class="stat-value" id="totalDownloads"&gt;0&lt;/div&gt;
-        &lt;div class="stat-label"&gt;下载次数&lt;/div&gt;
-      &lt;/div&gt;
+      <div class="card stat-card">
+        <div class="stat-value" id="totalDownloads">0</div>
+        <div class="stat-label">下载次数</div>
+      </div>
       
-      &lt;div class="card stat-card"&gt;
-        &lt;div class="stat-value" id="totalOrders"&gt;0&lt;/div&gt;
-        &lt;div class="stat-label"&gt;订单数量&lt;/div&gt;
-      &lt;/div&gt;
-    &lt;/div&gt;
+      <div class="card stat-card">
+        <div class="stat-value" id="totalOrders">0</div>
+        <div class="stat-label">订单数量</div>
+      </div>
+    </div>
 
-    &lt;h2 class="page-title" style="font-size: 24px; margin-top: 48px;"&gt;快捷操作&lt;/h2&gt;
-    &lt;div class="dashboard-grid"&gt;
-      &lt;a href="/user/purchase.html" class="action-btn"&gt;
-        &lt;div class="action-icon"&gt;💎&lt;/div&gt;
-        &lt;div class="action-text"&gt;
-          &lt;div class="action-title"&gt;购买点数&lt;/div&gt;
-          &lt;div class="action-desc"&gt;充值点数，解锁更多报告&lt;/div&gt;
-        &lt;/div&gt;
-      &lt;/a&gt;
+    <h2 class="page-title" style="font-size: 24px; margin-top: 48px;">快捷操作</h2>
+    <div class="dashboard-grid">
+      <a href="/user/purchase.html" class="action-btn">
+        <div class="action-icon">💎</div>
+        <div class="action-text">
+          <div class="action-title">购买点数</div>
+          <div class="action-desc">充值点数，解锁更多报告</div>
+        </div>
+      </a>
       
-      &lt;a href="/user/reports.html" class="action-btn"&gt;
-        &lt;div class="action-icon"&gt;📚&lt;/div&gt;
-        &lt;div class="action-text"&gt;
-          &lt;div class="action-title"&gt;浏览报告&lt;/div&gt;
-          &lt;div class="action-desc"&gt;查看所有专业深度报告&lt;/div&gt;
-        &lt;/div&gt;
-      &lt;/a&gt;
+      <a href="/user/reports.html" class="action-btn">
+        <div class="action-icon">📚</div>
+        <div class="action-text">
+          <div class="action-title">浏览报告</div>
+          <div class="action-desc">查看所有专业深度报告</div>
+        </div>
+      </a>
       
-      &lt;a href="/user/orders.html" class="action-btn"&gt;
-        &lt;div class="action-icon"&gt;📋&lt;/div&gt;
-        &lt;div class="action-text"&gt;
-          &lt;div class="action-title"&gt;历史记录&lt;/div&gt;
-          &lt;div class="action-desc"&gt;查看订单和下载记录&lt;/div&gt;
-        &lt;/div&gt;
-      &lt;/a&gt;
-    &lt;/div&gt;
-  &lt;/div&gt;
+      <a href="/user/orders.html" class="action-btn">
+        <div class="action-icon">📋</div>
+        <div class="action-text">
+          <div class="action-title">历史记录</div>
+          <div class="action-desc">查看订单和下载记录</div>
+        </div>
+      </a>
+    </div>
+  </div>
 
-  &lt;script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"&gt;&lt;/script&gt;
-  &lt;script src="/js/auth.js"&gt;&lt;/script&gt;
-  &lt;script&gt;
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="/js/auth.js"></script>
+  <script>
     (async function() {
       window.auth.initSupabase();
       
@@ -186,7 +186,7 @@
         await loadUserStats(profile.id);
       }
       
-      document.getElementById('logoutBtn').addEventListener('click', async (e) =&gt; {
+      document.getElementById('logoutBtn').addEventListener('click', async (e) => {
         e.preventDefault();
         try {
           await window.auth.logout();
@@ -217,7 +217,7 @@
         console.error('Load stats error:', error);
       }
     }
-  &lt;/script&gt;
-&lt;/body&gt;
-&lt;/html&gt;
+  </script>
+</body>
+</html>
 
