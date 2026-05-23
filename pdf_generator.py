@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-专业报告PDF生成器 v4.0 - 最终版（带页眉页脚）
-增强段落分隔 + 优化视觉层次 + 页眉页脚功能
+专业报告PDF生成器 v4.0 - 最终版（修复字体问题）
+增强段落分隔 + 优化视觉层次 + 页眉页脚 + 中文字体修复
 """
 
 import os
@@ -30,15 +30,17 @@ CHINESE_FONT_PATHS = [
 CHINESE_FONT = 'Helvetica'
 CHINESE_FONT_BOLD = 'Helvetica-Bold'
 
+# 注册中文字体
 for font_path in CHINESE_FONT_PATHS:
     if os.path.exists(font_path):
         try:
             pdfmetrics.registerFont(TTFont('ChineseFont', font_path))
             CHINESE_FONT = 'ChineseFont'
             CHINESE_FONT_BOLD = 'ChineseFont'
+            print(f"成功加载中文字体: {font_path}")
             break
-        except:
-            pass
+        except Exception as e:
+            print(f"加载字体失败 {font_path}: {e}")
 
 # ===============================
 # 颜色配置
@@ -213,68 +215,6 @@ class EnhancedParser:
 
 
 # ===============================
-# 带页眉页脚的Canvas
-# ===============================
-class HeaderFooterCanvas(pdfcanvas.Canvas):
-    """自定义Canvas，用于绘制页眉页脚"""
-    
-    def __init__(self, *args, **kwargs):
-        pdfcanvas.Canvas.__init__(self, *args, **kwargs)
-        self._saved_page_states = []
-    
-    def showPage(self):
-        self._saved_page_states.append(dict(self.__dict__))
-        self._startPage()
-        self._draw_header_footer()
-    
-    def save(self):
-        num_pages = len(self._saved_page_states)
-        for state in self._saved_page_states:
-            self.__dict__.update(state)
-            self._draw_header_footer(num_pages)
-            pdfcanvas.Canvas.showPage(self)
-        pdfcanvas.Canvas.save(self)
-    
-    def _draw_header_footer(self, page_count=1):
-        """绘制页眉页脚"""
-        page_width, page_height = A4
-        
-        # 保存状态
-        self.saveState()
-        self.setFont(CHINESE_FONT, 9)
-        self.setFillColor(LIGHT_TEXT_COLOR)
-        
-        # 页眉
-        header_text = "职业星图-专业深度报告"
-        text_width = self.stringWidth(header_text, CHINESE_FONT, 9)
-        x_position = (page_width - text_width) / 2
-        self.drawString(x_position, page_height - 1.5*cm, header_text)
-        
-        # 页眉下方细线
-        self.setStrokeColor(ACCENT_COLOR)
-        self.setLineWidth(0.5)
-        self.line(2.5*cm, page_height - 1.8*cm, page_width - 2.5*cm, page_height - 1.8*cm)
-        
-        # 页脚
-        # 页脚细线
-        self.line(2.5*cm, 2*cm, page_width - 2.5*cm, 2*cm)
-        
-        # 页脚页码 - 中间位置
-        current_page = self._pageNumber
-        if page_count > 1:
-            footer_text = f"{current_page}页/{page_count}页"
-        else:
-            footer_text = f"{current_page}页"
-        
-        text_width = self.stringWidth(footer_text, CHINESE_FONT, 9)
-        x_position = (page_width - text_width) / 2
-        self.drawString(x_position, 1.2*cm, footer_text)
-        
-        # 恢复状态
-        self.restoreState()
-
-
-# ===============================
 # 页眉页脚回调函数
 # ===============================
 def _draw_header_footer(canvas_obj, doc):
@@ -434,7 +374,7 @@ def batch_convert(reports_dir, output_dir=None):
 
 if __name__ == "__main__":
     print("="*60)
-    print("专业星图 PDF生成器 v4.0 - 含页眉页脚")
+    print("专业星图 PDF生成器 v4.0 - 带页眉页脚（字体修复版）")
     print("="*60)
     
     reports_dir = "/workspace/data/reports"
