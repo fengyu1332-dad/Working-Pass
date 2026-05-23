@@ -23,6 +23,29 @@ from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
 from reportlab.lib import colors
 
+# 注册中文字体
+CHINESE_FONT_PATHS = [
+    '/usr/share/fonts/truetype/wqy/wqy-microhei.ttc',
+    '/usr/share/fonts/truetype/wqy/wqy-zenhei.ttc'
+]
+
+CHINESE_FONT = None
+CHINESE_FONT_BOLD = None
+
+for font_path in CHINESE_FONT_PATHS:
+    if os.path.exists(font_path):
+        try:
+            pdfmetrics.registerFont(TTFont('ChineseFont', font_path))
+            CHINESE_FONT = 'ChineseFont'
+            CHINESE_FONT_BOLD = 'ChineseFont'
+            break
+        except:
+            continue
+
+if CHINESE_FONT is None:
+    CHINESE_FONT = 'Helvetica'
+    CHINESE_FONT_BOLD = 'Helvetica-Bold'
+
 # 全局样式配置
 PAGE_WIDTH, PAGE_HEIGHT = A4
 LEFT_MARGIN = 2.5 * cm
@@ -50,7 +73,7 @@ class PDFStyles:
         # 标题样式
         styles['MainTitle'] = ParagraphStyle(
             'MainTitle',
-            fontName='Helvetica-Bold',
+            fontName=CHINESE_FONT_BOLD,
             fontSize=24,
             textColor=PRIMARY_COLOR,
             alignment=TA_CENTER,
@@ -61,7 +84,7 @@ class PDFStyles:
         
         styles['SubTitle'] = ParagraphStyle(
             'SubTitle',
-            fontName='Helvetica',
+            fontName=CHINESE_FONT,
             fontSize=12,
             textColor=LIGHT_TEXT_COLOR,
             alignment=TA_CENTER,
@@ -71,7 +94,7 @@ class PDFStyles:
         
         styles['ChapterTitle'] = ParagraphStyle(
             'ChapterTitle',
-            fontName='Helvetica-Bold',
+            fontName=CHINESE_FONT_BOLD,
             fontSize=16,
             textColor=PRIMARY_COLOR,
             alignment=TA_LEFT,
@@ -85,7 +108,7 @@ class PDFStyles:
         
         styles['SectionTitle'] = ParagraphStyle(
             'SectionTitle',
-            fontName='Helvetica-Bold',
+            fontName=CHINESE_FONT_BOLD,
             fontSize=13,
             textColor=SECONDARY_COLOR,
             alignment=TA_LEFT,
@@ -96,7 +119,7 @@ class PDFStyles:
         
         styles['SubSectionTitle'] = ParagraphStyle(
             'SubSectionTitle',
-            fontName='Helvetica-Bold',
+            fontName=CHINESE_FONT_BOLD,
             fontSize=11,
             textColor=TEXT_COLOR,
             alignment=TA_LEFT,
@@ -107,7 +130,7 @@ class PDFStyles:
         
         styles['BodyText'] = ParagraphStyle(
             'BodyText',
-            fontName='Helvetica',
+            fontName=CHINESE_FONT,
             fontSize=10,
             textColor=TEXT_COLOR,
             alignment=TA_JUSTIFY,
@@ -119,7 +142,7 @@ class PDFStyles:
         
         styles['BodyTextNoIndent'] = ParagraphStyle(
             'BodyTextNoIndent',
-            fontName='Helvetica',
+            fontName=CHINESE_FONT,
             fontSize=10,
             textColor=TEXT_COLOR,
             alignment=TA_JUSTIFY,
@@ -130,7 +153,7 @@ class PDFStyles:
         
         styles['BulletText'] = ParagraphStyle(
             'BulletText',
-            fontName='Helvetica',
+            fontName=CHINESE_FONT,
             fontSize=10,
             textColor=TEXT_COLOR,
             alignment=TA_LEFT,
@@ -143,7 +166,7 @@ class PDFStyles:
         
         styles['DataSource'] = ParagraphStyle(
             'DataSource',
-            fontName='Helvetica-Oblique',
+            fontName=CHINESE_FONT,
             fontSize=8,
             textColor=LIGHT_TEXT_COLOR,
             alignment=TA_LEFT,
@@ -154,7 +177,7 @@ class PDFStyles:
         
         styles['Footer'] = ParagraphStyle(
             'Footer',
-            fontName='Helvetica',
+            fontName=CHINESE_FONT,
             fontSize=8,
             textColor=LIGHT_TEXT_COLOR,
             alignment=TA_CENTER,
@@ -163,7 +186,7 @@ class PDFStyles:
         
         styles['Highlight'] = ParagraphStyle(
             'Highlight',
-            fontName='Helvetica-Bold',
+            fontName=CHINESE_FONT_BOLD,
             fontSize=10,
             textColor=ACCENT_COLOR,
             alignment=TA_LEFT,
@@ -268,7 +291,7 @@ class PDFGenerator:
         page_num = canvas.getPageNumber()
         text = f"- {page_num} -"
         canvas.saveState()
-        canvas.setFont('Helvetica', 8)
+        canvas.setFont(CHINESE_FONT, 8)
         canvas.setFillColor(LIGHT_TEXT_COLOR)
         canvas.drawCentredString(PAGE_WIDTH / 2, 1.5 * cm, text)
         canvas.restoreState()
@@ -276,7 +299,7 @@ class PDFGenerator:
     def add_header(self, canvas, doc):
         """添加页眉"""
         canvas.saveState()
-        canvas.setFont('Helvetica', 8)
+        canvas.setFont(CHINESE_FONT, 8)
         canvas.setFillColor(LIGHT_TEXT_COLOR)
         canvas.drawString(LEFT_MARGIN, PAGE_HEIGHT - 1.5 * cm, "专业深度分析报告")
         canvas.drawRightString(PAGE_WIDTH - RIGHT_MARGIN, PAGE_HEIGHT - 1.5 * cm, 
