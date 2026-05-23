@@ -16,8 +16,11 @@ from pathlib import Path
 # 添加项目根目录到Python路径
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from config import config
-from utils.database import DatabaseClient
+# 加载.env文件
+from dotenv import load_dotenv
+load_dotenv()
+
+from utils.database import get_supabase_client
 from utils.api_client import DeepSeekClient
 
 # 进度记录文件
@@ -29,249 +32,174 @@ os.makedirs("data", exist_ok=True)
 os.makedirs("logs", exist_ok=True)
 
 
-class BatchReportGenerator:
-    """批量报告生成器"""
+def log(message: str, level: str = "INFO"):
+    """记录日志"""
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    log_line = f"[{timestamp}] [{level}] {message}"
+    print(log_line)
     
-    def __init__(self, db_client: DatabaseClient, llm_client: DeepSeekClient):
-        self.db = db_client
-        self.llm = llm_client
-        self.progress = self._load_progress()
+    with open(LOG_FILE, "a", encoding="utf-8") as f:
+        f.write(log_line + "\n")
+
+
+def load_progress():
+    """加载生成进度"""
+    if os.path.exists(PROGRESS_FILE):
+        with open(PROGRESS_FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    return {
+        "generated": [],
+        "failed": [],
+        "skipped": [],
+        "start_time": None,
+        "last_update": None
+    }
+
+
+def save_progress(progress: dict):
+    """保存进度"""
+    progress["last_update"] = datetime.now().isoformat()
+    with open(PROGRESS_FILE, "w", encoding="utf-8") as f:
+        json.dump(progress, f, ensure_ascii=False, indent=2)
+
+
+def generate_single_report(major: dict, llm_client: DeepSeekClient) -> dict:
+    """为单个专业生成报告"""
+    major_name = major.get("name", "未知专业")
+    major_code = major.get("code", "")
+    log(f"开始生成报告: {major_name} ({major_code})")
+    
+    try:
+        # 步骤1: 生成预览内容（免费部分）
+        preview_prompt = f"""你是一个专业的教育分析师。请为"{major_name}"专业生成一个简洁的预览内容。
+
+要求：
+1. 内容包括：专业简介、核心课程摘要、就业前景概述
+2. 字数约300-500字
+3. 语言通俗易懂，有参考价值
+
+专业信息：
+- 专业名称：{major_name}
+- 专业代码：{major_code}
+- 所属分类：{major.get('category', '')}
+- 现有描述：{major.get('description', '')}
+"""
         
-    def _load_progress(self):
-        """加载生成进度"""
-        if os.path.exists(PROGRESS_FILE):
-            with open(PROGRESS_FILE, 'r', encoding='utf-8') as f:
-                return json.load(f)
-        return {
-            "generated": [],
-            "failed": [],
-            "skipped": [],
-            "start_time": None,
-            "last_update": None
+        preview_content = llm_client.generate(preview_prompt, temperature=0.7)
+        
+        # 步骤2: 生成完整内容（付费部分）
+        full_prompt = f"""你是张雪峰，一位深受学生喜爱的高考志愿填报专家。请为"{major_name}"专业生成一份深度分析报告。
+
+请按照以下结构撰写：
+
+## 一、专业概述
+（150-200字，详细介绍这个专业学什么）
+
+## 二、课程安排
+（分年级列出核心课程，4-6门课程/年级）
+
+## 三、就业前景
+（200-300字，包括就业方向、行业发展、岗位需求等）
+
+## 四、薪资范畴
+（给出具体的数字范围，如：¥8k-20k/月）
+
+## 五、雪峰点评
+（张雪峰老师的风格：幽默、接地气、实用，200-300字）
+
+专业信息：
+- 专业名称：{major_name}
+- 专业代码：{major_code}
+- 所属分类：{major.get('category', '')}
+- 现有描述：{major.get('description', '')}
+- 现有课程：{major.get('courses', '')}
+- 就业信息：{major.get('employment', '')}
+
+请用中文撰写，语言要专业、实用、接地气。
+"""
+        
+        full_content = llm_client.generate(full_prompt, temperature=0.8)
+        
+        # 步骤3: 生成雪峰点评（单独一段）
+        xuefeng_prompt = f"""你是张雪峰，一位深受学生喜爱的高考志愿填报专家。请为"{major_name}"专业写一段点评。
+
+要求：
+1. 风格：幽默、接地气、像和学生聊天一样
+2. 内容要真实，不要假大空
+3. 给出实用的报考建议
+4. 200-300字
+
+专业信息：
+- 专业名称：{major_name}
+- 专业代码：{major_code}
+- 就业前景：{major.get('employment', '')}
+"""
+        
+        xuefeng_comment = llm_client.generate(xuefeng_prompt, temperature=0.9)
+        
+        # 计算质量评分（简单版）
+        quality_score = calculate_quality_score(preview_content, full_content, xuefeng_comment)
+        
+        # 准备报告数据
+        report_data = {
+            "major_code": major_code,
+            "major_name": major_name,
+            "category": major.get("category", ""),
+            "preview_content": preview_content,
+            "full_content": full_content,
+            "xuefeng_comment": xuefeng_comment,
+            "quality_score": quality_score,
+            "price": 10,  # 默认10点数
+            "is_premium": quality_score >= 75,
+            "generated_at": datetime.now().isoformat(),
+            "version": "1.0"
         }
         
-    def _save_progress(self):
-        """保存进度"""
-        self.progress["last_update"] = datetime.now().isoformat()
-        with open(PROGRESS_FILE, 'w', encoding='utf-8') as f:
-            json.dump(self.progress, f, ensure_ascii=False, indent=2)
-            
-    def _log(self, message: str, level: str = "INFO"):
-        """记录日志"""
-        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        log_line = f"[{timestamp}] [{level}] {message}\n"
-        print(log_line.strip())
+        log(f"报告生成成功: {major_name}, 质量评分: {quality_score}")
+        return report_data
         
-        with open(LOG_FILE, 'a', encoding='utf-8') as f:
-            f.write(log_line)
+    except Exception as e:
+        log(f"生成报告失败: {major_name}, 错误: {str(e)}", "ERROR")
+        raise
+
+
+def calculate_quality_score(preview: str, full: str, xuefeng: str) -> int:
+    """计算质量评分"""
+    score = 60  # 基础分
     
-    def generate_report_for_major(self, major: dict) -> dict:
-        """为单个专业生成报告（简化版，实际应用应使用完整AI Agent系统）"""
-        major_name = major.get('name', '未知专业')
-        self._log(f"开始生成报告: {major_name}")
-        
-        try:
-            # 步骤1: 准备数据
-            base_info = {
-                "name": major.get('name', ''),
-                "category": major.get('category', ''),
-                "description": major.get('description', ''),
-                "courses": major.get('courses', ''),
-                "employment": major.get('employment', ''),
-                "universities": major.get('universities', '')
-            }
-            
-            # 步骤2: 生成预览内容（免费部分）
-            preview_prompt = f"""
-            你是一个专业的教育分析师，请为"{base_info['name']}"专业生成一个免费的预览内容，
-            包含：专业简介、核心课程摘要、就业前景概述。
-
-            要求：
-            1. 内容简洁明了，约300-500字
-            2. 客观准确，有参考价值
-            3. 不要涉及需要付费的深度分析
-
-            基础信息：
-            {json.dumps(base_info, ensure_ascii=False, indent=2)}
-            """
-            
-            preview_content = self.llm.generate(preview_prompt, temperature=0.7)
-            
-            # 步骤3: 生成完整内容（付费部分）
-            full_prompt = f"""
-            你是张雪峰，一位知名的高考志愿填报专家。请为"{base_info['name']}"专业生成一份
-            深度分析报告。
-
-            报告结构：
-            1. 专业深度解析（1000-1500字）
-            2. 课程体系详解
-            3. 就业趋势分析
-            4. 院校选择指南
-            5. 雪峰点评（以张雪峰老师的风格进行点评，风趣幽默但客观实用）
-
-            基础信息：
-            {json.dumps(base_info, ensure_ascii=False, indent=2)}
-
-            请用专业、实用、接地气的语言撰写，总字数约3000-4000字。
-            """
-            
-            full_content = self.llm.generate(full_prompt, temperature=0.8)
-            
-            # 步骤4: 质量评分（简单实现）
-            quality_score = self._calculate_quality_score(preview_content, full_content)
-            
-            # 步骤5: 雪峰点评
-            xuefeng_comment_prompt = f"""
-            作为张雪峰老师，请为"{base_info['name']}"专业写一段点评。
-            要求：
-            1. 风格风趣幽默，像聊天一样
-            2. 200-300字
-            3. 有实用的报考建议
-            4. 突出重点，不啰嗦
-            """
-            
-            xuefeng_comment = self.llm.generate(xuefeng_comment_prompt, temperature=0.9)
-            
-            report_data = {
-                "major_id": major.get('id'),
-                "major_name": major_name,
-                "preview_content": preview_content,
-                "full_content": full_content,
-                "xuefeng_comment": xuefeng_comment,
-                "quality_score": quality_score,
-                "price": 10,  # 默认10点数
-                "is_premium": quality_score >= 80,
-                "generated_at": datetime.now().isoformat(),
-                "version": "1.0"
-            }
-            
-            self._log(f"报告生成成功: {major_name}, 质量评分: {quality_score}")
-            return report_data
-            
-        except Exception as e:
-            self._log(f"生成报告失败: {major_name}, 错误: {str(e)}", "ERROR")
-            raise
+    # 长度评分
+    if len(preview) > 300:
+        score += 5
+    if len(full) > 1500:
+        score += 10
+    if len(xuefeng) > 150:
+        score += 5
     
-    def _calculate_quality_score(self, preview: str, full: str) -> int:
-        """简单的质量评分"""
-        score = 70  # 基础分
-        
-        # 长度评分
-        if len(preview) > 400:
-            score += 5
-        if len(full) > 3000:
-            score += 10
-        
-        # 关键词检查
-        keywords = ['分析', '建议', '就业', '课程', '院校', '选择']
-        found = sum(1 for kw in keywords if kw in full)
-        score += found * 2
-        
-        return min(100, score)
+    # 关键词检查
+    keywords = ["课程", "就业", "前景", "建议", "报考", "薪资", "专业"]
+    found = sum(1 for kw in keywords if kw in full)
+    score += found * 3
     
-    def save_report_to_db(self, report_data: dict):
-        """保存报告到数据库"""
-        try:
-            # 检查是否已存在
-            existing = self.db.get_report_by_major_id(report_data['major_id'])
-            if existing:
-                self._log(f"报告已存在，跳过: {report_data['major_name']}")
-                return False
-            
-            # 保存到数据库
-            self.db.create_report(report_data)
-            self._log(f"报告已保存: {report_data['major_name']}")
-            return True
-            
-        except Exception as e:
-            self._log(f"保存报告失败: {report_data['major_name']}, 错误: {str(e)}", "ERROR")
+    return min(100, score)
+
+
+def save_report(db_client, report_data: dict):
+    """保存报告到数据库"""
+    try:
+        # 检查是否已存在
+        existing = db_client.get_report_by_code(report_data["major_code"])
+        if existing:
+            log(f"报告已存在，跳过: {report_data['major_name']}")
             return False
-    
-    def generate_batch(self, start_id: int = 1, end_id: int = None, skip_existing: bool = True):
-        """批量生成报告"""
-        self._log("=" * 60)
-        self._log("开始批量生成报告")
-        self._log(f"范围: ID {start_id} - {end_id or '全部'}")
-        self._log("=" * 60)
         
-        # 记录开始时间
-        if not self.progress.get("start_time"):
-            self.progress["start_time"] = datetime.now().isoformat()
+        # 保存到数据库
+        db_client.create_report(report_data)
+        log(f"报告已保存: {report_data['major_name']}")
+        return True
         
-        # 获取专业列表
-        majors = self.db.get_all_majors()
-        self._log(f"共找到 {len(majors)} 个专业")
-        
-        # 过滤范围
-        if end_id:
-            majors = [m for m in majors if start_id <= m.get('id', 0) <= end_id]
-        else:
-            majors = [m for m in majors if m.get('id', 0) >= start_id]
-        
-        self._log(f"本次生成 {len(majors)} 个专业")
-        
-        # 逐个生成
-        success_count = 0
-        fail_count = 0
-        skip_count = 0
-        
-        for i, major in enumerate(majors, 1):
-            major_id = major.get('id')
-            major_name = major.get('name', '未知')
-            
-            self._log(f"[{i}/{len(majors)}] 处理: ID={major_id}, {major_name}")
-            
-            # 检查是否已生成
-            if skip_existing and str(major_id) in self.progress.get("generated", []):
-                self._log(f"已生成，跳过: {major_name}")
-                skip_count += 1
-                continue
-            
-            try:
-                # 生成报告
-                report_data = self.generate_report_for_major(major)
-                
-                # 保存到数据库
-                saved = self.save_report_to_db(report_data)
-                
-                if saved:
-                    self.progress["generated"].append(str(major_id))
-                    success_count += 1
-                else:
-                    self.progress["skipped"].append(str(major_id))
-                    skip_count += 1
-                
-                # 保存进度
-                self._save_progress()
-                
-                # 避免API限流，稍作等待
-                time.sleep(1)
-                
-            except Exception as e:
-                self.progress["failed"].append(str(major_id))
-                fail_count += 1
-                self._log(f"处理失败: {major_name}", "ERROR")
-                
-                # 保存进度
-                self._save_progress()
-                
-                # 等待更长时间
-                time.sleep(3)
-        
-        # 完成统计
-        self._log("=" * 60)
-        self._log("批量生成完成")
-        self._log(f"成功: {success_count}")
-        self._log(f"失败: {fail_count}")
-        self._log(f"跳过: {skip_count}")
-        self._log("=" * 60)
-        
-        return {
-            "success": success_count,
-            "failed": fail_count,
-            "skipped": skip_count,
-            "total": len(majors)
-        }
+    except Exception as e:
+        log(f"保存报告失败: {report_data['major_name']}, 错误: {str(e)}", "ERROR")
+        return False
 
 
 def main():
@@ -284,36 +212,104 @@ def main():
     args = parser.parse_args()
     
     # 初始化客户端
-    db = DatabaseClient()
-    llm = DeepSeekClient()
+    db_client = get_supabase_client()
+    llm_client = DeepSeekClient(
+        api_key=os.getenv("DEEPSEEK_API_KEY", ""),
+        model=os.getenv("DEEPSEEK_MODEL", "deepseek-chat")
+    )
     
-    # 创建生成器
-    generator = BatchReportGenerator(db, llm)
+    # 加载进度
+    progress = load_progress()
+    if not progress.get("start_time"):
+        progress["start_time"] = datetime.now().isoformat()
     
+    # 获取专业列表
+    log("="*60)
+    log("开始批量生成报告")
+    log("="*60)
+    
+    majors = db_client.get_majors()
+    log(f"共找到 {len(majors)} 个专业")
+    
+    # 如果是测试模式，只取第一个
     if args.test:
-        print("测试模式：获取第一个专业并生成报告...")
-        majors = db.get_all_majors()
-        if majors:
-            first_major = majors[0]
-            print(f"测试专业: {first_major.get('name')}")
-            report = generator.generate_report_for_major(first_major)
-            print("\n生成成功！")
-            print(f"质量评分: {report['quality_score']}")
-            print(f"预览内容长度: {len(report['preview_content'])}")
-            print(f"完整内容长度: {len(report['full_content'])}")
-            print("\n雪峰点评:")
-            print(report['xuefeng_comment'][:200] + "...")
-        else:
-            print("未找到专业数据")
+        majors = majors[:1]
+        log("测试模式：只生成1个专业的报告")
     else:
-        # 批量生成
-        result = generator.generate_batch(
-            start_id=args.start,
-            end_id=args.end,
-            skip_existing=args.skip_existing
-        )
+        # 过滤范围
+        if args.end:
+            majors = [m for m in majors if args.start <= m.get("id", 0) <= args.end]
+        else:
+            majors = [m for m in majors if m.get("id", 0) >= args.start]
         
-        print(f"\n生成结果: {result}")
+        log(f"本次生成 {len(majors)} 个专业")
+    
+    # 逐个生成
+    success_count = 0
+    fail_count = 0
+    skip_count = 0
+    
+    for i, major in enumerate(majors, 1):
+        major_id = major.get("id")
+        major_code = major.get("code", "")
+        major_name = major.get("name", "未知")
+        
+        log(f"[{i}/{len(majors)}] 处理: ID={major_id}, {major_name}")
+        
+        # 检查是否已生成
+        if args.skip_existing and major_code in progress.get("generated", []):
+            log(f"已生成，跳过: {major_name}")
+            skip_count += 1
+            continue
+        
+        try:
+            # 生成报告
+            report_data = generate_single_report(major, llm_client)
+            
+            # 保存到数据库
+            saved = save_report(db_client, report_data)
+            
+            if saved:
+                progress["generated"].append(major_code)
+                success_count += 1
+            else:
+                progress["skipped"].append(major_code)
+                skip_count += 1
+            
+            # 保存进度
+            save_progress(progress)
+            
+            # 避免API限流，适当延迟
+            if not args.test:
+                time.sleep(1)
+            
+        except Exception as e:
+            progress["failed"].append(major_code)
+            fail_count += 1
+            log(f"处理失败: {major_name}", "ERROR")
+            
+            # 保存进度
+            save_progress(progress)
+            
+            # 失败后等待更久
+            time.sleep(3)
+    
+    # 完成统计
+    log("="*60)
+    log("批量生成完成")
+    log(f"成功: {success_count}")
+    log(f"失败: {fail_count}")
+    log(f"跳过: {skip_count}")
+    log("="*60)
+    
+    # 测试模式下显示结果
+    if args.test and success_count > 0:
+        log("\n🎉 测试成功！")
+        log("\n现在可以开始批量生成了！")
+        log("\n建议的操作:")
+        log("  1. 生成前5个: python scripts/batch_generate.py --start 1 --end 5")
+        log("  2. 生成前50个: python scripts/batch_generate.py --start 1 --end 50")
+        log("  3. 生成全部: python scripts/batch_generate.py --start 1")
 
 
 if __name__ == "__main__":
