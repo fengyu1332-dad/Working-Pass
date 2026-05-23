@@ -790,7 +790,7 @@
                     &lt;/div&gt;
                     
                     &lt;div class="cta-section"&gt;
-                        &lt;button class="cta-button" onclick="showPreheatModal()"&gt;🔥 获取深度分析报告&lt;/button&gt;
+                        &lt;button class="cta-button" onclick="goToReports()"&gt;🔥 获取深度分析报告&lt;/button&gt;
                     &lt;/div&gt;
                 &lt;/div&gt;
             &lt;/div&gt;
@@ -1025,12 +1025,19 @@
             currentMajor = null;
         }
         
-        function showPreheatModal() {
-            document.getElementById('preheatModal').classList.add('show');
-        }
-        
         function closePreheatModal() {
             document.getElementById('preheatModal').classList.remove('show');
+        }
+        
+        async function goToReports() {
+            const user = await auth.getCurrentUser();
+            if (!user) {
+                if (confirm('查看深度报告需要登录，是否前往登录？')) {
+                    window.location.href = 'login.html';
+                }
+                return;
+            }
+            window.location.href = 'user/reports.html';
         }
         
         document.addEventListener('DOMContentLoaded', () =&gt; {

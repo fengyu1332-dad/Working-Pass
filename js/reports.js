@@ -5,7 +5,7 @@ async function getReports(category = null, search = null) {
   
   let query = sb
     .from('reports')
-    .select('*')
+    .select('id, major_code, major_name, category, preview_content, pdf_url, download_count, status')
     .eq('status', 'published');
   
   if (category) {
@@ -44,7 +44,7 @@ async function downloadReport(reportId) {
   if (!user) throw new Error('User not logged in');
   
   const profile = await window.auth.getUserProfile();
-  if (!profile || profile.points_balance &lt; 1) {
+  if (!profile || profile.points_balance < 1) {
     throw new Error('点数不足，请先充值');
   }
   
@@ -64,7 +64,11 @@ async function downloadReport(reportId) {
     .maybeSingle();
   
   if (existingRecord) {
-    return report.full_content || report.preview_content || '';
+    return {
+      text: report.full_content || report.preview_content || '',
+      pdfUrl: report.pdf_url ? await generateSignedUrl(report.pdf_url) : null,
+      alreadyDownloaded: true
+    };
   }
   
   await sb
@@ -89,7 +93,47 @@ async function downloadReport(reportId) {
     })
     .eq('id', reportId);
   
-  return report.full_content || report.preview_content || '';
+  const pdfSignedUrl = report.pdf_url ? await generateSignedUrl(report.pdf_url) : null;
+  
+  return {
+    text: report.full_content || report.preview_content || '',
+    pdfUrl: pdfSignedUrl,
+    alreadyDownloaded: false
+  };
+}
+
+async function generateSignedUrl(fileName) {
+  const sb = window.auth ? window.auth.getSupabase() : null;
+  if (!sb) return null;
+  
+  try {
+    const { data, error } = await sb.storage
+      .from('reports-pdf')
+      .createSignedUrl(fileName, 3600);
+    
+    if (error) {
+      console.error('生成签名URL失败:', error.message);
+      return null;
+    }
+    
+    return data.signedUrl;
+  } catch (err) {
+    console.error('生成签名URL出错:', err.message);
+    return null;
+  }
+}
+
+function downloadPdfFromUrl(signedUrl, fileName) {
+  if (!signedUrl) {
+    throw new Error('PDF文件不存在');
+  }
+  
+  const link = document.createElement('a');
+  link.href = signedUrl;
+  link.download = fileName;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 }
 
 async function checkDownloaded(reportId) {
@@ -114,7 +158,7 @@ if (typeof window) {
     getReports,
     getReport,
     downloadReport,
+    downloadPdfFromUrl,
     checkDownloaded
   };
 }
-
