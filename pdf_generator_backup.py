@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-专业报告PDF生成器 v4.0 - 最终版（带页眉页脚）
-增强段落分隔 + 优化视觉层次 + 页眉页脚功能
+专业报告PDF生成器 v3.0 - 最终优化版
+增强段落分隔 + 优化视觉层次 + 提升阅读体验
 """
 
 import os
@@ -16,7 +16,6 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, HRFlowable
 from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_JUSTIFY
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
-from reportlab.pdfgen import canvas as pdfcanvas
 
 
 # ===============================
@@ -51,11 +50,12 @@ TEXT_COLOR = HexColor('#2d3748')
 
 
 # ===============================
-# PDF样式定义
+# PDF样式定义 - v3.0 增强版
 # ===============================
 def get_styles():
     styles = {}
     
+    # 主标题
     styles['MainTitle'] = ParagraphStyle(
         'MainTitle',
         fontName=CHINESE_FONT_BOLD,
@@ -67,6 +67,7 @@ def get_styles():
         leading=28
     )
     
+    # 章节标题 (### 一、xxx)
     styles['ChapterTitle'] = ParagraphStyle(
         'ChapterTitle',
         fontName=CHINESE_FONT_BOLD,
@@ -77,6 +78,7 @@ def get_styles():
         leading=20
     )
     
+    # 小节标题 (#### 1.1 xxx)
     styles['SectionTitle'] = ParagraphStyle(
         'SectionTitle',
         fontName=CHINESE_FONT_BOLD,
@@ -87,6 +89,7 @@ def get_styles():
         leading=17
     )
     
+    # 子标题 (##### xxx)
     styles['SubSectionTitle'] = ParagraphStyle(
         'SubSectionTitle',
         fontName=CHINESE_FONT_BOLD,
@@ -97,6 +100,7 @@ def get_styles():
         leading=14
     )
     
+    # 正文段落 - 增加段间距
     styles['BodyText'] = ParagraphStyle(
         'BodyText',
         fontName=CHINESE_FONT,
@@ -108,6 +112,7 @@ def get_styles():
         leading=15
     )
     
+    # 列表项 - 更明显的样式
     styles['BulletText'] = ParagraphStyle(
         'BulletText',
         fontName=CHINESE_FONT,
@@ -120,6 +125,7 @@ def get_styles():
         bulletIndent=5
     )
     
+    # 数据来源
     styles['DataSource'] = ParagraphStyle(
         'DataSource',
         fontName=CHINESE_FONT,
@@ -135,7 +141,7 @@ def get_styles():
 
 
 # ===============================
-# 内容解析器
+# 增强的内容解析器
 # ===============================
 class EnhancedParser:
     
@@ -152,6 +158,7 @@ class EnhancedParser:
         if not line:
             return ('empty', '')
         
+        # 检测标题级别
         if line.startswith('## '):
             return ('main_title', line[3:].strip())
         elif line.startswith('### '):
@@ -161,17 +168,21 @@ class EnhancedParser:
         elif line.startswith('##### '):
             return ('subsection', line[6:].strip())
         
+        # 数据来源
         if line.startswith('*数据来源') or line.startswith('*来源'):
             return ('datasource', line[1:].strip())
         
+        # 列表项
         if line.startswith('*'):
             return ('bullet', line[1:].strip())
         elif re.match(r'^\d+\.\s', line):
             return ('numbered', line.strip())
         
+        # 分隔符
         if line.strip() in ['---', '***', '___']:
             return ('separator', '')
         
+        # 普通段落
         return ('paragraph', line.strip())
     
     @staticmethod
@@ -185,10 +196,13 @@ class EnhancedParser:
             line_type, content = EnhancedParser.parse_line(line)
             
             if line_type == 'empty':
+                # 空行保持，作为段落分隔
                 elements.append(('empty', ''))
             elif line_type in ['main_title', 'chapter', 'section', 'subsection']:
+                # 标题后不加分隔
                 elements.append((line_type, content))
             elif line_type in ['bullet', 'numbered']:
+                # 收集连续的列表项
                 list_items = []
                 while line_type in ['bullet', 'numbered']:
                     list_items.append(content)
@@ -198,6 +212,7 @@ class EnhancedParser:
                     else:
                         line_type = 'end'
                         break
+                # 回退一行（因为循环会多走一步）
                 i -= 1
                 elements.append(('list_start', list_items))
             elif line_type == 'datasource':
@@ -213,107 +228,7 @@ class EnhancedParser:
 
 
 # ===============================
-# 带页眉页脚的Canvas
-# ===============================
-class HeaderFooterCanvas(pdfcanvas.Canvas):
-    """自定义Canvas，用于绘制页眉页脚"""
-    
-    def __init__(self, *args, **kwargs):
-        pdfcanvas.Canvas.__init__(self, *args, **kwargs)
-        self._saved_page_states = []
-    
-    def showPage(self):
-        self._saved_page_states.append(dict(self.__dict__))
-        self._startPage()
-        self._draw_header_footer()
-    
-    def save(self):
-        num_pages = len(self._saved_page_states)
-        for state in self._saved_page_states:
-            self.__dict__.update(state)
-            self._draw_header_footer(num_pages)
-            pdfcanvas.Canvas.showPage(self)
-        pdfcanvas.Canvas.save(self)
-    
-    def _draw_header_footer(self, page_count=1):
-        """绘制页眉页脚"""
-        page_width, page_height = A4
-        
-        # 保存状态
-        self.saveState()
-        self.setFont(CHINESE_FONT, 9)
-        self.setFillColor(LIGHT_TEXT_COLOR)
-        
-        # 页眉
-        header_text = "职业星图-专业深度报告"
-        text_width = self.stringWidth(header_text, CHINESE_FONT, 9)
-        x_position = (page_width - text_width) / 2
-        self.drawString(x_position, page_height - 1.5*cm, header_text)
-        
-        # 页眉下方细线
-        self.setStrokeColor(ACCENT_COLOR)
-        self.setLineWidth(0.5)
-        self.line(2.5*cm, page_height - 1.8*cm, page_width - 2.5*cm, page_height - 1.8*cm)
-        
-        # 页脚
-        # 页脚细线
-        self.line(2.5*cm, 2*cm, page_width - 2.5*cm, 2*cm)
-        
-        # 页脚页码 - 中间位置
-        current_page = self._pageNumber
-        if page_count > 1:
-            footer_text = f"{current_page}页/{page_count}页"
-        else:
-            footer_text = f"{current_page}页"
-        
-        text_width = self.stringWidth(footer_text, CHINESE_FONT, 9)
-        x_position = (page_width - text_width) / 2
-        self.drawString(x_position, 1.2*cm, footer_text)
-        
-        # 恢复状态
-        self.restoreState()
-
-
-# ===============================
-# 页眉页脚回调函数
-# ===============================
-def _draw_header_footer(canvas_obj, doc):
-    """绘制页眉页脚"""
-    canvas_obj.saveState()
-    
-    page_width, page_height = A4
-    page_num = canvas_obj._pageNumber
-    
-    # 页眉
-    canvas_obj.setFont(CHINESE_FONT, 9)
-    canvas_obj.setFillColor(LIGHT_TEXT_COLOR)
-    
-    # 页眉内容 - 中间位置
-    header_text = "职业星图-专业深度报告"
-    text_width = canvas_obj.stringWidth(header_text, CHINESE_FONT, 9)
-    x_position = (page_width - text_width) / 2
-    canvas_obj.drawString(x_position, page_height - 1.5*cm, header_text)
-    
-    # 页眉下方细线
-    canvas_obj.setStrokeColor(ACCENT_COLOR)
-    canvas_obj.setLineWidth(0.5)
-    canvas_obj.line(2.5*cm, page_height - 1.8*cm, page_width - 2.5*cm, page_height - 1.8*cm)
-    
-    # 页脚
-    # 页脚细线
-    canvas_obj.line(2.5*cm, 2*cm, page_width - 2.5*cm, 2*cm)
-    
-    # 页脚页码 - 中间位置（无法获取总页数，仅显示当前页码）
-    footer_text = f"{page_num}页"
-    text_width = canvas_obj.stringWidth(footer_text, CHINESE_FONT, 9)
-    x_position = (page_width - text_width) / 2
-    canvas_obj.drawString(x_position, 1.2*cm, footer_text)
-    
-    canvas_obj.restoreState()
-
-
-# ===============================
-# PDF生成器 - v4.0
+# PDF生成器 - 最终版
 # ===============================
 def generate_pdf(input_file, output_file=None):
     if output_file is None:
@@ -341,13 +256,14 @@ def generate_pdf(input_file, output_file=None):
     for el_type, el_content in elements:
         if el_type == 'empty':
             if last_was_paragraph and not last_was_empty:
+                # 段落之间的空行 - 转换为额外的间距
                 story.append(Spacer(1, 0.3*cm))
                 last_was_empty = True
             continue
         
         last_was_empty = False
         
-        if el_type == 'main_title':
+        if el_type in ['main_title']:
             story.append(Spacer(1, 1.5*cm))
             story.append(Paragraph(el_content, styles['MainTitle']))
             story.append(HRFlowable(width="80%", thickness=1, color=ACCENT_COLOR, spaceAfter=10))
@@ -375,6 +291,7 @@ def generate_pdf(input_file, output_file=None):
                 last_was_empty = False
                 
         elif el_type == 'list_start':
+            # 处理列表项
             for item in el_content:
                 clean_item = EnhancedParser.clean_text(item)
                 if clean_item:
@@ -388,9 +305,7 @@ def generate_pdf(input_file, output_file=None):
             story.append(Spacer(1, 0.2*cm))
             story.append(HRFlowable(width="100%", thickness=0.5, color=LIGHT_TEXT_COLOR, spaceAfter=0.2*cm))
     
-    # 使用标准回调函数方式
-    doc.build(story, onFirstPage=_draw_header_footer, onLaterPages=_draw_header_footer)
-    
+    doc.build(story)
     return output_file
 
 
@@ -398,7 +313,16 @@ def generate_pdf(input_file, output_file=None):
 # 批量转换
 # ===============================
 def batch_convert(reports_dir, output_dir=None):
-    """批量转换TXT报告为PDF"""
+    """
+    批量转换TXT报告为PDF
+    
+    Args:
+        reports_dir: TXT报告所在目录
+        output_dir: PDF输出目录，默认与reports_dir相同
+    
+    Returns:
+        转换结果列表
+    """
     if output_dir is None:
         output_dir = reports_dir
     
@@ -434,13 +358,13 @@ def batch_convert(reports_dir, output_dir=None):
 
 if __name__ == "__main__":
     print("="*60)
-    print("专业星图 PDF生成器 v4.0 - 含页眉页脚")
+    print("专业星图 PDF生成器 v3.0 - 最终优化版")
     print("="*60)
     
     reports_dir = "/workspace/data/reports"
     
     if os.path.exists(reports_dir):
-        results = batch_convert(reports_dir)
+        results = batch_convert_v3(reports_dir)
         
         print("\n" + "="*60)
         success_count = sum(1 for r in results if r['status'] == 'success')

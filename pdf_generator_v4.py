@@ -275,44 +275,6 @@ class HeaderFooterCanvas(pdfcanvas.Canvas):
 
 
 # ===============================
-# 页眉页脚回调函数
-# ===============================
-def _draw_header_footer(canvas_obj, doc):
-    """绘制页眉页脚"""
-    canvas_obj.saveState()
-    
-    page_width, page_height = A4
-    page_num = canvas_obj._pageNumber
-    
-    # 页眉
-    canvas_obj.setFont(CHINESE_FONT, 9)
-    canvas_obj.setFillColor(LIGHT_TEXT_COLOR)
-    
-    # 页眉内容 - 中间位置
-    header_text = "职业星图-专业深度报告"
-    text_width = canvas_obj.stringWidth(header_text, CHINESE_FONT, 9)
-    x_position = (page_width - text_width) / 2
-    canvas_obj.drawString(x_position, page_height - 1.5*cm, header_text)
-    
-    # 页眉下方细线
-    canvas_obj.setStrokeColor(ACCENT_COLOR)
-    canvas_obj.setLineWidth(0.5)
-    canvas_obj.line(2.5*cm, page_height - 1.8*cm, page_width - 2.5*cm, page_height - 1.8*cm)
-    
-    # 页脚
-    # 页脚细线
-    canvas_obj.line(2.5*cm, 2*cm, page_width - 2.5*cm, 2*cm)
-    
-    # 页脚页码 - 中间位置（无法获取总页数，仅显示当前页码）
-    footer_text = f"{page_num}页"
-    text_width = canvas_obj.stringWidth(footer_text, CHINESE_FONT, 9)
-    x_position = (page_width - text_width) / 2
-    canvas_obj.drawString(x_position, 1.2*cm, footer_text)
-    
-    canvas_obj.restoreState()
-
-
-# ===============================
 # PDF生成器 - v4.0
 # ===============================
 def generate_pdf(input_file, output_file=None):
@@ -322,6 +284,10 @@ def generate_pdf(input_file, output_file=None):
     with open(input_file, 'r', encoding='utf-8') as f:
         content = f.read()
     
+    # 创建自定义Canvas
+    canvas = HeaderFooterCanvas(output_file, pagesize=A4)
+    
+    # 创建Document
     doc = SimpleDocTemplate(
         output_file,
         pagesize=A4,
@@ -388,8 +354,8 @@ def generate_pdf(input_file, output_file=None):
             story.append(Spacer(1, 0.2*cm))
             story.append(HRFlowable(width="100%", thickness=0.5, color=LIGHT_TEXT_COLOR, spaceAfter=0.2*cm))
     
-    # 使用标准回调函数方式
-    doc.build(story, onFirstPage=_draw_header_footer, onLaterPages=_draw_header_footer)
+    # 使用标准方式构建，页眉页脚由Canvas自动处理
+    doc.build(story, canvas=canvas)
     
     return output_file
 
