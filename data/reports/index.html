@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>专业深度分析报告 - 索引</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+        h1 {
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            font-size: 18px;
+            opacity: 0.9;
+        }
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+        }
+        .card h3 {
+            color: #1a365d;
+            font-size: 18px;
+            margin-bottom: 12px;
+        }
+        .card p {
+            color: #718096;
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+        .card .links {
+            display: flex;
+            gap: 10px;
+        }
+        .card a {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background 0.3s;
+        }
+        .card a.html {
+            background: #3182ce;
+            color: white;
+        }
+        .card a.html:hover {
+            background: #2c5282;
+        }
+        .card a.pdf {
+            background: #e2e8f0;
+            color: #2d3748;
+        }
+        .card a.pdf:hover {
+            background: #cbd5e0;
+        }
+        .category {
+            color: white;
+            font-size: 20px;
+            margin: 30px 0 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(255,255,255,0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📊 专业深度分析报告</h1>
+            <p class="subtitle">点击下方卡片查看详细报告（HTML版本完美支持中文显示）</p>
+        </header>
+        
+        <div class="category">经济学与管理学</div>
+        <div class="cards">
+            <div class="card">
+                <h3>金融学</h3>
+                <p>专业代码：020301</p>
+                <div class="links">
+                    <a href="report_020301_金融学.html" class="html">查看 HTML</a>
+                    <a href="report_020301_金融学.pdf" class="pdf">查看 PDF</a>
+                </div>
+            </div>
+            <div class="card">
+                <h3>会计学</h3>
+                <p>专业代码：120203K</p>
+                <div class="links">
+                    <a href="report_120203K_会计学.html" class="html">查看 HTML</a>
+                    <a href="report_120203K_会计学.pdf" class="pdf">查看 PDF</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="category">法学与文学</div>
+        <div class="cards">
+            <div class="card">
+                <h3>法学</h3>
+                <p>专业代码：030101</p>
+                <div class="links">
+                    <a href="report_030101_法学.html" class="html">查看 HTML</a>
+                    <a href="report_030101_法学.pdf" class="pdf">查看 PDF</a>
+                </div>
+            </div>
+            <div class="card">
+                <h3>英语</h3>
+                <p>专业代码：050201</p>
+                <div class="links">
+                    <a href="report_050201_英语.html" class="html">查看 HTML</a>
+                    <a href="report_050201_英语.pdf" class="pdf">查看 PDF</a>
+                </div>
+            </div>
+            <div class="card">
+                <h3>新闻学</h3>
+                <p>专业代码：020401 / 050301</p>
+                <div class="links">
+                    <a href="report_020401_新闻学.html" class="html">查看 HTML</a>
+                    <a href="report_020401_新闻学.pdf" class="pdf">查看 PDF</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="category">理学</div>
+        <div class="cards">
+            <div class="card">
+                <h3>数学与应用数学</h3>
+                <p>专业代码：070101</p>
+                <div class="links">
+                    <a href="report_070101_数学与应用数学.html" class="html">查看 HTML</a>
+                    <a href="report_070101_数学与应用数学.pdf" class="pdf">查看 PDF</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="category">工学</div>
+        <div class="cards">
+            <div class="card">
+                <h3>机械设计制造及其自动化</h3>
+                <p>专业代码：080202</p>
+                <div class="links">
+                    <a href="report_080202_机械设计制造及其自动化.html" class="html">查看 HTML</a>
+                    <a href="report_080202_机械设计制造及其自动化.pdf" class="pdf">查看 PDF</a>
+                </div>
+            </div>
+            <div class="card">
+                <h3>机械电子工程</h3>
+                <p>专业代码：080204</p>
+                <div class="links">
+                    <a href="report_080204_机械电子工程.html" class="html">查看 HTML</a>
+                    <a href="report_080204_机械电子工程.pdf" class="pdf">查看 PDF</a>
+                </div>
+            </div>
+            <div class="card">
+                <h3>测控技术与仪器</h3>
+                <p>专业代码：080301</p>
+                <div class="links">
+                    <a href="report_080301_测控技术与仪器.html" class="html">查看 HTML</a>
+                    <a href="report_080301_测控技术与仪器.pdf" class="pdf">查看 PDF</a>
+                </div>
+            </div>
+            <div class="card">
+                <h3>电子信息工程</h3>
+                <p>专业代码：080701</p>
+                <div class="links">
+                    <a href="report_080701_电子信息工程.html" class="html">查看 HTML</a>
+                    <a href="report_080701_电子信息工程.pdf" class="pdf">查看 PDF</a>
+                </div>
+            </div>
+            <div class="card">
+                <h3>自动化</h3>
+                <p>专业代码：080801</p>
+                <div class="links">
+                    <a href="report_080801_自动化.html" class="html">查看 HTML</a>
+                    <a href="report_080801_自动化.pdf" class="pdf">查看 PDF</a>
+                </div>
+            </div>
+            <div class="card">
+                <h3>机器人工程</h3>
+                <p>专业代码：080803T</p>
+                <div class="links">
+                    <a href="report_080803T_机器人工程.html" class="html">查看 HTML</a>
+                    <a href="report_080803T_机器人工程.pdf" class="pdf">查看 PDF</a>
+                </div>
+            </div>
+            <div class="card">
+                <h3>计算机科学与技术</h3>
+                <p>专业代码：080901</p>
+                <div class="links">
+                    <a href="report_080901_计算机科学与技术.html" class="html">查看 HTML</a>
+                    <a href="report_080901_计算机科学与技术.pdf" class="pdf">查看 PDF</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="category">医学</div>
+        <div class="cards">
+            <div class="card">
+                <h3>临床医学</h3>
+                <p>专业代码：100201</p>
+                <div class="links">
+                    <a href="report_100201_临床医学.html" class="html">查看 HTML</a>
+                    <a href="report_100201_临床医学.pdf" class="pdf">查看 PDF</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
