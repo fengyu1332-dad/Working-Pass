@@ -122,8 +122,17 @@ async function getCurrentUser() {
   const sb = getSupabase();
   if (!sb) return null;
   
-  const { data: { user } } = await sb.auth.getUser();
-  return user;
+  try {
+    const { data: { user }, error } = await sb.auth.getUser();
+    if (error) {
+      console.log('No active session:', error.message);
+      return null;
+    }
+    return user;
+  } catch (error) {
+    console.log('Error getting current user:', error);
+    return null;
+  }
 }
 
 async function getUserProfile() {
