@@ -117,7 +117,7 @@ async function getDownloadRecords() {
   return data;
 }
 
-if (typeof window) {
+if (typeof window !== 'undefined') {
   window.payments = {
     getPointPackages,
     createOrder,

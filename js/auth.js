@@ -193,7 +193,7 @@ function createToastContainer() {
   return container;
 }
 
-if (typeof window) {
+if (typeof window !== 'undefined') {
   window.auth = {
     initSupabase,
     getSupabase,

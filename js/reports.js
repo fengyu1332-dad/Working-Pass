@@ -153,7 +153,7 @@ async function checkDownloaded(reportId) {
   return !!data;
 }
 
-if (typeof window) {
+if (typeof window !== 'undefined') {
   window.reports = {
     getReports,
     getReport,
