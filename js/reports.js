@@ -153,12 +153,11 @@ async function checkDownloaded(reportId) {
   return !!data;
 }
 
-if (typeof window !== 'undefined') {
-  window.reports = {
-    getReports,
-    getReport,
-    downloadReport,
-    downloadPdfFromUrl,
-    checkDownloaded
-  };
-}
+// 导出到全局作用域
+window.reports = {
+  getReports,
+  getReport,
+  downloadReport,
+  downloadPdfFromUrl,
+  checkDownloaded
+};

@@ -117,13 +117,12 @@ async function getDownloadRecords() {
   return data;
 }
 
-if (typeof window !== 'undefined') {
-  window.payments = {
-    getPointPackages,
-    createOrder,
-    completeOrder,
-    getOrders,
-    getDownloadRecords
-  };
-}
+// 导出到全局作用域
+window.payments = {
+  getPointPackages,
+  createOrder,
+  completeOrder,
+  getOrders,
+  getDownloadRecords
+};
 

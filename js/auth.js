@@ -193,21 +193,20 @@ function createToastContainer() {
   return container;
 }
 
-if (typeof window !== 'undefined') {
-  window.auth = {
-    initSupabase,
-    getSupabase,
-    loginWithEmail,
-    loginWithPhone,
-    registerWithEmail,
-    registerWithPhone,
-    logout,
-    getCurrentUser,
-    getUserProfile,
-    checkAuthState,
-    checkAuthAndRedirect,
-    isAdmin,
-    showToast
-  };
-}
+// 导出到全局作用域
+window.auth = {
+  initSupabase,
+  getSupabase,
+  loginWithEmail,
+  loginWithPhone,
+  registerWithEmail,
+  registerWithPhone,
+  logout,
+  getCurrentUser,
+  getUserProfile,
+  checkAuthState,
+  checkAuthAndRedirect,
+  isAdmin,
+  showToast
+};
 
