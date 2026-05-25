@@ -1,133 +1,161 @@
+# 专业星图 🎓
 
-# 专业星图
+> 温暖、专业的大学专业选择指南
 
-让人轻松了解专业选择背后的深层意义
+## 项目介绍
 
-## 项目概述
+专业星图是一个帮助高中生和家长了解大学专业的Web应用，提供：
 
-专业星图是一个帮助学生了解大学专业选择的平台，提供丰富的专业信息和深度分析报告。
+- ✨ **246个专业**的详细介绍
+- 📊 **深度分析报告**（15个热门专业）
+- 💡 **张雪峰风格**的专业点评
+- 🎯 **智能搜索**和分类浏览
+- 📱 **响应式设计**，完美支持移动端
 
-## 项目结构
+## 在线预览
 
-```
-/workspace/
-├── index.html                    # 首页
-├── majors.html                   # 专业列表页
-├── login.html                    # 登录页
-├── register.html                 # 注册页
-├── user/                         # 用户端页面
-│   ├── dashboard.html            # 个人中心
-│   ├── reports.html              # 报告浏览页
-│   ├── orders.html               # 订单/下载历史
-│   └── purchase.html             # 购买点数页
-├── admin/                        # 管理端页面
-│   ├── index.html                # 管理后台首页
-│   ├── users.html                # 用户管理
-│   └── reports.html              # 报告管理
-├── css/                          # 样式文件
-│   └── common.css                # 通用样式
-├── js/                           # JavaScript 文件
-│   └── supabase-client.js        # Supabase 客户端配置
-├── docs/                         # 文档
-│   └── design.md                 # 设计文档
-├── supabase-init.sql             # 数据库初始化脚本
-└── README.md                     # 项目说明
-```
-
-## 技术栈
-
-- 前端：HTML5 + CSS3 + JavaScript (原生)
-- 后端：Supabase (Auth + Database)
-- 数据库：PostgreSQL
-- 设计：响应式设计，移动优先
+🚀 **访问地址**（部署后更新）
 
 ## 快速开始
 
-### 1. 配置 Supabase
+### 本地开发
 
-首先，你需要创建一个 Supabase 项目：
+```bash
+# 1. 克隆项目
+git clone <repository-url>
+cd professional-starmap
 
-1. 访问 [supabase.com](https://supabase.com) 并创建账户
-2. 创建新项目
-3. 在项目设置中找到 API URL 和 anon key
+# 2. 启动本地服务器
+python3 -m http.server 3456
 
-### 2. 初始化数据库
+# 3. 浏览器访问
+open http://localhost:3456
+```
 
-在 Supabase 的 SQL Editor 中运行 `supabase-init.sql` 文件，这将创建所有必要的表、RLS 策略和触发器。
+### Supabase配置
 
-### 3. 配置客户端
+本项目使用Supabase作为后端服务：
 
-编辑 `js/supabase-client.js` 文件，将 `YOUR_SUPABASE_URL` 和 `YOUR_SUPABASE_ANON_KEY` 替换为你自己的 Supabase 项目信息：
+1. 创建Supabase项目
+2. 运行 `sql/supabase-init.sql` 初始化数据库
+3. 更新 `js/supabase-client.js` 中的配置
 
 ```javascript
 const SUPABASE_URL = 'https://your-project.supabase.co';
 const SUPABASE_ANON_KEY = 'your-anon-key';
 ```
 
-### 4. 在 HTML 中引入
+## 项目结构
 
-在你的 HTML 文件中引入必要的文件：
-
-```html
-&lt;link rel="stylesheet" href="css/common.css"&gt;
-&lt;script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"&gt;&lt;/script&gt;
-&lt;script src="js/supabase-client.js"&gt;&lt;/script&gt;
+```
+professional-starmap/
+├── index.html              # 首页
+├── majors.html             # 专业列表页
+├── login.html              # 登录页
+├── register.html           # 注册页
+├── test-tool.html          # 测试工具
+│
+├── user/                   # 用户中心
+│   ├── dashboard.html      # 个人中心
+│   ├── reports.html        # 深度报告
+│   ├── orders.html         # 订单历史
+│   └── purchase.html       # 点数购买
+│
+├── admin/                  # 管理后台
+│   ├── index.html          # 管理首页
+│   ├── users.html          # 用户管理
+│   └── reports.html        # 报告管理
+│
+├── js/                     # JavaScript模块
+│   ├── supabase-client.js  # Supabase客户端
+│   ├── auth.js             # 认证模块
+│   ├── payments.js         # 支付模块
+│   └── reports.js          # 报告模块
+│
+├── css/                    # 样式文件
+│   ├── common.css          # 通用样式
+│   └── admin.css           # 管理后台样式
+│
+├── data/                   # 数据文件
+│   └── reports/            # 深度报告
+│       ├── index.html      # 报告索引
+│       └── *.html/*.pdf    # 专业报告
+│
+├── docs/                   # 项目文档
+│   ├── design.md           # 设计文档
+│   ├── DEPLOYMENT_GUIDE.md # 部署指南
+│   └── ...
+│
+├── scripts/                # 工具脚本
+│   ├── archive/            # 归档脚本
+│   └── ...
+│
+├── sql/                    # 数据库脚本
+│   └── supabase-init.sql   # 初始化脚本
+│
+└── archive/                # 归档文件
 ```
 
-## 设计规范
+## 技术栈
 
-### 颜色
+- **前端**: HTML5 + CSS3 + 原生JavaScript
+- **后端**: Supabase (Auth + Database + Storage)
+- **数据库**: PostgreSQL
+- **设计**: 响应式设计，移动优先
 
-- 主色调：#E67E22 (橙色)
-- 辅助色：#705A49 (棕色)
-- 背景色：#FFF8F5 (暖白色)
-- 卡片背景：#FFFFFF
-- 文字颜色：#2C2621
+## 核心功能
 
-### 响应式断点
+### 🏠 首页
+- 精选专业推荐
+- 专业搜索
+- 统计数据展示
 
-- 手机：&lt; 768px
-- 平板：768px - 1024px
-- 桌面：&gt; 1024px
+### 📚 专业列表
+- 按学科分类浏览
+- 搜索和筛选
+- 专业详情弹窗
 
-## 主要功能
+### 👤 用户系统
+- 注册/登录
+- 个人中心
+- 点数管理
+- 订单历史
 
-### 用户端
+### 📖 深度报告
+- 15个热门专业的HTML报告
+- PDF版本下载
+- 完美的中文支持
 
-- 用户注册/登录（手机号 + 微信）
-- 个人中心（查看点数余额）
-- 浏览专业报告
-- 免费预览报告内容
-- 消耗点数下载完整报告
-- 购买点数套餐
-- 查看订单和下载历史
+## 部署指南
 
-### 管理端
+### GitHub Pages（推荐）
 
-- 数据概览
-- 用户管理
-- 报告管理
+1. 将代码推送到GitHub仓库
+2. 在仓库设置中启用GitHub Pages
+3. 配置自定义域名（可选）
 
-## 数据库结构
+详细部署步骤请参考 [docs/DEPLOYMENT_GUIDE.md](docs/DEPLOYMENT_GUIDE.md)
 
-### 主要表
+## 项目进展
 
-- `user_profiles` - 用户扩展信息
-- `reports` - 专业报告
-- `point_packages` - 点数套餐
-- `orders` - 订单记录
-- `download_records` - 下载记录
+- ✅ 核心功能完成
+- ✅ 246个专业数据导入
+- ✅ 15个深度报告生成
+- ✅ 项目清理完成
+- 🔄 准备部署上线
 
-详细的数据库结构和 RLS 策略请参考 `supabase-init.sql` 文件。
+**计划上线时间**: 2026年5月26日
 
-## 文档
+详细进展请查看 [docs/项目进展分析与上线规划.md](docs/项目进展分析与上线规划.md)
 
-- [设计文档](docs/design.md) - 详细的项目设计文档
+## 开发团队
 
-## 开发
-
-项目采用模块化设计，便于维护和扩展。所有页面都遵循相同的设计规范，确保用户体验的一致性。
+专业星图团队
 
 ## 许可证
 
-本项目版权所有 © 2026 专业星图团队。
+© 2026 专业星图. All rights reserved.
+
+---
+
+**祝您好运！找到最适合的专业！** 🎉
