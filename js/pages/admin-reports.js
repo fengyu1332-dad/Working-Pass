@@ -104,7 +104,7 @@ async function generateWithAI(major) {
   statusEl.textContent = '正在调用AI分析引擎（预计60-90秒）...';
 
   const controller = new AbortController();
-  const timeoutId = setTimeout(() => controller.abort(), 180000);
+  const timeoutId = setTimeout(() => controller.abort(), 100000);
 
   try {
     const res = await fetch(`${SUPABASE_URL}/functions/v1/generate-report`, {
@@ -153,7 +153,7 @@ async function openGenerateModal() {
         </select>
       </div>
       <p style="font-size:13px;color:var(--on-surface-variant);margin:0;">
-        调用 AI 分析引擎，基于专业库数据生成包含 13 个章节的深度分析报告（专业概述、课程安排、就业前景、薪资水平、考研深造、考公考编、行业发展、适合人群、学业难度、家庭背景与投入回报、城市地区适配、AI影响、雪峰点评），约 8000 字。生成耗时约 60-90 秒，请耐心等待。
+        调用 AI 分析引擎，基于专业库数据生成包含 13 个章节的深度分析报告，约 8000 字。生成耗时约 45-90 秒，请耐心等待。
       </p>
       <div id="genStatus" style="display:none;font-size:13px;color:var(--primary);"></div>
       <div style="display:flex;gap:12px;justify-content:flex-end;">
