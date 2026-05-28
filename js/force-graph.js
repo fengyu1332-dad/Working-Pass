@@ -70,7 +70,8 @@ export class ForceGraph {
     this.height = this.container.clientHeight;
     this._resize();
     if (this.simulation) {
-      this.simulation.force('center', d3.forceCenter(this.width / 2, this.height / 2));
+      this.simulation.force('x', d3.forceX(this.width / 2).strength(0.006));
+      this.simulation.force('y', d3.forceY(this.height / 2).strength(0.006));
       this.simulation.alpha(0.3).restart();
     }
   }
@@ -87,7 +88,7 @@ export class ForceGraph {
     });
     const graphW = maxX - minX + padding * 2;
     const graphH = maxY - minY + padding * 2;
-    const scale = Math.min(this.width / graphW, this.height / graphH, 1.5);
+    const scale = Math.min(this.width / graphW, this.height / graphH, 1.8);
     const tx = (this.width - (minX + maxX) * scale) / 2;
     const ty = (this.height - (minY + maxY) * scale) / 2;
     this._transform = { x: tx, y: ty, k: scale };
@@ -132,21 +133,22 @@ export class ForceGraph {
   _setupSimulation() {
     const self = this;
     this.simulation = d3.forceSimulation()
-      .force('center', d3.forceCenter(this.width / 2, this.height / 2))
-      .force('charge', d3.forceManyBody().strength(-80))
-      .force('collide', d3.forceCollide().radius(d => (d.type === 'category' ? CATEGORY_RADIUS + 4 : MAJOR_RADIUS + 2)))
-      .force('link', d3.forceLink().id(d => d.id).distance(d => d.type === 'cat-cat' ? 180 : 90))
+      .force('x', d3.forceX(this.width / 2).strength(0.006))
+      .force('y', d3.forceY(this.height / 2).strength(0.006))
+      .force('charge', d3.forceManyBody().strength(d => d.type === 'category' ? -450 : -130))
+      .force('collide', d3.forceCollide().radius(d => (d.type === 'category' ? CATEGORY_RADIUS + 8 : MAJOR_RADIUS + 4)))
+      .force('link', d3.forceLink().id(d => d.id).distance(d => d.type === 'cat-cat' ? 350 : 150))
       .force('bounds', () => {
-        const margin = 80;
+        const margin = 30;
         for (const n of self.nodes) {
           const r = n.type === 'category' ? CATEGORY_RADIUS : MAJOR_RADIUS;
-          if (n.x < margin + r) n.vx += (margin + r - n.x) * 0.015;
-          if (n.x > self.width - margin - r) n.vx -= (n.x - self.width + margin + r) * 0.015;
-          if (n.y < margin + r) n.vy += (margin + r - n.y) * 0.015;
-          if (n.y > self.height - margin - r) n.vy -= (n.y - self.height + margin + r) * 0.015;
+          if (n.x < margin + r) n.vx += (margin + r - n.x) * 0.025;
+          if (n.x > self.width - margin - r) n.vx -= (n.x - self.width + margin + r) * 0.025;
+          if (n.y < margin + r) n.vy += (margin + r - n.y) * 0.025;
+          if (n.y > self.height - margin - r) n.vy -= (n.y - self.height + margin + r) * 0.025;
         }
       })
-      .alphaDecay(0.02)
+      .alphaDecay(0.012)
       .on('tick', () => { /* render handled by rAF */ });
   }
 
@@ -235,12 +237,12 @@ export class ForceGraph {
     this.simulation.force('link').links(this.links);
     this.simulation.alpha(1).restart();
 
-    // Pre-warm: run 200 ticks silently
-    for (let i = 0; i < 200; i++) this.simulation.tick();
-    this.simulation.alpha(0.1).alphaDecay(0.01);
+    // Pre-warm: run more ticks for even spread with weak center
+    for (let i = 0; i < 350; i++) this.simulation.tick();
+    this.simulation.alpha(0.08).alphaDecay(0.008);
 
     // Auto-fit view to show all nodes
-    setTimeout(() => this.fitView(), 100);
+    setTimeout(() => this.fitView(), 150);
   }
 
   // --- Private: Render Loop ---
