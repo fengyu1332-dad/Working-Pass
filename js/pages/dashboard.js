@@ -15,12 +15,11 @@ import '../error-report.js';
 
   const profile = await window.auth.getUserProfile();
   if (profile) {
+    const displayEmail = profile.email || '未知用户';
     document.getElementById('pointsBalance').textContent = profile.points_balance || 0;
-    document.getElementById('userPhone').textContent = profile.phone || '未设置手机号';
-    document.getElementById('userName').textContent = profile.phone
-      ? profile.phone.slice(0, 3) + '****' + profile.phone.slice(-4)
-      : '用户';
-    document.getElementById('userAvatar').textContent = (profile.phone || 'U')[0].toUpperCase();
+    document.getElementById('userPhone').textContent = profile.phone || '';
+    document.getElementById('userName').textContent = displayEmail;
+    document.getElementById('userAvatar').textContent = displayEmail[0].toUpperCase();
 
     // admin 入口
     if (profile.role === 'admin') {
