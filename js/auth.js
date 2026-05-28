@@ -58,7 +58,7 @@ async function createUserProfile(userId, phone) {
 
   const { data, error } = await sb
     .from('user_profiles')
-    .upsert({ id: userId, phone, points_balance: 0, role: 'user' })
+    .upsert({ id: userId, phone, points_balance: 1, role: 'user' })
     .select()
     .single();
 
@@ -114,7 +114,7 @@ export async function getUserProfile() {
       const phone = user.phone || '';
       const { data: newProfile, error: insertError } = await sb
         .from('user_profiles')
-        .upsert({ id: user.id, phone, points_balance: 0, role: 'user' })
+        .upsert({ id: user.id, phone, points_balance: 1, role: 'user' })
         .select()
         .single();
       if (insertError) {

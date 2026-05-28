@@ -109,7 +109,7 @@ Deno.serve(async (req: Request) => {
             email: email,
             phone: phone || null,
             role: role || "user",
-            points_balance: 10,
+            points_balance: 1,
           });
       }
     }
