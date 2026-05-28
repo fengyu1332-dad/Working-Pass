@@ -1,10 +1,14 @@
+// ============================================================
+// 专业星图 - Supabase 客户端配置（ES Module）
+// ============================================================
 
-const SUPABASE_URL = 'https://djteatwxjlnbjylynvjh.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRqdGVhdHd4amxuYmp5bHludmpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwODUwOTMsImV4cCI6MjA5NDY2MTA5M30.P6IJW2noTImzeNXtfKsmjJBMp9AJBTw1LamYTdtyd_4';
+export const SUPABASE_URL = 'https://djteatwxjlnbjylynvjh.supabase.co';
+export const SUPABASE_ANON_KEY =
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRqdGVhdHd4amxuYmp5bHludmpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwODUwOTMsImV4cCI6MjA5NDY2MTA5M30.P6IJW2noTImzeNXtfKsmjJBMp9AJBTw1LamYTdtyd_4';
 
 let supabaseClient = null;
 
-function initSupabase() {
+export function initSupabase() {
   if (typeof supabase !== 'undefined') {
     supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     return supabaseClient;
@@ -12,24 +16,26 @@ function initSupabase() {
   return null;
 }
 
-function getSupabase() {
+export function getSupabase() {
   if (!supabaseClient) {
     initSupabase();
   }
   return supabaseClient;
 }
 
-function configureSupabase(url, key) {
+export function configureSupabase(url, key) {
   if (typeof supabase !== 'undefined') {
     supabaseClient = supabase.createClient(url, key);
   }
 }
 
-if (typeof window) {
+// 向后兼容：也挂载到全局 window
+if (typeof window !== 'undefined') {
   window.supabaseClient = {
     init: initSupabase,
     get: getSupabase,
-    configure: configureSupabase
+    configure: configureSupabase,
+    url: SUPABASE_URL,
+    key: SUPABASE_ANON_KEY,
   };
 }
-

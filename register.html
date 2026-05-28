@@ -1,13 +1,19 @@
 
-&lt;!DOCTYPE html&gt;
-&lt;html lang="zh-CN"&gt;
-&lt;head&gt;
-    &lt;meta charset="UTF-8"&gt;
-    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
-    &lt;title&gt;注册 - 专业星图&lt;/title&gt;
-    &lt;link rel="stylesheet" href="css/common.css"&gt;
-    &lt;link href="https://fonts.googleapis.com/css2?family=Literata:wght@600;700&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"&gt;
-    &lt;style&gt;
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="注册专业星图账号，开启你的大学专业探索之旅。获取深度专业报告、个性化推荐，找到最适合你的专业。">
+    <meta property="og:title" content="注册 - 专业星图">
+    <meta property="og:description" content="注册专业星图账号，开启大学专业探索之旅。">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="zh_CN">
+    <meta name="twitter:card" content="summary">
+    <title>注册 - 专业星图</title>
+    <link rel="stylesheet" href="css/common.css">
+    <link href="https://fonts.googleapis.com/css2?family=Literata:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
         :root {
             --surface: #FFF8F5;
             --surface-container: #FFFFFF;
@@ -252,177 +258,62 @@
                 flex-direction: column;
             }
         }
-    &lt;/style&gt;
-&lt;/head&gt;
-&lt;body&gt;
-    &lt;div class="register-container"&gt;
-        &lt;a href="index.html" class="back-link"&gt;
-            &lt;span&gt;←&lt;/span&gt; 返回首页
-        &lt;/a&gt;
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <a href="index.html" class="back-link">
+            <span>←</span> 返回首页
+        </a>
         
-        &lt;div class="logo-section"&gt;
-            &lt;h1 class="logo-title"&gt;专业星图&lt;/h1&gt;
-            &lt;p class="logo-subtitle"&gt;温暖、专业的大学专业选择指南&lt;/p&gt;
-        &lt;/div&gt;
+        <div class="logo-section">
+            <h1 class="logo-title">专业星图</h1>
+            <p class="logo-subtitle">温暖、专业的大学专业选择指南</p>
+        </div>
         
-        &lt;div class="register-card"&gt;
-            &lt;div id="errorMessage" class="error-message"&gt;&lt;/div&gt;
-            &lt;div id="successMessage" class="success-message"&gt;&lt;/div&gt;
+        <div class="register-card">
+            <div id="errorMessage" class="error-message"></div>
+            <div id="successMessage" class="success-message"></div>
             
-            &lt;form id="registerForm"&gt;
-                &lt;div class="form-group"&gt;
-                    &lt;label class="form-label" for="phone"&gt;手机号&lt;/label&gt;
-                    &lt;input type="tel" id="phone" class="form-input" placeholder="请输入手机号" required&gt;
-                &lt;/div&gt;
-                
-                &lt;div class="form-group"&gt;
-                    &lt;label class="form-label"&gt;验证码&lt;/label&gt;
-                    &lt;div class="form-row"&gt;
-                        &lt;input type="text" id="verifyCode" class="form-input" placeholder="请输入验证码" required&gt;
-                        &lt;button type="button" class="btn-send-code" id="sendCodeBtn"&gt;获取验证码&lt;/button&gt;
-                    &lt;/div&gt;
-                &lt;/div&gt;
-                
-                &lt;div class="form-group"&gt;
-                    &lt;label class="form-label" for="password"&gt;密码&lt;/label&gt;
-                    &lt;input type="password" id="password" class="form-input" placeholder="请设置密码（至少6位）" required minlength="6"&gt;
-                &lt;/div&gt;
-                
-                &lt;div class="form-group"&gt;
-                    &lt;label class="form-label" for="confirmPassword"&gt;确认密码&lt;/label&gt;
-                    &lt;input type="password" id="confirmPassword" class="form-input" placeholder="请再次输入密码" required&gt;
-                &lt;/div&gt;
-                
-                &lt;div class="terms-section"&gt;
-                    &lt;input type="checkbox" id="terms" class="terms-checkbox" required&gt;
-                    &lt;label for="terms" class="terms-text"&gt;
-                        我已阅读并同意 &lt;a href="#" class="terms-link"&gt;《用户协议》&lt;/a&gt; 和 &lt;a href="#" class="terms-link"&gt;《隐私政策》&lt;/a&gt;
-                    &lt;/label&gt;
-                &lt;/div&gt;
-                
-                &lt;button type="submit" class="btn-primary" id="registerBtn"&gt;注册&lt;/button&gt;
-            &lt;/form&gt;
-            
-            &lt;div class="link-section"&gt;
-                &lt;span class="link-text"&gt;已有账号？&lt;/span&gt;
-                &lt;a href="login.html" class="link"&gt;立即登录&lt;/a&gt;
-            &lt;/div&gt;
-        &lt;/div&gt;
-    &lt;/div&gt;
+            <form id="registerForm">
+                <div class="form-group">
+                    <label class="form-label" for="email">邮箱</label>
+                    <input type="email" id="email" class="form-input" placeholder="请输入邮箱地址" required autocomplete="email">
+                </div>
 
-    &lt;script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"&gt;&lt;/script&gt;
-    &lt;script src="js/auth.js"&gt;&lt;/script&gt;
-    &lt;script&gt;
-        document.addEventListener('DOMContentLoaded', () =&gt; {
-            const registerForm = document.getElementById('registerForm');
-            const registerBtn = document.getElementById('registerBtn');
-            const sendCodeBtn = document.getElementById('sendCodeBtn');
-            const errorMessage = document.getElementById('errorMessage');
-            const successMessage = document.getElementById('successMessage');
-            let countdown = 0;
-            let countdownTimer = null;
+                <div class="form-group">
+                    <label class="form-label" for="phone">手机号（选填）</label>
+                    <input type="tel" id="phone" class="form-input" placeholder="请输入手机号">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="password">密码</label>
+                    <input type="password" id="password" class="form-input" placeholder="请设置密码（至少6位）" required minlength="6" autocomplete="new-password">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="confirmPassword">确认密码</label>
+                    <input type="password" id="confirmPassword" class="form-input" placeholder="请再次输入密码" required autocomplete="new-password">
+                </div>
+                
+                <div class="terms-section">
+                    <input type="checkbox" id="terms" class="terms-checkbox" required>
+                    <label for="terms" class="terms-text">
+                        我已阅读并同意 <a href="#" class="terms-link">《用户协议》</a> 和 <a href="#" class="terms-link">《隐私政策》</a>
+                    </label>
+                </div>
+                
+                <button type="submit" class="btn-primary" id="registerBtn">注册</button>
+            </form>
             
-            function showError(message) {
-                errorMessage.textContent = message;
-                errorMessage.classList.add('show');
-                successMessage.classList.remove('show');
-            }
-            
-            function showSuccess(message) {
-                successMessage.textContent = message;
-                successMessage.classList.add('show');
-                errorMessage.classList.remove('show');
-            }
-            
-            function clearMessages() {
-                errorMessage.classList.remove('show');
-                successMessage.classList.remove('show');
-            }
-            
-            function startCountdown() {
-                countdown = 60;
-                sendCodeBtn.disabled = true;
-                sendCodeBtn.textContent = `${countdown}秒后重试`;
-                
-                countdownTimer = setInterval(() =&gt; {
-                    countdown--;
-                    if (countdown &lt;= 0) {
-                        clearInterval(countdownTimer);
-                        sendCodeBtn.disabled = false;
-                        sendCodeBtn.textContent = '获取验证码';
-                    } else {
-                        sendCodeBtn.textContent = `${countdown}秒后重试`;
-                    }
-                }, 1000);
-            }
-            
-            sendCodeBtn.addEventListener('click', () =&gt; {
-                const phone = document.getElementById('phone').value.trim();
-                if (!phone) {
-                    showError('请先输入手机号');
-                    return;
-                }
-                
-                clearMessages();
-                startCountdown();
-                showSuccess('验证码已发送！请查看短信（演示环境，任意6位数字均可）');
-            });
-            
-            registerForm.addEventListener('submit', async (e) =&gt; {
-                e.preventDefault();
-                clearMessages();
-                
-                const phone = document.getElementById('phone').value.trim();
-                const verifyCode = document.getElementById('verifyCode').value.trim();
-                const password = document.getElementById('password').value;
-                const confirmPassword = document.getElementById('confirmPassword').value;
-                const termsChecked = document.getElementById('terms').checked;
-                
-                if (!phone || !verifyCode || !password || !confirmPassword) {
-                    showError('请填写所有必填项');
-                    return;
-                }
-                
-                if (password !== confirmPassword) {
-                    showError('两次输入的密码不一致');
-                    return;
-                }
-                
-                if (password.length &lt; 6) {
-                    showError('密码长度至少为6位');
-                    return;
-                }
-                
-                if (!termsChecked) {
-                    showError('请同意用户协议和隐私政策');
-                    return;
-                }
-                
-                registerBtn.disabled = true;
-                registerBtn.textContent = '注册中...';
-                
-                try {
-                    await auth.registerWithPhone(phone, password);
-                    showSuccess('注册成功！即将跳转...');
-                    
-                    setTimeout(() =&gt; {
-                        window.location.href = 'index.html';
-                    }, 1500);
-                } catch (error) {
-                    console.error('Registration error:', error);
-                    showError(error.message || '注册失败，请稍后重试');
-                } finally {
-                    registerBtn.disabled = false;
-                    registerBtn.textContent = '注册';
-                }
-            });
-            
-            auth.checkAuthState(async (session) =&gt; {
-                if (session) {
-                    window.location.href = 'index.html';
-                }
-            });
-        });
-    &lt;/script&gt;
-&lt;/body&gt;
-&lt;/html&gt;
+            <div class="link-section">
+                <span class="link-text">已有账号？</span>
+                <a href="login.html" class="link">立即登录</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script type="module" src="/js/pages/register.js"></script>
+</body>
+</html>

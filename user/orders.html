@@ -1,19 +1,18 @@
-
-&lt;!DOCTYPE html&gt;
-&lt;html lang="zh-CN"&gt;
-&lt;head&gt;
-  &lt;meta charset="UTF-8"&gt;
-  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
-  &lt;title&gt;历史记录 - 专业星图&lt;/title&gt;
-  &lt;link rel="stylesheet" href="/css/common.css"&gt;
-  &lt;style&gt;
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>历史记录 - 专业星图</title>
+  <link rel="stylesheet" href="/css/common.css">
+  <style>
     .tabs {
       display: flex;
       gap: 8px;
-      margin-bottom: 32px;
+      margin-bottom: 28px;
       border-bottom: 2px solid var(--outline);
     }
-    
+
     .tab-btn {
       padding: 12px 24px;
       background: none;
@@ -25,250 +24,106 @@
       border-bottom: 3px solid transparent;
       margin-bottom: -2px;
       transition: all 0.3s;
+      font-family: inherit;
     }
-    
-    .tab-btn:hover {
-      color: var(--secondary);
-    }
-    
+
+    .tab-btn:hover { color: var(--secondary); }
     .tab-btn.active {
       color: var(--primary);
       border-bottom-color: var(--primary);
     }
-    
+
     .records-list {
       display: flex;
       flex-direction: column;
       gap: 0;
     }
-    
+
     .record-item {
-      padding: 20px;
+      padding: 18px 0;
       border-bottom: 1px solid var(--outline);
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
     }
-    
-    .record-item:last-child {
-      border-bottom: none;
-    }
-    
+
+    .record-item:last-child { border-bottom: none; }
+
     .record-title {
       font-weight: 600;
       color: var(--secondary);
       margin-bottom: 4px;
-      font-size: 16px;
+      font-size: 15px;
     }
-    
+
     .record-meta {
       color: var(--on-surface-variant);
-      font-size: 14px;
+      font-size: 13px;
     }
-    
+
     .record-points {
-      font-size: 20px;
+      font-size: 18px;
       font-weight: 700;
     }
-    
-    .positive {
-      color: var(--success);
-    }
-    
-    .negative {
-      color: var(--error);
-    }
-    
+
+    .positive { color: var(--success); }
+    .negative { color: var(--error); }
+
     .empty-state {
       text-align: center;
       padding: 60px 20px;
       color: var(--on-surface-variant);
     }
-    
+
     .empty-state-icon {
       font-size: 48px;
       margin-bottom: 16px;
     }
-  &lt;/style&gt;
-&lt;/head&gt;
-&lt;body&gt;
-  &lt;div class="container"&gt;
-    &lt;nav class="nav"&gt;
-      &lt;a href="/" class="nav-logo"&gt;专业星图&lt;/a&gt;
-      &lt;div class="nav-links"&gt;
-        &lt;a href="/user/dashboard.html" class="nav-link"&gt;个人中心&lt;/a&gt;
-        &lt;a href="/user/reports.html" class="nav-link"&gt;浏览报告&lt;/a&gt;
-        &lt;a href="#" id="logoutBtn" class="nav-link"&gt;退出&lt;/a&gt;
-      &lt;/div&gt;
-    &lt;/nav&gt;
 
-    &lt;h1 class="page-title"&gt;历史记录&lt;/h1&gt;
-    &lt;p class="page-subtitle"&gt;查看您的订单和下载记录&lt;/p&gt;
-
-    &lt;div class="tabs"&gt;
-      &lt;button class="tab-btn active" data-tab="orders" onclick="switchTab('orders')"&gt;订单记录&lt;/button&gt;
-      &lt;button class="tab-btn" data-tab="downloads" onclick="switchTab('downloads')"&gt;下载记录&lt;/button&gt;
-    &lt;/div&gt;
-
-    &lt;div id="ordersTab" class="card" style="padding: 0;"&gt;
-      &lt;div id="ordersList" class="records-list"&gt;
-      &lt;/div&gt;
-    &lt;/div&gt;
-
-    &lt;div id="downloadsTab" class="card" style="padding: 0; display: none;"&gt;
-      &lt;div id="downloadsList" class="records-list"&gt;
-      &lt;/div&gt;
-    &lt;/div&gt;
-  &lt;/div&gt;
-
-  &lt;script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"&gt;&lt;/script&gt;
-  &lt;script src="/js/auth.js"&gt;&lt;/script&gt;
-  &lt;script src="/js/payments.js"&gt;&lt;/script&gt;
-  &lt;script&gt;
-    let currentTab = 'orders';
-    
-    (async function() {
-      window.auth.initSupabase();
-      
-      const isLoggedIn = await window.auth.checkAuthAndRedirect();
-      if (!isLoggedIn) return;
-      
-      await loadOrders();
-      
-      document.getElementById('logoutBtn').addEventListener('click', async (e) =&gt; {
-        e.preventDefault();
-        try {
-          await window.auth.logout();
-        } catch (error) {
-          window.auth.showToast('退出失败', 'error');
-        }
-      });
-    })();
-    
-    function switchTab(tab) {
-      currentTab = tab;
-      
-      document.querySelectorAll('.tab-btn').forEach(btn =&gt; {
-        btn.classList.toggle('active', btn.dataset.tab === tab);
-      });
-      
-      document.getElementById('ordersTab').style.display = tab === 'orders' ? 'block' : 'none';
-      document.getElementById('downloadsTab').style.display = tab === 'downloads' ? 'block' : 'none';
-      
-      if (tab === 'orders') {
-        loadOrders();
-      } else {
-        loadDownloads();
-      }
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--on-surface-variant);
+      text-decoration: none;
+      font-size: 14px;
+      margin-bottom: 24px;
+      transition: color 0.3s;
     }
-    
-    async function loadOrders() {
-      const list = document.getElementById('ordersList');
-      
-      try {
-        let orders = await window.payments.getOrders();
-        
-        if (!orders || orders.length === 0) {
-          orders = [
-            { id: 1, package_name: '新手包', points: 10, amount: 9.9, status: 'paid', created_at: new Date(Date.now() - 86400000 * 3).toISOString() },
-            { id: 2, package_name: '进阶包', points: 50, amount: 39.9, status: 'paid', created_at: new Date(Date.now() - 86400000 * 1).toISOString() }
-          ];
-        }
-        
-        if (orders.length === 0) {
-          list.innerHTML = `
-            &lt;div class="empty-state"&gt;
-              &lt;div class="empty-state-icon"&gt;📦&lt;/div&gt;
-              &lt;div&gt;暂无订单记录&lt;/div&gt;
-            &lt;/div&gt;
-          `;
-          return;
-        }
-        
-        list.innerHTML = orders.map(order =&gt; `
-          &lt;div class="record-item"&gt;
-            &lt;div&gt;
-              &lt;div class="record-title"&gt;${order.point_packages?.name || order.package_name || '点数充值'}&lt;/div&gt;
-              &lt;div class="record-meta"&gt;
-                ${formatDate(order.created_at)} · 
-                ${order.status === 'paid' ? '✓ 已支付' : order.status === 'pending' ? '⏳ 待支付' : order.status === 'cancelled' ? '✗ 已取消' : order.status}
-              &lt;/div&gt;
-            &lt;/div&gt;
-            &lt;div class="record-points positive"&gt;
-              +${order.points}
-            &lt;/div&gt;
-          &lt;/div&gt;
-        `).join('');
-      } catch (error) {
-        console.error('Load orders error:', error);
-        list.innerHTML = `
-          &lt;div class="empty-state"&gt;
-            &lt;div class="empty-state-icon"&gt;⚠️&lt;/div&gt;
-            &lt;div&gt;加载失败，请稍后重试&lt;/div&gt;
-          &lt;/div&gt;
-        `;
-      }
-    }
-    
-    async function loadDownloads() {
-      const list = document.getElementById('downloadsList');
-      
-      try {
-        let downloads = await window.payments.getDownloadRecords();
-        
-        if (!downloads || downloads.length === 0) {
-          downloads = [
-            { id: 1, report_name: '计算机科学与技术', report_code: '080901', points_spent: 1, created_at: new Date(Date.now() - 86400000 * 2).toISOString() },
-            { id: 2, report_name: '金融学', report_code: '020301K', points_spent: 1, created_at: new Date(Date.now() - 86400000 * 1).toISOString() }
-          ];
-        }
-        
-        if (downloads.length === 0) {
-          list.innerHTML = `
-            &lt;div class="empty-state"&gt;
-              &lt;div class="empty-state-icon"&gt;📚&lt;/div&gt;
-              &lt;div&gt;暂无下载记录&lt;/div&gt;
-            &lt;/div&gt;
-          `;
-          return;
-        }
-        
-        list.innerHTML = downloads.map(record =&gt; `
-          &lt;div class="record-item"&gt;
-            &lt;div&gt;
-              &lt;div class="record-title"&gt;${record.reports?.major_name || record.report_name || '专业报告'}&lt;/div&gt;
-              &lt;div class="record-meta"&gt;
-                ${record.reports?.major_code || record.report_code || ''} · 
-                ${formatDate(record.created_at)}
-              &lt;/div&gt;
-            &lt;/div&gt;
-            &lt;div class="record-points negative"&gt;
-              -${record.points_spent}
-            &lt;/div&gt;
-          &lt;/div&gt;
-        `).join('');
-      } catch (error) {
-        console.error('Load downloads error:', error);
-        list.innerHTML = `
-          &lt;div class="empty-state"&gt;
-            &lt;div class="empty-state-icon"&gt;⚠️&lt;/div&gt;
-            &lt;div&gt;加载失败，请稍后重试&lt;/div&gt;
-          &lt;/div&gt;
-        `;
-      }
-    }
-    
-    function formatDate(dateString) {
-      const date = new Date(dateString);
-      return date.toLocaleString('zh-CN', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit'
-      });
-    }
-  &lt;/script&gt;
-&lt;/body&gt;
-&lt;/html&gt;
+    .back-link:hover { color: var(--primary); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <nav class="nav">
+      <a href="/" class="nav-logo">专业星图</a>
+      <div class="nav-links">
+        <a href="/user/dashboard.html" class="nav-link">个人中心</a>
+        <a href="/user/reports.html" class="nav-link">浏览报告</a>
+        <a href="/user/purchase.html" class="nav-link">购买点数</a>
+        <a href="#" id="logoutBtn" class="nav-link">退出</a>
+      </div>
+    </nav>
 
+    <a href="/user/dashboard.html" class="back-link">← 返回个人中心</a>
+
+    <h1 class="page-title">历史记录</h1>
+
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="orders" onclick="switchTab('orders')">📦 充值记录</button>
+      <button class="tab-btn" data-tab="downloads" onclick="switchTab('downloads')">📥 下载记录</button>
+    </div>
+
+    <div id="ordersTab" class="card" style="padding: 0 20px;">
+      <div id="ordersList" class="records-list"></div>
+    </div>
+
+    <div id="downloadsTab" class="card" style="padding: 0 20px; display: none;">
+      <div id="downloadsList" class="records-list"></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script type="module" src="/js/pages/orders.js"></script>
+</body>
+</html>

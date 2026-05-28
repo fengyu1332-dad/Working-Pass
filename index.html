@@ -1,11 +1,27 @@
-&lt;!DOCTYPE html&gt;
-&lt;html lang="zh-CN"&gt;
-&lt;head&gt;
-    &lt;meta charset="UTF-8"&gt;
-    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
-    &lt;title&gt;专业星图 - 温暖、专业的大学专业选择指南&lt;/title&gt;
-    &lt;link href="https://fonts.googleapis.com/css2?family=Literata:wght@600;700&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"&gt;
-    &lt;style&gt;
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="专业星图——温暖的大学专业选择指南。探索中国大学全部专业，了解就业前景、薪资范围、学习难度，找到最适合你的专业方向。">
+    <meta property="og:title" content="专业星图 - 温暖、专业的大学专业选择指南">
+    <meta property="og:description" content="探索中国大学全部专业，了解就业前景、薪资范围、学习难度，找到最适合你的专业方向。">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="zh_CN">
+    <meta name="twitter:card" content="summary">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "专业星图",
+      "description": "温暖的大学专业选择指南",
+      "url": "https://fengyu1332-dad.github.io",
+      "inLanguage": "zh-CN"
+    }
+    </script>
+    <title>专业星图 - 温暖、专业的大学专业选择指南</title>
+    <link href="https://fonts.googleapis.com/css2?family=Literata:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
         :root {
             --surface: #FFF8F5;
             --surface-container: #FFFFFF;
@@ -84,6 +100,19 @@
             font-weight: 500;
             color: var(--secondary);
         }
+        .user-avatar-link {
+            text-decoration: none;
+            transition: transform 0.3s;
+        }
+        .user-avatar-link:hover { transform: scale(1.1); }
+        .user-name-link {
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--secondary);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        .user-name-link:hover { color: var(--primary); }
         
         .btn-sm {
             padding: 8px 16px;
@@ -164,6 +193,22 @@
         }
         .search-input:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(230, 126, 34, 0.1); }
         .search-icon { font-size: 28px; color: var(--secondary); }
+        .search-clear {
+            background: var(--secondary-container);
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            font-size: 16px;
+            cursor: pointer;
+            color: var(--secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.3s;
+        }
+        .search-clear:hover { background: var(--primary); color: white; }
         .search-btn {
             padding: 16px 32px;
             background: var(--primary);
@@ -341,7 +386,34 @@
         }
         @keyframes spin { to { transform: rotate(360deg); } }
         .loading-text { color: var(--on-surface-variant); font-size: 16px; }
-        
+
+        .skeleton-card {
+            background: var(--surface-container);
+            border-radius: 20px;
+            padding: 24px;
+            border: 2px solid var(--outline);
+            animation: skeleton-pulse 1.5s ease-in-out infinite;
+        }
+        .skeleton-line {
+            height: 16px;
+            background: var(--outline);
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+        .skeleton-line.short { width: 60%; }
+        .skeleton-line.medium { width: 80%; }
+        .skeleton-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 16px;
+            background: var(--outline);
+            flex-shrink: 0;
+        }
+        @keyframes skeleton-pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+
         footer {
             text-align: center;
             padding: 56px 20px;
@@ -642,451 +714,203 @@
             .modal-title h2 { font-size: 22px; }
             .section-header { flex-direction: column; gap: 16px; align-items: flex-start; }
         }
-    &lt;/style&gt;
-&lt;/head&gt;
-&lt;body&gt;
-    &lt;div class="container"&gt;
-        &lt;nav class="nav-bar"&gt;
-            &lt;a href="index.html" class="nav-logo"&gt;专业星图&lt;/a&gt;
-            &lt;div id="navUserArea" class="nav-links"&gt;
-                &lt;!-- User area will be populated by JavaScript --&gt;
-            &lt;/div&gt;
-        &lt;/nav&gt;
+    </style>
+</head>
+<body>
+    <div class="container">
+        <nav class="nav-bar">
+            <a href="index.html" class="nav-logo">专业星图</a>
+            <div id="navUserArea" class="nav-links">
+                <!-- User area will be populated by JavaScript -->
+            </div>
+        </nav>
         
-        &lt;header&gt;
-            &lt;h1&gt;专业星图&lt;/h1&gt;
-            &lt;p&gt;温暖、专业的大学专业选择指南 · 帮助你找到最适合的专业&lt;/p&gt;
-            &lt;p style="margin-top:12px;font-size:14px;"&gt;⚠️ 本网站数据均为参考，建议结合自身情况选择&lt;/p&gt;
+        <header>
+            <h1>专业星图</h1>
+            <p>温暖、专业的大学专业选择指南 · 帮助你找到最适合的专业</p>
+            <p style="margin-top:12px;font-size:14px;">⚠️ 本网站数据均为参考，建议结合自身情况选择</p>
             
-            &lt;div class="stats-banner"&gt;
-                &lt;div class="stat-item"&gt;
-                    &lt;div class="stat-number" id="totalMajors"&gt;--&lt;/div&gt;
-                    &lt;div class="stat-label"&gt;专业收录&lt;/div&gt;
-                &lt;/div&gt;
-                &lt;div class="stat-item"&gt;
-                    &lt;div class="stat-number" id="totalCategories"&gt;--&lt;/div&gt;
-                    &lt;div class="stat-label"&gt;学科门类&lt;/div&gt;
-                &lt;/div&gt;
-            &lt;/div&gt;
-        &lt;/header&gt;
+            <div class="stats-banner">
+                <div class="stat-item">
+                    <div class="stat-number" id="totalMajors">--</div>
+                    <div class="stat-label">专业收录</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number" id="totalCategories">--</div>
+                    <div class="stat-label">学科门类</div>
+                </div>
+            </div>
+        </header>
         
-        &lt;section class="search-section"&gt;
-            &lt;div class="search-box"&gt;
-                &lt;span class="search-icon"&gt;🔍&lt;/span&gt;
-                &lt;input type="text" class="search-input" id="searchInput" placeholder="搜索专业名称、学科门类，或直接查看全部专业..."&gt;
-                &lt;button class="search-btn" id="searchBtn"&gt;搜索&lt;/button&gt;
-            &lt;/div&gt;
-        &lt;/section&gt;
+        <section class="search-section">
+            <div class="search-box">
+                <span class="search-icon">🔍</span>
+                <input type="text" class="search-input" id="searchInput" placeholder="搜索专业名称、学科门类，或直接查看全部专业...">
+                <button class="search-clear" id="searchClear" style="display:none;" aria-label="清除搜索">✕</button>
+                <button class="search-btn" id="searchBtn">搜索</button>
+            </div>
+        </section>
         
-        &lt;section class="featured-section"&gt;
-            &lt;div class="section-header"&gt;
-                &lt;div&gt;
-                    &lt;h2 class="section-title"&gt;🔥 精选专业推荐&lt;/h2&gt;
-                    &lt;p class="section-subtitle"&gt;老师推荐 · 热门专业 · 高薪方向&lt;/p&gt;
-                &lt;/div&gt;
-                &lt;a href="majors.html" class="view-all-btn" id="viewAllBtn"&gt;查看全部专业 →&lt;/a&gt;
-            &lt;/div&gt;
+        <section class="featured-section">
+            <div class="section-header">
+                <div>
+                    <h2 class="section-title">🔥 精选专业推荐</h2>
+                    <p class="section-subtitle">老师推荐 · 热门专业 · 高薪方向</p>
+                </div>
+                <a href="majors.html" class="view-all-btn" id="viewAllBtn">查看全部专业 →</a>
+            </div>
             
-            &lt;div id="loading" class="loading-section"&gt;
-                &lt;div class="loading-spinner"&gt;&lt;/div&gt;
-                &lt;p class="loading-text"&gt;正在加载精选专业...&lt;/p&gt;
-            &lt;/div&gt;
+            <div id="loading">
+                <div class="featured-grid">
+                    <div class="skeleton-card"><div style="display:flex;gap:14px;margin-bottom:16px;"><div class="skeleton-circle"></div><div style="flex:1;"><div class="skeleton-line"></div><div class="skeleton-line short"></div></div></div><div class="skeleton-line short" style="height:28px;border-radius:9999px;"></div><div class="skeleton-line medium"></div><div class="skeleton-line short"></div></div>
+                    <div class="skeleton-card"><div style="display:flex;gap:14px;margin-bottom:16px;"><div class="skeleton-circle"></div><div style="flex:1;"><div class="skeleton-line"></div><div class="skeleton-line short"></div></div></div><div class="skeleton-line short" style="height:28px;border-radius:9999px;"></div><div class="skeleton-line medium"></div><div class="skeleton-line short"></div></div>
+                    <div class="skeleton-card"><div style="display:flex;gap:14px;margin-bottom:16px;"><div class="skeleton-circle"></div><div style="flex:1;"><div class="skeleton-line"></div><div class="skeleton-line short"></div></div></div><div class="skeleton-line short" style="height:28px;border-radius:9999px;"></div><div class="skeleton-line medium"></div><div class="skeleton-line short"></div></div>
+                    <div class="skeleton-card"><div style="display:flex;gap:14px;margin-bottom:16px;"><div class="skeleton-circle"></div><div style="flex:1;"><div class="skeleton-line"></div><div class="skeleton-line short"></div></div></div><div class="skeleton-line short" style="height:28px;border-radius:9999px;"></div><div class="skeleton-line medium"></div><div class="skeleton-line short"></div></div>
+                    <div class="skeleton-card"><div style="display:flex;gap:14px;margin-bottom:16px;"><div class="skeleton-circle"></div><div style="flex:1;"><div class="skeleton-line"></div><div class="skeleton-line short"></div></div></div><div class="skeleton-line short" style="height:28px;border-radius:9999px;"></div><div class="skeleton-line medium"></div><div class="skeleton-line short"></div></div>
+                    <div class="skeleton-card"><div style="display:flex;gap:14px;margin-bottom:16px;"><div class="skeleton-circle"></div><div style="flex:1;"><div class="skeleton-line"></div><div class="skeleton-line short"></div></div></div><div class="skeleton-line short" style="height:28px;border-radius:9999px;"></div><div class="skeleton-line medium"></div><div class="skeleton-line short"></div></div>
+                </div>
+            </div>
             
-            &lt;div class="featured-grid" id="featuredGrid" style="display: none;"&gt;
-            &lt;/div&gt;
-        &lt;/section&gt;
+            <div class="featured-grid" id="featuredGrid" style="display: none;">
+            </div>
+        </section>
         
-        &lt;footer&gt;
-            &lt;p&gt;专业星图 · 温暖的专业指南&lt;/p&gt;
-            &lt;p style="margin-top:8px;font-size:13px;"&gt;数据来源：专业星图数据库 · 请结合自身情况选择&lt;/p&gt;
-        &lt;/footer&gt;
-    &lt;/div&gt;
+        <footer>
+            <p>专业星图 · 温暖的专业指南</p>
+            <p style="margin-top:8px;font-size:13px;">数据来源：专业星图数据库 · 请结合自身情况选择</p>
+        </footer>
+    </div>
     
-    &lt;div id="modal" class="modal"&gt;
-        &lt;div class="modal-content"&gt;
-            &lt;div class="modal-header"&gt;
-                &lt;div class="modal-title"&gt;
-                    &lt;div class="category-icon" id="modalIcon"&gt;📚&lt;/div&gt;
-                    &lt;div&gt;
-                        &lt;p class="modal-category" id="modalCategory"&gt;--&lt;/p&gt;
-                        &lt;h2 id="modalTitle"&gt;--&lt;/h2&gt;
-                    &lt;/div&gt;
-                &lt;/div&gt;
-                &lt;button class="modal-close" id="closeModal"&gt;✕&lt;/button&gt;
-            &lt;/div&gt;
-            &lt;div class="modal-body"&gt;
-                &lt;div class="tab-buttons"&gt;
-                    &lt;button class="tab-btn active" data-tab="overview"&gt;专业概况&lt;/button&gt;
-                    &lt;button class="tab-btn" data-tab="courses"&gt;课程安排&lt;/button&gt;
-                    &lt;button class="tab-btn" data-tab="careers"&gt;就业前景&lt;/button&gt;
-                    &lt;button class="tab-btn" data-tab="review"&gt;⭐ 雪峰点评&lt;/button&gt;
-                &lt;/div&gt;
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <div class="category-icon" id="modalIcon">📚</div>
+                    <div>
+                        <p class="modal-category" id="modalCategory">--</p>
+                        <h2 id="modalTitle">--</h2>
+                    </div>
+                </div>
+                <button class="modal-close" id="closeModal">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="tab-buttons">
+                    <button class="tab-btn active" data-tab="overview">专业概况</button>
+                    <button class="tab-btn" data-tab="courses">课程安排</button>
+                    <button class="tab-btn" data-tab="careers">就业前景</button>
+                    <button class="tab-btn" data-tab="review">⭐ 雪峰点评</button>
+                </div>
                 
-                &lt;div id="overviewTab" class="tab-content active"&gt;
-                    &lt;div class="info-grid"&gt;
-                        &lt;div class="info-card"&gt;
-                            &lt;p class="info-card-label"&gt;学科门类&lt;/p&gt;
-                            &lt;p class="info-card-value" id="infoCategory"&gt;--&lt;/p&gt;
-                        &lt;/div&gt;
-                        &lt;div class="info-card"&gt;
-                            &lt;p class="info-card-label"&gt;专业代码&lt;/p&gt;
-                            &lt;p class="info-card-value" id="infoCode"&gt;--&lt;/p&gt;
-                        &lt;/div&gt;
-                        &lt;div class="info-card"&gt;
-                            &lt;p class="info-card-label"&gt;学习难度&lt;/p&gt;
-                            &lt;p class="info-card-value" id="infoDifficulty"&gt;--&lt;/p&gt;
-                        &lt;/div&gt;
-                        &lt;div class="info-card"&gt;
-                            &lt;p class="info-card-label"&gt;薪资范围&lt;/p&gt;
-                            &lt;p class="info-card-value" id="infoSalary"&gt;--&lt;/p&gt;
-                        &lt;/div&gt;
-                    &lt;/div&gt;
+                <div id="overviewTab" class="tab-content active">
+                    <div class="info-grid">
+                        <div class="info-card">
+                            <p class="info-card-label">学科门类</p>
+                            <p class="info-card-value" id="infoCategory">--</p>
+                        </div>
+                        <div class="info-card">
+                            <p class="info-card-label">专业代码</p>
+                            <p class="info-card-value" id="infoCode">--</p>
+                        </div>
+                        <div class="info-card">
+                            <p class="info-card-label">学位</p>
+                            <p class="info-card-value" id="infoDegree">--</p>
+                        </div>
+                        <div class="info-card">
+                            <p class="info-card-label">学制</p>
+                            <p class="info-card-value" id="infoDuration">--</p>
+                        </div>
+                        <div class="info-card">
+                            <p class="info-card-label">学习难度</p>
+                            <p class="info-card-value" id="infoDifficulty">--</p>
+                        </div>
+                        <div class="info-card">
+                            <p class="info-card-label">薪资范围</p>
+                            <p class="info-card-value" id="infoSalary">--</p>
+                        </div>
+                    </div>
                     
-                    &lt;div class="detail-section"&gt;
-                        &lt;h3 class="detail-title"&gt;📋 专业概述&lt;/h3&gt;
-                        &lt;p class="detail-content" id="detailOverview"&gt;--&lt;/p&gt;
-                    &lt;/div&gt;
+                    <div class="detail-section">
+                        <h3 class="detail-title">📋 专业概述</h3>
+                        <p class="detail-content" id="detailOverview">--</p>
+                    </div>
                     
-                    &lt;div class="detail-section"&gt;
-                        &lt;h3 class="detail-title"&gt;📚 你将学到&lt;/h3&gt;
-                        &lt;p class="detail-content" id="detailWhatYouLearn"&gt;--&lt;/p&gt;
-                    &lt;/div&gt;
+                    <div class="detail-section">
+                        <h3 class="detail-title">📚 你将学到</h3>
+                        <p class="detail-content" id="detailWhatYouLearn">--</p>
+                    </div>
                     
-                    &lt;div class="detail-section"&gt;
-                        &lt;h3 class="detail-title"&gt;👤 适合人群&lt;/h3&gt;
-                        &lt;p class="detail-content" id="detailSuitable"&gt;--&lt;/p&gt;
-                    &lt;/div&gt;
-                &lt;/div&gt;
+                    <div class="detail-section">
+                        <h3 class="detail-title">👤 适合人群</h3>
+                        <p class="detail-content" id="detailSuitable">--</p>
+                    </div>
+                </div>
                 
-                &lt;div id="coursesTab" class="tab-content"&gt;
-                    &lt;div class="detail-section"&gt;
-                        &lt;h3 class="detail-title"&gt;📅 四年课程安排&lt;/h3&gt;
-                        &lt;div id="detailYearlyCourses"&gt;&lt;/div&gt;
-                    &lt;/div&gt;
+                <div id="coursesTab" class="tab-content">
+                    <div class="detail-section">
+                        <h3 class="detail-title">📅 四年课程安排</h3>
+                        <div id="detailYearlyCourses"></div>
+                    </div>
                     
-                    &lt;div class="detail-section"&gt;
-                        &lt;h3 class="detail-title"&gt;🏛️ 名校推荐&lt;/h3&gt;
-                        &lt;div id="detailUniversities"&gt;&lt;/div&gt;
-                    &lt;/div&gt;
-                &lt;/div&gt;
+                    <div class="detail-section">
+                        <h3 class="detail-title">🏛️ 名校推荐</h3>
+                        <div id="detailUniversities"></div>
+                    </div>
+                </div>
                 
-                &lt;div id="careersTab" class="tab-content"&gt;
-                    &lt;div class="detail-section"&gt;
-                        &lt;h3 class="detail-title"&gt;🚀 前景展望&lt;/h3&gt;
-                        &lt;p class="detail-content" id="detailCareerOutlook"&gt;--&lt;/p&gt;
-                    &lt;/div&gt;
-                    
-                    &lt;div class="detail-section"&gt;
-                        &lt;h3 class="detail-title"&gt;💰 薪资范畴&lt;/h3&gt;
-                        &lt;p class="detail-content" id="detailSalaryRange"&gt;--&lt;/p&gt;
-                    &lt;/div&gt;
-                &lt;/div&gt;
-                
-                &lt;div id="reviewTab" class="tab-content"&gt;
-                    &lt;div class="detail-section"&gt;
-                        &lt;h3 class="detail-title"&gt;🔥 雪峰点评&lt;/h3&gt;
-                        &lt;p style="font-size: 12px; color: #9e9e9e; margin-bottom: 12px;"&gt;⚠️ 本栏目观点为模拟评论，仅供参考。&lt;/p&gt;
-                        &lt;div class="summary-box" id="detailXuefengComment" style="font-size: 15px; line-height: 1.9; color: #5d4037;"&gt;--&lt;/div&gt;
-                    &lt;/div&gt;
-                    
-                    &lt;div class="cta-section"&gt;
-                        &lt;button class="cta-button" onclick="goToReports()"&gt;🔥 获取深度分析报告&lt;/button&gt;
-                    &lt;/div&gt;
-                &lt;/div&gt;
-            &lt;/div&gt;
-        &lt;/div&gt;
-    &lt;/div&gt;
-    
-    &lt;div id="preheatModal" class="preheat-modal"&gt;
-        &lt;div class="preheat-content"&gt;
-            &lt;button class="preheat-close" onclick="closePreheatModal()"&gt;✕&lt;/button&gt;
-            &lt;div class="preheat-icon"&gt;🔮&lt;/div&gt;
-            &lt;h2 class="preheat-title"&gt;深度分析报告即将上线&lt;/h2&gt;
-            &lt;p class="preheat-desc"&gt;
-                我们正在全力打造专业的深度分析报告，为您提供更权威、更深度的专业选择指导。
-            &lt;/p&gt;
-            &lt;ul class="preheat-features"&gt;
-                &lt;li&gt;📊 权威就业数据（教育部/人社部数据支持）&lt;/li&gt;
-                &lt;li&gt;🎯 个性化职业发展路径分析&lt;/li&gt;
-                &lt;li&gt;👔 HR视角的市场需求解读&lt;/li&gt;
-                &lt;li&gt;💡 张雪峰风格的硬核报考建议&lt;/li&gt;
-                &lt;li&gt;📈 行业趋势深度分析&lt;/li&gt;
-            &lt;/ul&gt;
-            &lt;p style="font-size: 13px; color: var(--on-surface-variant);"&gt;
-                预计上线时间：2026年7月
-            &lt;/p&gt;
-        &lt;/div&gt;
-    &lt;/div&gt;
+                <div id="careersTab" class="tab-content">
+                    <div class="detail-section">
+                        <h3 class="detail-title">🚀 前景展望</h3>
+                        <p class="detail-content" id="detailCareerOutlook">--</p>
+                    </div>
 
-    &lt;script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"&gt;&lt;/script&gt;
-    &lt;script src="js/auth.js"&gt;&lt;/script&gt;
-    &lt;script&gt;
-        const SUPABASE_URL = 'https://djteatwxjlnbjylynvjh.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRqdGVhdHd4amxuYmp5bHludmpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwODUwOTMsImV4cCI6MjA5NDY2MTA5M30.P6IJW2noTImzeNXtfKsmjJBMp9AJBTw1LamYTdtyd_4';
-        
-        let majorsData = [];
-        let currentMajor = null;
-        let currentUser = null;
-        
-        function formatXuefengComment(comment) {
-            if (!comment) return '';
-            let html = comment;
-            html = html.replace(/\*\*(.+?)\*\*/g, '&lt;strong&gt;$1&lt;/strong&gt;');
-            html = html.replace(/\n\n/g, '&lt;/p&gt;&lt;p&gt;');
-            html = html.replace(/\n/g, '&lt;br&gt;');
-            html = html.replace(/^\- /gm, '&lt;span style="display:inline-block;width:16px;"&gt;•&lt;/span&gt;');
-            html = html.replace(/^\d+\.\s/gm, '&lt;span style="display:inline-block;width:24px;font-weight:bold;"&gt;$&amp;&lt;/span&gt;');
-            html = '&lt;p&gt;' + html + '&lt;/p&gt;';
-            html = html.replace(/&lt;p&gt;&lt;\/p&gt;/g, '');
-            return html;
-        }
-        
-        const featuredMajorCodes = [
-            '080901', '080701', '100201K',
-            '081301', '080601', '050303',
-            '081001', '080801', '070101'
-        ];
-        
-        const badges = [
-            '🔥 老师推荐', '💰 高薪专业', '📈 热门方向',
-            '🎯 前景广阔', '🌟 特色专业', '💡 新兴行业',
-            '🚀 潜力无限', '💼 就业无忧', '🎓 名校首选'
-        ];
-        
-        async function updateUserArea() {
-            const userArea = document.getElementById('navUserArea');
-            const user = await auth.getCurrentUser();
-            currentUser = user;
-            
-            if (user) {
-                const phone = user.phone || user.email || '用户';
-                const displayName = phone.length &gt; 11 ? phone.slice(0, 11) : phone;
+                    <div class="detail-section" id="careerDirectionsSection" style="display:none;">
+                        <h3 class="detail-title">🎯 就业方向</h3>
+                        <div id="detailCareerDirections" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
+                    </div>
+
+                    <div class="detail-section">
+                        <h3 class="detail-title">💰 薪资范畴</h3>
+                        <p class="detail-content" id="detailSalaryRange">--</p>
+                    </div>
+                </div>
                 
-                userArea.innerHTML = `
-                    &lt;div class="user-info"&gt;
-                        &lt;div class="user-avatar"&gt;👤&lt;/div&gt;
-                        &lt;span class="user-name"&gt;${displayName}&lt;/span&gt;
-                        &lt;button class="btn-sm btn-primary-sm" id="logoutBtn"&gt;退出&lt;/button&gt;
-                    &lt;/div&gt;
-                `;
-                
-                document.getElementById('logoutBtn').addEventListener('click', async () =&gt; {
-                    await auth.logout();
-                    updateUserArea();
-                });
-            } else {
-                userArea.innerHTML = `
-                    &lt;a href="login.html" class="nav-link"&gt;登录&lt;/a&gt;
-                    &lt;a href="register.html" class="btn-sm btn-primary-sm" style="text-decoration: none;"&gt;注册&lt;/a&gt;
-                `;
-            }
-        }
-        
-        async function fetchMajors() {
-            try {
-                console.log('Fetching majors from Supabase...');
-                const response = await fetch(`${SUPABASE_URL}/rest/v1/majors?select=*`, {
-                    headers: {
-                        'apikey': SUPABASE_KEY,
-                        'Authorization': `Bearer ${SUPABASE_KEY}`,
-                        'Content-Type': 'application/json'
-                    }
-                });
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                
-                majorsData = await response.json();
-                console.log('Fetched', majorsData.length, 'majors');
-                initializeUI();
-            } catch (error) {
-                console.error('Error fetching majors:', error);
-                document.getElementById('loading').innerHTML = `&lt;p class="loading-text" style="color: #e53935;"&gt;加载失败: ${error.message}&lt;br&gt;请刷新页面重试&lt;/p&gt;`;
-            }
-        }
-        
-        function initializeUI() {
-            document.getElementById('loading').style.display = 'none';
-            document.getElementById('featuredGrid').style.display = 'grid';
-            
-            const categories = [...new Set(majorsData.map(m =&gt; m.category))];
-            document.getElementById('totalMajors').textContent = majorsData.length;
-            document.getElementById('totalCategories').textContent = categories.length;
-            
-            document.querySelector('.view-all-btn').textContent = `查看全部 ${majorsData.length} 个专业 →`;
-            
-            const featuredMajors = featuredMajorCodes
-                .map(code =&gt; majorsData.find(m =&gt; m.code === code))
-                .filter(Boolean);
-            
-            displayFeaturedMajors(featuredMajors);
-        }
-        
-        function displayFeaturedMajors(majors) {
-            const grid = document.getElementById('featuredGrid');
-            grid.innerHTML = '';
-            
-            majors.forEach((major, index) =&gt; {
-                const card = document.createElement('div');
-                card.className = 'featured-card';
-                card.dataset.code = major.code;
-                card.innerHTML = `
-                    &lt;div class="card-badge"&gt;${badges[index]}&lt;/div&gt;
-                    &lt;div class="featured-header"&gt;
-                        &lt;div class="featured-icon"&gt;${major.category_icon || '📚'}&lt;/div&gt;
-                        &lt;div class="featured-info"&gt;
-                            &lt;h3 class="featured-name"&gt;${major.name}&lt;/h3&gt;
-                            &lt;p class="featured-code"&gt;${major.code}&lt;/p&gt;
-                            &lt;p class="featured-difficulty"&gt;${major.difficulty || ''}&lt;/p&gt;
-                        &lt;/div&gt;
-                    &lt;/div&gt;
-                    &lt;div class="featured-body"&gt;
-                        &lt;span class="featured-salary"&gt;${(major.salary_range || '薪资面议').replace('¥', '')}&lt;/span&gt;
-                        &lt;p class="featured-preview"&gt;${(major.overview || '').substring(0, 80)}...&lt;/p&gt;
-                    &lt;/div&gt;
-                `;
-                card.addEventListener('click', () =&gt; openModal(major));
-                grid.appendChild(card);
-            });
-        }
-        
-        function openModal(major) {
-            currentMajor = major;
-            document.getElementById('modalIcon').textContent = major.category_icon || '📚';
-            document.getElementById('modalCategory').textContent = major.category;
-            document.getElementById('modalTitle').textContent = major.name;
-            
-            document.getElementById('infoCategory').textContent = major.category;
-            document.getElementById('infoCode').textContent = major.code;
-            document.getElementById('infoDifficulty').textContent = major.difficulty;
-            document.getElementById('infoSalary').textContent = major.salary_range;
-            
-            document.getElementById('detailOverview').textContent = major.overview || '暂无数据';
-            document.getElementById('detailWhatYouLearn').textContent = major.what_you_learn || '暂无数据';
-            document.getElementById('detailSuitable').textContent = major.suitable_for || '暂无数据';
-            document.getElementById('detailCareerOutlook').textContent = major.career_outlook || '暂无数据';
-            document.getElementById('detailSalaryRange').textContent = '就业薪资范围：' + (major.salary_range || '暂无数据');
-            document.getElementById('detailXuefengComment').innerHTML = formatXuefengComment(major.xuefeng_comment) || '暂无数据';
-            
-            const yearlyCourses = document.getElementById('detailYearlyCourses');
-            if (yearlyCourses) {
-                yearlyCourses.innerHTML = '';
-                if (major.yearly_courses) {
-                    const courses = typeof major.yearly_courses === 'string' ? JSON.parse(major.yearly_courses) : major.yearly_courses;
-                    for (const [year, items] of Object.entries(courses)) {
-                        yearlyCourses.innerHTML += `
-                            &lt;ul class="year-list"&gt;
-                                &lt;li&gt;&lt;strong&gt;${year}：&lt;/strong&gt;${items.join('、')}&lt;/li&gt;
-                            &lt;/ul&gt;
-                        `;
-                    }
-                }
-            }
-            
-            const unis = major.top_universities ? 
-                (typeof major.top_universities === 'string' ? JSON.parse(major.top_universities) : major.top_universities) : {};
-            
-            const universities = document.getElementById('detailUniversities');
-            if (universities) {
-                universities.innerHTML = '';
-                if (unis.domestic) {
-                    universities.innerHTML += `
-                        &lt;div class="uni-section"&gt;
-                            &lt;p class="uni-label"&gt;🇨🇳 国内名校&lt;/p&gt;
-                            &lt;div class="uni-tags"&gt;
-                                ${unis.domestic.map(u =&gt; `&lt;span class="uni-tag chinese"&gt;${u}&lt;/span&gt;`).join('')}
-                            &lt;/div&gt;
-                        &lt;/div&gt;
-                    `;
-                }
-                if (unis.international) {
-                    universities.innerHTML += `
-                        &lt;div class="uni-section"&gt;
-                            &lt;p class="uni-label"&gt;🌍 国际名校&lt;/p&gt;
-                            &lt;div class="uni-tags"&gt;
-                                ${unis.international.map(u =&gt; `&lt;span class="uni-tag foreign"&gt;${u}&lt;/span&gt;`).join('')}
-                            &lt;/div&gt;
-                        &lt;/div&gt;
-                    `;
-                }
-            }
-            
-            document.querySelectorAll('.tab-btn').forEach(btn =&gt; btn.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(tab =&gt; tab.classList.remove('active'));
-            document.querySelector('[data-tab="overview"]').classList.add('active');
-            document.getElementById('overviewTab').classList.add('active');
-            
-            document.getElementById('modal').classList.add('show');
-        }
-        
-        function closeModal() {
-            document.getElementById('modal').classList.remove('show');
-            currentMajor = null;
-        }
-        
-        function closePreheatModal() {
-            document.getElementById('preheatModal').classList.remove('show');
-        }
-        
-        async function goToReports() {
-            const user = await auth.getCurrentUser();
-            if (!user) {
-                if (confirm('查看深度报告需要登录，是否前往登录？')) {
-                    window.location.href = 'login.html';
-                }
-                return;
-            }
-            window.location.href = 'user/reports.html';
-        }
-        
-        document.addEventListener('DOMContentLoaded', () =&gt; {
-            auth.initSupabase();
-            updateUserArea();
-            fetchMajors();
-            
-            document.getElementById('searchBtn').addEventListener('click', () =&gt; {
-                const searchTerm = document.getElementById('searchInput').value.trim();
-                if (searchTerm) {
-                    const found = majorsData.find(m =&gt; 
-                        m.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                        m.category.toLowerCase().includes(searchTerm.toLowerCase())
-                    );
-                    if (found) {
-                        openModal(found);
-                    } else {
-                        window.location.href = 'majors.html';
-                    }
-                } else {
-                    window.location.href = 'majors.html';
-                }
-            });
-            
-            document.getElementById('searchInput').addEventListener('keypress', (e) =&gt; {
-                if (e.key === 'Enter') {
-                    document.getElementById('searchBtn').click();
-                }
-            });
-            
-            document.getElementById('closeModal').addEventListener('click', closeModal);
-            
-            document.getElementById('modal').addEventListener('click', (e) =&gt; {
-                if (e.target === document.getElementById('modal')) closeModal();
-            });
-            
-            document.querySelectorAll('.tab-btn').forEach(btn =&gt; {
-                btn.addEventListener('click', () =&gt; {
-                    document.querySelectorAll('.tab-btn').forEach(b =&gt; b.classList.remove('active'));
-                    document.querySelectorAll('.tab-content').forEach(tab =&gt; tab.classList.remove('active'));
-                    btn.classList.add('active');
-                    document.getElementById(btn.dataset.tab + 'Tab').classList.add('active');
-                });
-            });
-            
-            document.getElementById('preheatModal').addEventListener('click', (e) =&gt; {
-                if (e.target === document.getElementById('preheatModal')) closePreheatModal();
-            });
-        });
-    &lt;/script&gt;
-&lt;/body&gt;
-&lt;/html&gt;
+                <div id="reviewTab" class="tab-content">
+                    <div class="detail-section">
+                        <h3 class="detail-title">🔥 雪峰点评</h3>
+                        <p style="font-size: 12px; color: #9e9e9e; margin-bottom: 12px;">⚠️ 本栏目观点为模拟评论，仅供参考。</p>
+                        <div class="summary-box" id="detailXuefengComment" style="font-size: 15px; line-height: 1.9; color: #5d4037;">--</div>
+                    </div>
+                    
+                    <div class="cta-section">
+                        <button class="cta-button" onclick="goToReports()">🔥 获取深度分析报告</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="preheatModal" class="preheat-modal">
+        <div class="preheat-content">
+            <button class="preheat-close" onclick="closePreheatModal()">✕</button>
+            <div class="preheat-icon">🎓</div>
+            <h2 class="preheat-title">深度分析报告已上线</h2>
+            <p class="preheat-desc">
+                15个热门专业的深度分析报告现已开放，为您提供权威、深度的专业选择指导。
+            </p>
+            <ul class="preheat-features">
+                <li>📊 权威就业数据（教育部/人社部数据支持）</li>
+                <li>🎯 个性化职业发展路径分析</li>
+                <li>👔 HR视角的市场需求解读</li>
+                <li>💡 张雪峰风格的硬核报考建议</li>
+                <li>📈 行业趋势深度分析</li>
+            </ul>
+            <button class="btn btn-primary" onclick="goToReports()" style="margin-top: 16px; width: 100%; padding: 14px; font-size: 16px;">
+                立即查看深度报告
+            </button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script type="module" src="/js/pages/index.js"></script>
+</body>
+</html>

@@ -1,129 +1,92 @@
+// ============================================================
+// 专业星图 - 认证模块（ES Module）
+// ============================================================
 
-const SUPABASE_URL = 'https://djteatwxjlnbjylynvjh.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRqdGVhdHd4amxuYmp5bHludmpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwODUwOTMsImV4cCI6MjA5NDY2MTA5M30.P6IJW2noTImzeNXtfKsmjJBMp9AJBTw1LamYTdtyd_4';
+import { getSupabase, initSupabase } from './supabase-client.js';
 
-let supabaseClient = null;
-
-function initSupabase() {
-  if (typeof supabase !== 'undefined') {
-    supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    return supabaseClient;
-  }
-  return null;
-}
-
-function getSupabase() {
-  if (!supabaseClient) {
-    initSupabase();
-  }
-  return supabaseClient;
-}
-
-async function loginWithEmail(email, password) {
+export async function loginWithEmail(email, password) {
   const sb = getSupabase();
   if (!sb) throw new Error('Supabase not initialized');
-  
-  const { data, error } = await sb.auth.signInWithPassword({
-    email,
-    password
-  });
-  
+
+  const { data, error } = await sb.auth.signInWithPassword({ email, password });
   if (error) throw error;
   return data;
 }
 
-async function loginWithPhone(phone, password) {
+export async function loginWithPhone(phone, password) {
   const sb = getSupabase();
   if (!sb) throw new Error('Supabase not initialized');
-  
-  const { data, error } = await sb.auth.signInWithPassword({
-    phone,
-    password
-  });
-  
+
+  const { data, error } = await sb.auth.signInWithPassword({ phone, password });
   if (error) throw error;
   return data;
 }
 
-async function registerWithEmail(email, password, phone) {
+export async function registerWithEmail(email, password, phone) {
   const sb = getSupabase();
   if (!sb) throw new Error('Supabase not initialized');
-  
+
   const { data, error } = await sb.auth.signUp({
     email,
     password,
-    options: {
-      data: {
-        phone: phone
-      }
-    }
+    options: { data: { phone } },
   });
-  
   if (error) throw error;
-  
+
   if (data.user) {
     await createUserProfile(data.user.id, phone);
   }
-  
   return data;
 }
 
-async function registerWithPhone(phone, password) {
+export async function registerWithPhone(phone, password) {
   const sb = getSupabase();
   if (!sb) throw new Error('Supabase not initialized');
-  
-  const { data, error } = await sb.auth.signUp({
-    phone,
-    password
-  });
-  
+
+  const { data, error } = await sb.auth.signUp({ phone, password });
   if (error) throw error;
-  
+
   if (data.user) {
     await createUserProfile(data.user.id, phone);
   }
-  
   return data;
 }
 
 async function createUserProfile(userId, phone) {
   const sb = getSupabase();
   if (!sb) throw new Error('Supabase not initialized');
-  
+
   const { data, error } = await sb
     .from('user_profiles')
-    .upsert({
-      id: userId,
-      phone: phone,
-      points_balance: 0,
-      role: 'user'
-    })
+    .upsert({ id: userId, phone, points_balance: 0, role: 'user' })
     .select()
     .single();
-  
+
   if (error) {
     console.error('Error creating user profile:', error);
   }
-  
   return data;
 }
 
-async function logout() {
+export async function logout() {
   const sb = getSupabase();
   if (!sb) throw new Error('Supabase not initialized');
-  
+
   const { error } = await sb.auth.signOut();
   if (error) throw error;
-  
+
   window.location.href = '/login.html';
 }
 
-async function getCurrentUser() {
+export async function getCurrentUser() {
   const sb = getSupabase();
   if (!sb) return null;
-  
+
   try {
-    const { data: { user }, error } = await sb.auth.getUser();
+    const {
+      data: { user },
+      error,
+    } = await sb.auth.getUser();
     if (error) {
       console.log('No active session:', error.message);
       return null;
@@ -135,39 +98,47 @@ async function getCurrentUser() {
   }
 }
 
-async function getUserProfile() {
+export async function getUserProfile() {
   const user = await getCurrentUser();
   if (!user) return null;
-  
+
   const sb = getSupabase();
   if (!sb) return null;
-  
-  const { data, error } = await sb
-    .from('user_profiles')
-    .select('*')
-    .eq('id', user.id)
-    .single();
-  
+
+  const { data, error } = await sb.from('user_profiles').select('*').eq('id', user.id).single();
+
   if (error) {
+    // PGRST116: 查询返回 0 行，说明 profile 尚未创建，自动创建一个
+    if (error.code === 'PGRST116') {
+      console.log('User profile not found, auto-creating...');
+      const phone = user.phone || '';
+      const { data: newProfile, error: insertError } = await sb
+        .from('user_profiles')
+        .upsert({ id: user.id, phone, points_balance: 0, role: 'user' })
+        .select()
+        .single();
+      if (insertError) {
+        console.error('Error auto-creating user profile:', insertError);
+        return null;
+      }
+      return newProfile;
+    }
     console.error('Error fetching user profile:', error);
     return null;
   }
-  
   return data;
 }
 
-async function checkAuthState(callback) {
+export function checkAuthState(callback) {
   const sb = getSupabase();
   if (!sb) return;
-  
-  sb.auth.onAuthStateChange((event, session) =&gt; {
-    if (callback) {
-      callback(session);
-    }
+
+  sb.auth.onAuthStateChange((event, session) => {
+    if (callback) callback(session);
   });
 }
 
-async function checkAuthAndRedirect(redirectTo = '/login.html') {
+export async function checkAuthAndRedirect(redirectTo = '/login.html') {
   const user = await getCurrentUser();
   if (!user) {
     window.location.href = redirectTo;
@@ -176,23 +147,20 @@ async function checkAuthAndRedirect(redirectTo = '/login.html') {
   return true;
 }
 
-async function isAdmin() {
+export async function isAdmin() {
   const profile = await getUserProfile();
-  return profile &amp;&amp; profile.role === 'admin';
+  return profile && profile.role === 'admin';
 }
 
-function showToast(message, type = 'success') {
+export function showToast(message, type = 'success') {
   const container = document.querySelector('.toast-container') || createToastContainer();
-  
+
   const toast = document.createElement('div');
   toast.className = `toast toast-${type}`;
   toast.textContent = message;
-  
   container.appendChild(toast);
-  
-  setTimeout(() =&gt; {
-    toast.remove();
-  }, 3000);
+
+  setTimeout(() => toast.remove(), 3000);
 }
 
 function createToastContainer() {
@@ -202,20 +170,21 @@ function createToastContainer() {
   return container;
 }
 
-// 导出到全局作用域
-window.auth = {
-  initSupabase,
-  getSupabase,
-  loginWithEmail,
-  loginWithPhone,
-  registerWithEmail,
-  registerWithPhone,
-  logout,
-  getCurrentUser,
-  getUserProfile,
-  checkAuthState,
-  checkAuthAndRedirect,
-  isAdmin,
-  showToast
-};
-
+// 向后兼容：挂载到全局 window
+if (typeof window !== 'undefined') {
+  window.auth = {
+    initSupabase: () => (window.supabaseClient ? window.supabaseClient.init() : null),
+    getSupabase: () => (window.supabaseClient ? window.supabaseClient.get() : null),
+    loginWithEmail,
+    loginWithPhone,
+    registerWithEmail,
+    registerWithPhone,
+    logout,
+    getCurrentUser,
+    getUserProfile,
+    checkAuthState,
+    checkAuthAndRedirect,
+    isAdmin,
+    showToast,
+  };
+}
