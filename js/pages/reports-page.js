@@ -156,7 +156,7 @@ function buildShareContent(report) {
   // 提取纯文本摘要（去除 HTML 标签）
   const plainText = shareText.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
   const excerpt = plainText.length > 300 ? plainText.slice(0, 300) + '...' : plainText;
-  return `📊【${report.major_name}】深度分析报告\n\n${excerpt}\n\n🔗 注册专业星图，解锁完整深度分析报告 → ${window.location.origin}/register.html\n\n—— 专业星图 · 大学专业职业前景查询平台`;
+  return `📊【${report.major_name}】深度分析报告\n\n${excerpt}\n\n🔗 查看更多专业深度分析报告 → ${window.location.origin}/\n\n—— 专业星图 · 大学专业职业前景查询平台`;
 }
 
 async function handleShare(report) {
@@ -200,8 +200,7 @@ async function showReportDetail(reportId) {
       <div class="report-unlocked-layout">
         <div id="reportReaderContainer" class="report-reader-container">加载中...</div>
         <div class="report-share-bar">
-          <a href="/register.html" class="invite-cta" target="_blank">🎓 注册专业星图 · 解锁更多报告</a>
-          <button class="share-btn" id="shareReportBtn">
+          <button class="share-btn" id="shareReportBtn" style="margin-left:auto;">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.59 13.51l6.83 3.98M15.41 6.51l-6.82 3.98"/></svg>
             分享报告
           </button>
@@ -247,8 +246,7 @@ async function showReportDetail(reportId) {
         </div>
       </div>
       <div class="preview-share-bar">
-        <a href="/register.html" class="invite-cta" target="_blank">🎓 注册专业星图 · 免费解锁更多报告</a>
-        <button class="share-btn" id="shareReportBtn">
+        <button class="share-btn" id="shareReportBtn" style="margin-left:auto;">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.59 13.51l6.83 3.98M15.41 6.51l-6.82 3.98"/></svg>
           分享报告
         </button>
