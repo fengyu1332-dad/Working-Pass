@@ -1,0 +1,27 @@
+{
+  "env": {
+    "browser": true,
+    "es2021": true
+  },
+  "extends": "eslint:recommended",
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "sourceType": "module"
+  },
+  "rules": {
+    "no-unused-vars": "off",
+    "no-undef": "off",
+    "no-redeclare": "off",
+    "no-console": "off",
+    "no-extra-semi": "warn",
+    "no-empty": "warn",
+    "no-constant-condition": "warn",
+    "no-unreachable": "warn",
+    "no-unsafe-negation": "error",
+    "no-dupe-keys": "error"
+  },
+  "globals": {
+    "supabase": "readonly",
+    "auth": "readonly"
+  }
+}

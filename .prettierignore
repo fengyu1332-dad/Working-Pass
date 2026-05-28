@@ -1,0 +1,10 @@
+.git/
+archive/
+data/reports/backup*/
+scripts/archive/
+fonts/
+*.pdf
+*.zip
+*.otf
+*-lock.json
+node_modules/

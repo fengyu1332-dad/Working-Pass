@@ -1,0 +1,79 @@
+name: Uptime Health Check
+
+on:
+  schedule:
+    # 每30分钟运行一次（避开整点和半点减少并发）
+    - cron: "7,37 * * * *"
+  workflow_dispatch:
+
+jobs:
+  check:
+    name: Health check
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check website
+        id: website
+        run: |
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 "https://${{ vars.SITE_URL }}/")
+          echo "http_code=$HTTP_CODE" >> $GITHUB_OUTPUT
+          if [ "$HTTP_CODE" != "200" ]; then
+            echo "::warning::Website returned HTTP $HTTP_CODE"
+            echo "site_down=true" >> $GITHUB_OUTPUT
+          else
+            echo "site_down=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Check Supabase API
+        id: supabase
+        run: |
+          HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 \
+            -H "apikey: ${{ secrets.SUPABASE_ANON_KEY }}" \
+            "https://${{ vars.SUPABASE_PROJECT_ID }}.supabase.co/rest/v1/")
+          echo "http_code=$HTTP_CODE" >> $GITHUB_OUTPUT
+          if [ "$HTTP_CODE" != "200" ]; then
+            echo "::warning::Supabase returned HTTP $HTTP_CODE"
+            echo "db_down=true" >> $GITHUB_OUTPUT
+          else
+            echo "db_down=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Create alert issue
+        if: steps.website.outputs.site_down == 'true' || steps.supabase.outputs.db_down == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const siteDown = '${{ steps.website.outputs.site_down }}' === 'true';
+            const dbDown = '${{ steps.supabase.outputs.db_down }}' === 'true';
+
+            let body = '## 🚨 服务健康检查告警\n\n';
+            body += `**时间**: ${new Date().toISOString()}\n`;
+            body += `**工作流**: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}\n\n`;
+            body += '| 检查项 | 状态 |\n';
+            body += '|--------|------|\n';
+            body += `| 网站 (${{ vars.SITE_URL }}) | ${siteDown ? '❌ 不可达' : '✅ 正常'} |\n`;
+            body += `| Supabase API | ${dbDown ? '❌ 不可达' : '✅ 正常'} |\n`;
+
+            const { data: issues } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ['uptime-alert'],
+              state: 'open',
+              per_page: 5
+            });
+
+            if (issues.length > 0) {
+              body += '\n> ⚠️ 已有未关闭的告警 issue，请在确认恢复后手动关闭。';
+            }
+
+            if (issues.length === 0) {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: '🚨 服务异常告警 - ' + new Date().toLocaleString('zh-CN'),
+                body: body,
+                labels: ['uptime-alert']
+              });
+            }

@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vue 3 组件原型 — 专业星图</title>
+  <link href="https://fonts.googleapis.com/css2?family=Literata:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --surface: #FFF8F5;
+      --surface-container: #FFFFFF;
+      --primary: #E67E22;
+      --primary-container: #FAD7B2;
+      --secondary: #705A49;
+      --secondary-container: #EBE0D6;
+      --on-surface: #2C2621;
+      --on-primary: #FFFFFF;
+      --on-surface-variant: #8B7E74;
+      --outline: #DED0C6;
+      --shadow: rgba(112, 90, 73, 0.05);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: "Inter", -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
+      background: var(--surface);
+      min-height: 100vh;
+      color: var(--on-surface);
+      line-height: 1.8;
+    }
+
+    .top-nav {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .nav-logo {
+      font-family: "Literata", serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--secondary);
+      text-decoration: none;
+    }
+    .nav-links {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+    .nav-link {
+      color: var(--on-surface-variant);
+      text-decoration: none;
+      font-size: 14px;
+      transition: color 0.3s;
+    }
+    .nav-link:hover { color: var(--primary); }
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .user-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--primary-container);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+    .user-name {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--secondary);
+    }
+    .btn-sm {
+      padding: 8px 16px;
+      font-size: 14px;
+      border-radius: 12px;
+    }
+    .btn-primary-sm {
+      background: var(--primary);
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .btn-primary-sm:hover {
+      background: #D35400;
+      transform: translateY(-1px);
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+
+    .demo-section {
+      background: var(--surface-container);
+      border-radius: 24px;
+      padding: 40px;
+      margin-bottom: 32px;
+      box-shadow: 0 4px 24px var(--shadow);
+    }
+    .demo-title {
+      font-family: "Literata", serif;
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--secondary);
+      margin-bottom: 8px;
+    }
+    .demo-desc {
+      color: var(--on-surface-variant);
+      margin-bottom: 24px;
+      font-size: 14px;
+    }
+    .demo-subtitle {
+      font-size: 12px;
+      color: var(--on-surface-variant);
+      margin-top: 16px;
+      padding: 12px;
+      background: var(--secondary-container);
+      border-radius: 8px;
+      font-family: monospace;
+    }
+
+    .mock-data-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .mock-card {
+      background: var(--secondary-container);
+      padding: 20px;
+      border-radius: 16px;
+      cursor: pointer;
+      transition: all 0.3s;
+      border: 2px solid transparent;
+    }
+    .mock-card:hover {
+      border-color: var(--primary);
+      transform: translateY(-2px);
+    }
+    .mock-card h3 {
+      font-family: "Literata", serif;
+      color: var(--secondary);
+      margin-bottom: 4px;
+    }
+    .mock-card .code {
+      font-size: 12px;
+      color: var(--on-surface-variant);
+    }
+
+    /* 复用原项目的模态框样式 */
+    .modal {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      overflow-y: auto;
+      padding: 20px;
+    }
+    .modal.show { display: flex; }
+    .modal-content {
+      background: var(--surface-container);
+      max-width: 900px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      border-radius: 24px;
+      box-shadow: 0 8px 48px rgba(0,0,0,0.1);
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 24px;
+      border-bottom: 1px solid var(--outline);
+      position: sticky;
+      top: 0;
+      background: var(--surface-container);
+      z-index: 10;
+    }
+    .modal-title {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .modal-title .category-icon {
+      font-size: 48px;
+      width: 80px;
+      height: 80px;
+      background: var(--primary-container);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 16px;
+    }
+    .modal-title h2 {
+      font-family: "Literata", serif;
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--secondary);
+      margin: 0;
+    }
+    .modal-category {
+      font-size: 14px;
+      color: var(--on-surface-variant);
+      margin-bottom: 4px;
+    }
+    .modal-close {
+      background: var(--secondary-container);
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      font-size: 24px;
+      cursor: pointer;
+      color: var(--secondary);
+      transition: all 0.3s;
+    }
+    .modal-close:hover {
+      background: var(--primary);
+      color: white;
+    }
+    .modal-body { padding: 32px; }
+    .tab-buttons {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+    }
+    .tab-btn {
+      padding: 10px 20px;
+      border: 2px solid var(--outline);
+      border-radius: 9999px;
+      background: transparent;
+      color: var(--secondary);
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.3s;
+    }
+    .tab-btn:hover { background: var(--secondary-container); }
+    .tab-btn.active {
+      background: var(--primary);
+      color: var(--on-primary);
+      border-color: var(--primary);
+    }
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .info-card {
+      background: var(--secondary-container);
+      padding: 16px;
+      border-radius: 16px;
+      text-align: center;
+    }
+    .info-card-label {
+      font-size: 12px;
+      color: var(--on-surface-variant);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+    .info-card-value {
+      font-family: "Literata", serif;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--secondary);
+    }
+    .detail-section { margin-bottom: 24px; }
+    .detail-title {
+      font-family: "Literata", serif;
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--secondary);
+      margin-bottom: 12px;
+    }
+    .detail-content {
+      font-size: 15px;
+      color: var(--on-surface);
+      margin-bottom: 10px;
+      line-height: 1.8;
+    }
+    .year-list { list-style: none; padding-left: 0; }
+    .year-list li {
+      margin: 10px 0;
+      position: relative;
+      padding-left: 24px;
+      font-size: 14px;
+      color: var(--on-surface-variant);
+    }
+    .year-list li::before {
+      content: "•";
+      position: absolute;
+      left: 0;
+      color: var(--primary);
+      font-weight: bold;
+      font-size: 18px;
+    }
+    .uni-tags { display: flex; flex-wrap: wrap; gap: 10px; }
+    .uni-tag {
+      display: inline-block;
+      padding: 8px 16px;
+      border-radius: 9999px;
+      font-size: 13px;
+      font-weight: 500;
+      line-height: 1;
+    }
+    .uni-tag.chinese {
+      background: linear-gradient(135deg, #fff3e0, #ffe0b2);
+      color: #e65100;
+      border: 1px solid #ffcc80;
+    }
+    .uni-tag.foreign {
+      background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+      color: #1565c0;
+      border: 1px solid #90caf9;
+    }
+    .summary-box {
+      background: var(--secondary-container);
+      padding: 20px;
+      border-radius: 16px;
+      margin-top: 20px;
+      color: var(--on-surface);
+      font-size: 14px;
+      line-height: 1.8;
+    }
+    .cta-section {
+      margin-top: 32px;
+      text-align: center;
+    }
+    .cta-button {
+      background: linear-gradient(135deg, #E67E22, #D35400);
+      color: white;
+      border: none;
+      padding: 16px 48px;
+      border-radius: 9999px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 4px 20px rgba(230,126,34,0.4);
+    }
+    .cta-button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 30px rgba(230,126,34,0.5);
+    }
+
+    .migration-note {
+      background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+      border-left: 4px solid #1565c0;
+      padding: 20px 24px;
+      border-radius: 12px;
+      margin-top: 24px;
+      font-size: 14px;
+      line-height: 1.8;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <!-- 导航栏组件 -->
+    <site-navbar
+      :user="currentUser"
+      current-page="demo"
+      @logout="handleLogout"
+    ></site-navbar>
+
+    <div class="container">
+      <div class="demo-section">
+        <h1 class="demo-title">Vue 3 组件原型演示</h1>
+        <p class="demo-desc">
+          此页面展示如何使用 Vue 3 组件封装专业星图的核心 UI 模块。
+          组件定义在 <code>js/vue-components/</code> 目录下，可在渐进式迁移中逐步替换现有 HTML + 原生 JS。
+        </p>
+
+        <h2 style="font-family:'Literata',serif;color:var(--secondary);margin-bottom:16px;">
+          模拟专业数据（点击查看模态框）
+        </h2>
+        <div class="mock-data-list">
+          <div
+            v-for="major in mockMajors"
+            :key="major.code"
+            class="mock-card"
+            @click="openMajorModal(major)"
+          >
+            <h3>{{ major.category_icon || '📚' }} {{ major.name }}</h3>
+            <span class="code">{{ major.code }}</span>
+          </div>
+        </div>
+
+        <!-- 模态框组件 -->
+        <major-modal
+          :major="selectedMajor"
+          :visible="modalVisible"
+          @close="modalVisible = false"
+        ></major-modal>
+
+        <div class="migration-note">
+          <strong>迁移路径建议：</strong><br>
+          1️⃣ 先在独立页面验证 Vue 3 组件（当前阶段）<br>
+          2️⃣ 使用 <code>&lt;script type=&quot;module&quot;&gt;</code> 加载 Vue 3 CDN + 组件<br>
+          3️⃣ 在 <code>index.html</code> 的特定区域用 <code>createApp</code> 挂载<br>
+          4️⃣ 逐步将原生 JS 逻辑迁移到 Vue 3 组件内<br>
+          5️⃣ 最终用 Vue Router + Vite 完成全站 SPA 化
+        </div>
+
+        <div class="demo-subtitle">
+          &lt;!-- 使用方式 --&gt;<br>
+          &lt;script src=&quot;https://unpkg.com/vue@3/dist/vue.global.js&quot;&gt;&lt;/script&gt;<br>
+          &lt;script src=&quot;/js/vue-components/modal.js&quot;&gt;&lt;/script&gt;<br>
+          &lt;script src=&quot;/js/vue-components/navbar.js&quot;&gt;&lt;/script&gt;<br>
+          &lt;script&gt;<br>
+          &nbsp;&nbsp;const app = Vue.createApp({ ... });<br>
+          &nbsp;&nbsp;app.component('major-modal', MajorModal);<br>
+          &nbsp;&nbsp;app.component('site-navbar', SiteNavbar);<br>
+          &nbsp;&nbsp;app.mount('#app');<br>
+          &lt;/script&gt;
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <script src="/js/vue-components/modal.js"></script>
+  <script src="/js/vue-components/navbar.js"></script>
+  <script>
+    const { createApp } = Vue;
+
+    const app = createApp({
+      data() {
+        return {
+          currentUser: null,
+          modalVisible: false,
+          selectedMajor: null,
+          mockMajors: [
+            {
+              code: '080901',
+              name: '计算机科学与技术',
+              category: '08 工学',
+              category_icon: '💻',
+              difficulty: '⭐⭐⭐⭐',
+              salary_range: '¥15k-35k',
+              overview: '计算机科学与技术是研究计算机系统结构、程序系统、人工智能以及计算机应用等领域的综合性学科。毕业生可在互联网公司、金融机构、科研院所等单位从事软件开发、系统架构、算法研究等工作。',
+              what_you_learn: '数据结构与算法、操作系统、计算机网络、数据库原理、编译原理、软件工程、人工智能等核心课程。',
+              suitable_for: '适合逻辑思维强、喜欢解决问题的学生，尤其适合对编程和数学有浓厚兴趣的同学。',
+              career_outlook: '互联网行业持续高速发展，AI、大数据、云计算等新兴领域人才缺口巨大。',
+              yearly_courses: {
+                '大一': ['高等数学', '线性代数', '程序设计基础', '大学物理'],
+                '大二': ['数据结构', '计算机组成原理', '离散数学', '面向对象编程'],
+                '大三': ['操作系统', '计算机网络', '数据库原理', '算法设计'],
+                '大四': ['软件工程', '毕业设计', '专业实习', '人工智能导论'],
+              },
+              top_universities: {
+                domestic: ['清华大学', '北京大学', '浙江大学', '上海交通大学', '南京大学'],
+                international: ['MIT', 'Stanford', 'CMU', 'UC Berkeley', 'ETH Zurich'],
+              },
+              xuefeng_comment: '**计算机专业依然是王牌！**\n\n如果你能考上985/211的计算机，基本上工作不用愁。但要注意：\n- 数学和英语必须跟上\n- 多参加ACM等编程竞赛\n- 实习很重要，大三大四抓紧去大厂实习',
+            },
+            {
+              code: '100201K',
+              name: '临床医学',
+              category: '10 医学',
+              category_icon: '🩺',
+              difficulty: '⭐⭐⭐⭐⭐',
+              salary_range: '¥12k-40k',
+              overview: '临床医学是研究疾病的病因、诊断、治疗和预后，提高临床治疗水平的学科。培养具备基础医学、临床医学基本理论和医疗预防基本技能的高级专门人才。',
+              what_you_learn: '人体解剖学、生理学、病理学、药理学、诊断学、内科学、外科学、妇产科学、儿科学等。',
+              suitable_for: '适合有耐心、有爱心、抗压能力强、动手能力强的学生，需要有终身学习的准备。',
+              career_outlook: '医生是永不失业的职业，三甲医院薪资可观，但培养周期长（5年本科+3年规培+3年专培）。',
+              yearly_courses: {
+                '大一': ['基础化学', '细胞生物学', '医用物理学', '高等数学'],
+                '大二': ['人体解剖学', '生理学', '生物化学', '组织胚胎学'],
+                '大三': ['病理学', '药理学', '诊断学', '医学免疫学'],
+                '大四': ['内科学', '外科学', '妇产科学', '儿科学'],
+              },
+              top_universities: {
+                domestic: ['北京协和医学院', '北京大学医学部', '复旦大学医学院', '上海交通大学医学院'],
+                international: ['Harvard', 'Johns Hopkins', 'Oxford', 'Karolinska'],
+              },
+              xuefeng_comment: '**学医是一条苦路，但值得。**\n\n家里条件好的孩子才能安心学医，因为培养周期太长。\n- 一定要考研，本科很难进三甲\n- 口腔、眼科是医学里的"香饽饽"\n- 35岁以后才开始真正赚钱',
+            },
+            {
+              code: '080701',
+              name: '电子信息工程',
+              category: '08 工学',
+              category_icon: '📡',
+              difficulty: '⭐⭐⭐⭐',
+              salary_range: '¥14k-32k',
+              overview: '电子信息工程是研究信息的获取、传输、处理和应用，以及电子设备与信息系统的设计、开发、集成和应用的学科。',
+              what_you_learn: '电路分析、模拟电子技术、数字电子技术、信号与系统、通信原理、电磁场与电磁波、嵌入式系统等。',
+              suitable_for: '适合动手能力强、对电子和通信感兴趣的学生。需要有较强的物理和数学基础。',
+              career_outlook: '5G、物联网、芯片设计是国家战略方向，人才需求旺盛，尤其集成电路方向。',
+              yearly_courses: {
+                '大一': ['高等数学', '大学物理', '电路分析', 'C语言程序设计'],
+                '大二': ['模拟电子技术', '数字电子技术', '信号与系统', '概率论'],
+                '大三': ['通信原理', '电磁场', '嵌入式系统', '数字信号处理'],
+                '大四': ['毕业设计', '专业实习', '集成电路设计', '物联网技术'],
+              },
+              top_universities: {
+                domestic: ['电子科技大学', '西安电子科技大学', '清华大学', '东南大学'],
+                international: ['MIT', 'Stanford', 'UC Berkeley', 'TU Delft'],
+              },
+              xuefeng_comment: '**电子信息是国家战略方向！**\n\n芯片被"卡脖子"后，这个专业的重要性更突出了。\n- 尽量选集成电路、微电子方向\n- 成电、西电是性价比最高的选择\n- 研究生是标配，本科生发展受限',
+            },
+          ],
+        };
+      },
+      methods: {
+        openMajorModal(major) {
+          this.selectedMajor = major;
+          this.modalVisible = true;
+        },
+        handleLogout() {
+          this.currentUser = null;
+          alert('已退出登录（演示）');
+        },
+      },
+    });
+
+    app.component('major-modal', MajorModal);
+    app.component('site-navbar', SiteNavbar);
+    app.mount('#app');
+  </script>
+</body>
+</html>
