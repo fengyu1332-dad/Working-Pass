@@ -111,3 +111,234 @@
     display: flex;
     gap: 8px;
 }
+
+/* ---- 新增组件 ---- */
+
+/* 页面头部工具栏 */
+.admin-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.admin-page-header h1 {
+  font-size: 28px;
+  color: var(--secondary);
+  margin: 0;
+}
+.admin-toolbar {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* 状态徽章 */
+.status-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.status-badge.published { background: var(--success-container); color: var(--success); }
+.status-badge.draft { background: var(--primary-container); color: var(--primary); }
+.status-badge.archived { background: var(--outline-variant); color: var(--on-surface-variant); }
+
+/* 切换开关 */
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 48px;
+  height: 24px;
+  cursor: pointer;
+}
+.toggle-switch input { display: none; }
+.toggle-slider {
+  position: absolute;
+  inset: 0;
+  background: var(--outline);
+  border-radius: 24px;
+  transition: 0.3s;
+}
+.toggle-switch input:checked + .toggle-slider {
+  background: var(--success);
+}
+.toggle-slider::after {
+  content: '';
+  position: absolute;
+  width: 18px; height: 18px;
+  left: 3px; top: 3px;
+  background: white;
+  border-radius: 50%;
+  transition: 0.3s;
+}
+.toggle-switch input:checked + .toggle-slider::after {
+  transform: translateX(24px);
+}
+
+/* JSON 动态行 */
+.json-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.json-row input {
+  flex: 1;
+}
+.json-row button {
+  flex-shrink: 0;
+}
+
+/* 进度条 */
+.progress-bar {
+  height: 8px;
+  background: var(--outline-variant);
+  border-radius: 4px;
+  overflow: hidden;
+  min-width: 80px;
+}
+.progress-bar-fill {
+  height: 100%;
+  background: var(--primary);
+  border-radius: 4px;
+  transition: width 0.5s;
+}
+
+/* 柱状图 */
+.bar-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  height: 150px;
+  padding-top: 8px;
+}
+.bar-chart-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.bar-chart-bar {
+  width: 100%;
+  max-width: 48px;
+  background: var(--primary);
+  border-radius: 4px 4px 0 0;
+  min-height: 4px;
+  transition: height 0.5s;
+}
+.bar-chart-label {
+  font-size: 11px;
+  color: var(--on-surface-variant);
+  text-align: center;
+}
+.bar-chart-value {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--secondary);
+}
+
+/* 确认对话框 */
+.confirm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.confirm-dialog {
+  background: var(--surface);
+  border-radius: 16px;
+  padding: 24px;
+  max-width: 420px;
+  width: 90vw;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.2);
+}
+
+/* 快捷操作卡片 */
+.quick-actions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+}
+.quick-action-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px;
+  background: var(--surface-container);
+  border: 2px solid var(--outline);
+  border-radius: 12px;
+  text-decoration: none;
+  color: var(--on-surface);
+  transition: all 0.3s;
+}
+.quick-action-card:hover {
+  border-color: var(--primary);
+  transform: translateY(-2px);
+}
+.quick-action-icon { font-size: 28px; }
+.quick-action-text { font-weight: 600; font-size: 14px; }
+
+/* 弹窗内子区域 */
+.admin-sub-section {
+  border: 1px solid var(--outline);
+  border-radius: 12px;
+  padding: 16px;
+  margin-top: 16px;
+  background: var(--surface-container-low);
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+/* 分页 */
+.pagination {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.pagination button {
+  padding: 8px 14px;
+  border: 1px solid var(--outline);
+  background: var(--surface);
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--on-surface);
+  transition: all 0.2s;
+}
+.pagination button:hover { background: var(--secondary-container); }
+.pagination button.active {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+/* 响应式 */
+@media (max-width: 768px) {
+  .admin-layout {
+    grid-template-columns: 1fr;
+  }
+  .admin-sidebar {
+    display: none;
+  }
+  .admin-content {
+    padding: 16px;
+  }
+  .admin-page-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .admin-page-header h1 {
+    font-size: 22px;
+  }
+}

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>专业库管理 - 专业星图</title>
+  <link rel="stylesheet" href="/css/common.css">
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+  <div class="admin-layout">
+    <nav id="adminSidebar"></nav>
+    <div class="admin-content">
+      <div class="admin-page-header">
+        <h1>专业库管理</h1>
+        <div class="admin-toolbar">
+          <select id="categoryFilterSelect" class="form-input" style="max-width:180px;">
+            <option value="">全部分类</option>
+          </select>
+          <input type="text" id="majorSearch" class="form-input" placeholder="搜索专业代码/名称..." style="max-width:260px;">
+          <button class="btn btn-primary" id="addMajorBtn">+ 新增专业</button>
+        </div>
+      </div>
+
+      <div class="admin-section">
+        <table class="admin-table" id="majorsTable">
+          <thead>
+            <tr><th>专业代码</th><th>专业名称</th><th>学科门类</th><th>学位</th><th>薪资范围</th><th>难度</th><th>操作</th></tr>
+          </thead>
+          <tbody id="majorsTableBody"></tbody>
+        </table>
+        <div class="pagination" id="majorsPagination" style="margin-top:16px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="adminModal">
+    <div class="modal-content" style="max-width:800px;">
+      <div class="modal-header">
+        <h2 class="modal-title" id="adminModalTitle">编辑专业</h2>
+        <button class="modal-close" id="adminModalClose">&times;</button>
+      </div>
+      <div id="adminModalBody"></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script type="module" src="/js/pages/admin-majors.js"></script>
+</body>
+</html>

@@ -1,242 +1,44 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>报告管理 - 专业星图</title>
-    <link rel="stylesheet" href="/css/common.css">
-    <link rel="stylesheet" href="/css/admin.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>报告管理 - 专业星图</title>
+  <link rel="stylesheet" href="/css/common.css">
+  <link rel="stylesheet" href="/css/admin.css">
 </head>
 <body>
-    <div class="admin-layout">
-        <!-- 侧边栏 -->
-        <div class="admin-sidebar">
-            <div style="padding: 0 24px; margin-bottom: 24px;">
-                <div class="admin-logo" style="font-size: 20px; font-weight: 700; color: var(--secondary);">
-                    专业星图
-                </div>
-                <div style="font-size: 14px; color: var(--on-surface-variant); margin-top: 4px;">
-                    管理后台
-                </div>
-            </div>
-            <nav class="admin-sidebar-nav">
-                <a href="/admin/index.html" class="admin-nav-item">
-                    📊 数据概览
-                </a>
-                <a href="/admin/users.html" class="admin-nav-item">
-                    👥 用户管理
-                </a>
-                <a href="/admin/reports.html" class="admin-nav-item active">
-                    📚 报告管理
-                </a>
-            </nav>
-            <div style="margin-top: auto; padding: 0 24px; border-top: 1px solid var(--outline); margin-top: 24px; padding-top: 24px;">
-                <a href="/user/dashboard.html" class="admin-nav-item">
-                    ← 返回用户端
-                </a>
-                <a href="#" id="logoutBtn" class="admin-nav-item" style="color: var(--error);">
-                    退出登录
-                </a>
-            </div>
-        </div>
+  <div class="admin-layout">
+    <nav id="adminSidebar"></nav>
+    <div class="admin-content">
+      <div class="admin-page-header">
+        <h1>报告管理</h1>
+        <button class="btn btn-primary" id="addReportBtn">+ 新增报告</button>
+        <button class="btn btn-secondary" id="generateReportBtn">📝 从专业数据生成</button>
+      </div>
 
-        <!-- 内容区域 -->
-        <div class="admin-content">
-            <h1 style="font-size: 28px; color: var(--secondary); margin-bottom: 24px;">
-                报告管理
-            </h1>
-
-            <div class="admin-section">
-                <table class="admin-table" id="reportsTable">
-                    <thead>
-                        <tr>
-                            <th>专业代码</th>
-                            <th>专业名称</th>
-                            <th>学科门类</th>
-                            <th>状态</th>
-                            <th>下载次数</th>
-                            <th>操作</th>
-                        </tr>
-                    </thead>
-                    <tbody id="reportsTableBody">
-                        <!-- 数据将通过 JS 加载 -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
+      <div class="admin-section">
+        <table class="admin-table" id="reportsTable">
+          <thead>
+            <tr><th>专业代码</th><th>专业名称</th><th>学科门类</th><th>状态</th><th>下载次数</th><th>操作</th></tr>
+          </thead>
+          <tbody id="reportsTableBody"></tbody>
+        </table>
+      </div>
     </div>
+  </div>
 
-    <!-- 报告编辑模态框 -->
-    <div class="modal" id="reportEditModal">
-        <div class="modal-content" style="max-width: 800px;">
-            <div class="modal-header">
-                <h2 class="modal-title" id="editModalTitle">编辑报告</h2>
-                <button class="modal-close" onclick="closeEditModal()">&times;</button>
-            </div>
-
-            <form id="reportEditForm">
-                <div class="form-group">
-                    <label class="form-label">专业代码</label>
-                    <input type="text" id="editMajorCode" class="form-input" readonly>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">专业名称</label>
-                    <input type="text" id="editMajorName" class="form-input" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">学科门类</label>
-                    <input type="text" id="editCategory" class="form-input" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">预览内容（前20%）</label>
-                    <textarea id="editPreviewContent" class="form-input" rows="4"></textarea>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">完整报告内容</label>
-                    <textarea id="editFullContent" class="form-input" rows="8"></textarea>
-                </div>
-                <div class="form-group">
-                    <label class="form-label">状态</label>
-                    <select id="editStatus" class="form-input">
-                        <option value="draft">草稿</option>
-                        <option value="published">已发布</option>
-                        <option value="archived">已归档</option>
-                    </select>
-                </div>
-                <div class="form-actions">
-                    <button type="button" class="btn btn-secondary" onclick="closeEditModal()">取消</button>
-                    <button type="submit" class="btn btn-primary">保存</button>
-                </div>
-            </form>
-        </div>
+  <div class="modal" id="adminModal">
+    <div class="modal-content" style="max-width:800px;">
+      <div class="modal-header">
+        <h2 class="modal-title" id="adminModalTitle">编辑报告</h2>
+        <button class="modal-close" id="adminModalClose">&times;</button>
+      </div>
+      <div id="adminModalBody"></div>
     </div>
+  </div>
 
-    <script type="module">
-        import { checkAuthAndRedirect, logout, isAdmin, showToast } from '/js/auth.js'
-        import { supabase } from '/js/supabase-client.js'
-
-        let currentReportId = null
-
-        // 检查登录和管理员状态
-        await checkAuthAndRedirect()
-        if (!await isAdmin()) {
-            showToast('无权访问管理后台', 'error')
-            window.location.href = '/user/dashboard.html'
-        }
-
-        // 加载报告列表
-        async function loadReports() {
-            try {
-                const { data: reports } = await supabase
-                    .from('reports')
-                    .select('*')
-                    .order('created_at', { ascending: false })
-
-                const tbody = document.getElementById('reportsTableBody')
-                
-                if (!reports || reports.length === 0) {
-                    tbody.innerHTML = `
-                        <tr>
-                            <td colspan="6" style="text-align: center; padding: 48px; color: var(--on-surface-variant);">
-                                暂无报告
-                            </td>
-                        </tr>
-                    `
-                    return
-                }
-
-                tbody.innerHTML = reports.map(report => `
-                    <tr>
-                        <td>${report.major_code}</td>
-                        <td>${report.major_name}</td>
-                        <td>${report.category}</td>
-                        <td>
-                            ${report.status === 'published' ? '✅ 已发布' : report.status === 'draft' ? '📝 草稿' : '📦 已归档'}
-                        </td>
-                        <td>${report.download_count}</td>
-                        <td>
-                            <button class="btn btn-primary btn-sm" onclick="openEditModal('${report.id}')">
-                                编辑
-                            </button>
-                        </td>
-                    </tr>
-                `).join('')
-            } catch (error) {
-                console.error('加载报告列表失败:', error)
-                showToast('加载报告列表失败', 'error')
-            }
-        }
-
-        // 打开编辑模态框
-        async function openEditModal(reportId) {
-            currentReportId = reportId
-            
-            try {
-                const { data: report } = await supabase
-                    .from('reports')
-                    .select('*')
-                    .eq('id', reportId)
-                    .single()
-
-                if (report) {
-                    document.getElementById('editMajorCode').value = report.major_code
-                    document.getElementById('editMajorName').value = report.major_name
-                    document.getElementById('editCategory').value = report.category
-                    document.getElementById('editPreviewContent').value = report.preview_content || ''
-                    document.getElementById('editFullContent').value = report.full_content || ''
-                    document.getElementById('editStatus').value = report.status
-                    document.getElementById('editModalTitle').textContent = '编辑报告'
-                    document.getElementById('reportEditModal').classList.add('active')
-                }
-            } catch (error) {
-                showToast('加载报告失败', 'error')
-            }
-        }
-
-        // 保存报告
-        document.getElementById('reportEditForm').addEventListener('submit', async (e) => {
-            e.preventDefault()
-            
-            if (!currentReportId) return
-
-            try {
-                const updates = {
-                    major_name: document.getElementById('editMajorName').value,
-                    category: document.getElementById('editCategory').value,
-                    preview_content: document.getElementById('editPreviewContent').value,
-                    full_content: document.getElementById('editFullContent').value,
-                    status: document.getElementById('editStatus').value,
-                    updated_at: new Date().toISOString()
-                }
-
-                await supabase
-                    .from('reports')
-                    .update(updates)
-                    .eq('id', currentReportId)
-
-                showToast('保存成功', 'success')
-                closeEditModal()
-                loadReports()
-            } catch (error) {
-                showToast('保存失败', 'error')
-            }
-        })
-
-        // 关闭模态框
-        function closeEditModal() {
-            document.getElementById('reportEditModal').classList.remove('active')
-            document.getElementById('reportEditForm').reset()
-            currentReportId = null
-        }
-
-        // 退出登录
-        document.getElementById('logoutBtn').addEventListener('click', (e) => {
-            e.preventDefault()
-            logout()
-        })
-
-        // 初始化
-        loadReports()
-    </script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script type="module" src="/js/pages/admin-reports.js"></script>
 </body>
 </html>
