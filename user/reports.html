@@ -81,41 +81,6 @@
       margin-top: 16px;
     }
 
-    .report-preview {
-      background: var(--secondary-container);
-      border-radius: 12px;
-      padding: 24px;
-      margin: 24px 0;
-      max-height: 400px;
-      overflow-y: auto;
-      white-space: pre-wrap;
-      line-height: 1.8;
-    }
-
-    .report-locked {
-      text-align: center;
-      padding: 32px;
-      background: var(--secondary-container);
-      border-radius: 12px;
-      margin: 24px 0;
-    }
-
-    .report-locked-icon {
-      font-size: 48px;
-      margin-bottom: 16px;
-    }
-
-    .report-full {
-      background: var(--surface-container-low);
-      border-radius: 12px;
-      padding: 24px;
-      margin: 24px 0;
-      max-height: 500px;
-      overflow-y: auto;
-      white-space: pre-wrap;
-      line-height: 1.8;
-    }
-
     .downloaded-badge {
       display: inline-flex;
       align-items: center;
@@ -128,6 +93,142 @@
       margin-left: 10px;
     }
 
+    /* 报告阅读弹窗 - 大屏自适应 */
+    .report-modal-content {
+      max-width: min(95vw, 1100px);
+      width: 100%;
+      padding: 16px 20px;
+      max-height: 95vh;
+      display: flex;
+      flex-direction: column;
+    }
+    .report-modal-header {
+      margin-bottom: 8px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--outline);
+      flex-shrink: 0;
+    }
+    .report-modal-topline {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      flex: 1;
+      min-width: 0;
+    }
+    .report-modal-title {
+      margin: 0;
+      font-size: 20px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 400px;
+    }
+    #modalContent {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+      overflow: hidden;
+    }
+    .report-reader-container {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px 24px;
+      background: #fafafa;
+      border-radius: 12px;
+      line-height: 1.9;
+      font-size: 15px;
+      min-height: 50vh;
+      max-height: calc(95vh - 140px);
+    }
+    .report-unlocked-layout {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+    }
+    .report-share-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px solid var(--outline);
+      flex-shrink: 0;
+      flex-wrap: wrap;
+    }
+    .share-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      padding: 8px 16px;
+      border-radius: 20px;
+      border: 1px solid var(--outline);
+      background: var(--surface-container);
+      color: var(--on-surface-variant);
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .share-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+      background: var(--primary-container);
+    }
+    .share-btn.copied {
+      border-color: var(--success);
+      color: var(--success);
+      background: var(--success-container);
+    }
+    .invite-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      padding: 8px 20px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, var(--primary), #E65100);
+      color: #fff;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .invite-cta:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px rgba(230, 81, 0, 0.3);
+      color: #fff;
+    }
+    /* 预览模式底部 */
+    .preview-share-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      padding-top: 16px;
+      margin-top: 16px;
+      border-top: 1px solid var(--outline);
+    }
+    .report-preview-content {
+      background: var(--secondary-container);
+      border-radius: 12px;
+      padding: 24px;
+      max-height: 55vh;
+      overflow-y: auto;
+      line-height: 1.8;
+      font-size: 15px;
+      flex: 1;
+    }
+    .report-locked-area {
+      text-align: center;
+      padding: 20px;
+      background: var(--secondary-container);
+      border-radius: 12px;
+    }
     .download-actions {
       display: flex;
       gap: 12px;
@@ -214,9 +315,13 @@
   </div>
 
   <div class="modal" id="reportModal">
-    <div class="modal-content" style="max-width: 700px;">
-      <div class="modal-header">
-        <h2 class="modal-title" id="modalTitle">报告详情</h2>
+    <div class="modal-content report-modal-content">
+      <div class="modal-header report-modal-header">
+        <div class="report-modal-topline">
+          <span id="modalBadge" class="report-code" style="margin:0;"></span>
+          <h2 class="modal-title report-modal-title" id="modalTitle">报告详情</h2>
+          <span id="modalCategory" style="font-size:13px;color:var(--on-surface-variant);"></span>
+        </div>
         <button class="modal-close" id="modalCloseBtn">&times;</button>
       </div>
       <div id="modalContent">

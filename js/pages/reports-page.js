@@ -151,57 +151,128 @@ function renderReports(reports) {
   });
 }
 
+function buildShareContent(report) {
+  const shareText = report.preview_content || '';
+  // 提取纯文本摘要（去除 HTML 标签）
+  const plainText = shareText.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim();
+  const excerpt = plainText.length > 300 ? plainText.slice(0, 300) + '...' : plainText;
+  return `📊【${report.major_name}】深度分析报告\n\n${excerpt}\n\n🔗 注册专业星图，解锁完整深度分析报告 → ${window.location.origin}/register.html\n\n—— 专业星图 · 大学专业职业前景查询平台`;
+}
+
+async function handleShare(report) {
+  const shareContent = buildShareContent(report);
+  try {
+    await navigator.clipboard.writeText(shareContent);
+    window.auth.showToast('分享内容已复制到剪贴板', 'success');
+  } catch {
+    // fallback: 使用传统方法
+    const ta = document.createElement('textarea');
+    ta.value = shareContent;
+    ta.style.position = 'fixed';
+    ta.style.left = '-9999px';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    window.auth.showToast('分享内容已复制到剪贴板', 'success');
+  }
+}
+
 async function showReportDetail(reportId) {
   const report = currentReports.find((r) => r.id === reportId);
   if (!report) return;
 
   const modal = document.getElementById('reportModal');
   const title = document.getElementById('modalTitle');
+  const badge = document.getElementById('modalBadge');
+  const catEl = document.getElementById('modalCategory');
   const content = document.getElementById('modalContent');
 
   title.textContent = report.major_name;
+  badge.textContent = report.major_code || '';
+  badge.style.display = report.major_code ? '' : 'none';
+  catEl.textContent = report.category || '';
 
   const isUnlocked = unlockedReports.has(reportId);
 
   if (isUnlocked) {
     content.innerHTML = `
-      <div class="report-code">${report.major_code || ''}</div>
-      <div style="color: var(--on-surface-variant); margin-bottom: 16px;">${report.category || ''}</div>
-      <div id="reportReaderContainer" style="max-height:60vh;overflow-y:auto;padding:20px;background:#fafafa;border-radius:12px;line-height:1.9;font-size:15px;">
-        加载中...
-      </div>
-      <div style="display:flex;gap:12px;justify-content:flex-end;margin-top:16px;">
-        <button class="btn btn-outline" id="detailCloseBtn">关闭</button>
+      <div class="report-unlocked-layout">
+        <div id="reportReaderContainer" class="report-reader-container">加载中...</div>
+        <div class="report-share-bar">
+          <a href="/register.html" class="invite-cta" target="_blank">🎓 注册专业星图 · 解锁更多报告</a>
+          <button class="share-btn" id="shareReportBtn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.59 13.51l6.83 3.98M15.41 6.51l-6.82 3.98"/></svg>
+            分享报告
+          </button>
+        </div>
       </div>`;
     modal.classList.add('active');
-    document.getElementById('detailCloseBtn').addEventListener('click', closeModal);
+
+    const shareBtn = document.getElementById('shareReportBtn');
+    shareBtn.addEventListener('click', async () => {
+      await handleShare(report);
+      shareBtn.classList.add('copied');
+      shareBtn.innerHTML = `
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+        已复制
+      `;
+      setTimeout(() => {
+        shareBtn.classList.remove('copied');
+        shareBtn.innerHTML = `
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.59 13.51l6.83 3.98M15.41 6.51l-6.82 3.98"/></svg>
+          分享报告
+        `;
+      }, 2000);
+    });
+
     await loadFullReport(reportId);
   } else {
     content.innerHTML = `
-      <div class="report-code">${report.major_code || ''}</div>
-      <div style="color: var(--on-surface-variant); margin-bottom: 16px;">${report.category || ''}</div>
-      <div class="report-preview">
-        <div style="font-weight: 600; margin-bottom: 12px; color: var(--secondary);">👁️ 免费预览</div>
-        ${report.preview_content || '暂无预览内容'}
-      </div>
-      <div class="report-locked">
-        <div class="report-locked-icon">🔒</div>
-        <div style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">解锁完整报告</div>
-        <div style="color: var(--on-surface-variant); margin-bottom: 24px;">
-          您的点数: <span style="color: var(--primary); font-weight: 700; font-size: 24px;">${currentProfile?.points_balance || 0}</span>
+      <div style="flex:1;display:flex;flex-direction:column;min-height:0;overflow-y:auto;">
+        <div class="report-preview-content" id="previewScroll">
+          <div style="font-weight: 600; margin-bottom: 12px; color: var(--secondary); font-size: 16px;">👁️ 免费预览</div>
+          ${report.preview_content || '暂无预览内容'}
         </div>
-        <button class="btn btn-primary" id="unlockBtn">
-          消耗 1 点解锁完整报告
+        <div class="report-locked-area">
+          <div style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">🔒 解锁完整深度分析报告</div>
+          <div style="color: var(--on-surface-variant); margin-bottom: 16px;">
+            您的点数: <span style="color: var(--primary); font-weight: 700; font-size: 24px;">${currentProfile?.points_balance || 0}</span>
+          </div>
+          <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+            <button class="btn btn-primary" id="unlockBtn">消耗 1 点解锁</button>
+            ${(currentProfile?.points_balance || 0) < 1 ? `
+              <a href="/user/purchase.html" class="btn btn-secondary">充值获取点数</a>` : ''}
+          </div>
+        </div>
+      </div>
+      <div class="preview-share-bar">
+        <a href="/register.html" class="invite-cta" target="_blank">🎓 注册专业星图 · 免费解锁更多报告</a>
+        <button class="share-btn" id="shareReportBtn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.59 13.51l6.83 3.98M15.41 6.51l-6.82 3.98"/></svg>
+          分享报告
         </button>
-        ${(currentProfile?.points_balance || 0) < 1 ? `
-          <div style="margin-top: 16px;">
-            <a href="/user/purchase.html" style="color: var(--primary); text-decoration: none; font-weight: 600;">点数不足？去充值 →</a>
-          </div>` : ''}
-        <button class="btn btn-outline" id="detailCloseBtn" style="margin-top:12px;">关闭</button>
       </div>`;
     modal.classList.add('active');
+
     document.getElementById('unlockBtn').addEventListener('click', () => unlockReportWrapper(report.id));
-    document.getElementById('detailCloseBtn').addEventListener('click', closeModal);
+
+    const shareBtn = document.getElementById('shareReportBtn');
+    shareBtn.addEventListener('click', async () => {
+      await handleShare(report);
+      shareBtn.classList.add('copied');
+      shareBtn.innerHTML = `
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+        已复制
+      `;
+      setTimeout(() => {
+        shareBtn.classList.remove('copied');
+        shareBtn.innerHTML = `
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.59 13.51l6.83 3.98M15.41 6.51l-6.82 3.98"/></svg>
+          分享报告
+        `;
+      }, 2000);
+    });
   }
 }
 
