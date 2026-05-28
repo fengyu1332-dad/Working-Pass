@@ -73,11 +73,12 @@ export class ForceGraph {
       this.simulation.force('x', d3.forceX(this.width / 2).strength(0.006));
       this.simulation.force('y', d3.forceY(this.height / 2).strength(0.006));
       this.simulation.alpha(0.3).restart();
+      setTimeout(() => this.fitView(), 250);
     }
   }
 
-  /** 自动缩放以适应全部节点 */
-  fitView(padding = 60) {
+  /** 自动缩放使节点填满整个可视区域 */
+  fitView(padding = 10) {
     if (!this.nodes.length) return;
     let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
     this.nodes.forEach(n => {
@@ -88,7 +89,9 @@ export class ForceGraph {
     });
     const graphW = maxX - minX + padding * 2;
     const graphH = maxY - minY + padding * 2;
-    const scale = Math.min(this.width / graphW, this.height / graphH, 1.8);
+    if (graphW <= 0 || graphH <= 0) return;
+    // 计算填满视口的缩放比，上限 3.0 避免过度放大
+    const scale = Math.min(this.width / graphW, this.height / graphH, 3.0);
     const tx = (this.width - (minX + maxX) * scale) / 2;
     const ty = (this.height - (minY + maxY) * scale) / 2;
     this._transform = { x: tx, y: ty, k: scale };
