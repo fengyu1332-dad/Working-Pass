@@ -131,19 +131,28 @@ export function formatDate(dateString) {
 // 管理后台如使用 Supabase 客户端则自动附带 JWT，可能被 RLS 拦截
 // 统一使用此 helper 确保与用户端行为一致
 
-let adminJwt = null;
-
 async function initAdminJwt() {
+  // 仅触发 session 检查，确保后续 getAuthHeaders 可用
   const sb = window.auth.getSupabase();
-  const { data: { session } } = await sb.auth.getSession();
-  adminJwt = session?.access_token || null;
+  await sb.auth.getSession();
 }
 
-function anonHeaders() {
-  const { url: _u, key } = window.supabaseClient;
+async function getAuthHeaders() {
+  const { key } = window.supabaseClient;
+  const sb = window.auth.getSupabase();
+  if (sb) {
+    const { data: { session } } = await sb.auth.getSession();
+    if (session?.access_token) {
+      return {
+        apikey: key,
+        Authorization: `Bearer ${session.access_token}`,
+        'Content-Type': 'application/json',
+      };
+    }
+  }
   return {
     apikey: key,
-    Authorization: `Bearer ${adminJwt || key}`,
+    Authorization: `Bearer ${key}`,
     'Content-Type': 'application/json',
   };
 }
@@ -162,7 +171,7 @@ export const adminApi = {
     }
     if (order) url += `&order=${order.col}.${order.dir || 'asc'}`;
     if (limit) url += `&limit=${limit}`;
-    const res = await fetch(url, { headers: anonHeaders() });
+    const res = await fetch(url, { headers: await getAuthHeaders() });
     if (!res.ok) {
       const body = await res.text().catch(() => '');
       throw new Error(`[${table}] GET ${res.status}: ${body}`);
@@ -176,7 +185,7 @@ export const adminApi = {
     for (const f of filters) {
       url += `&${f.col}=${f.op}.${encodeURIComponent(f.val)}`;
     }
-    const res = await fetch(url, { headers: { ...anonHeaders(), Prefer: 'count=exact' } });
+    const res = await fetch(url, { headers: { ...(await getAuthHeaders()), Prefer: 'count=exact' } });
     if (!res.ok) {
       const body = await res.text().catch(() => '');
       throw new Error(`[${table}] COUNT ${res.status}: ${body}`);
@@ -193,7 +202,7 @@ export const adminApi = {
   async insert(table, payload) {
     const res = await fetch(restUrl(table), {
       method: 'POST',
-      headers: { ...anonHeaders(), Prefer: 'return=representation' },
+      headers: { ...(await getAuthHeaders()), Prefer: 'return=representation' },
       body: JSON.stringify(payload),
     });
     if (!res.ok) {
@@ -207,7 +216,7 @@ export const adminApi = {
     let url = `${restUrl(table)}?${eq.col}=eq.${encodeURIComponent(eq.val)}`;
     const res = await fetch(url, {
       method: 'PATCH',
-      headers: { ...anonHeaders(), Prefer: 'return=representation' },
+      headers: { ...(await getAuthHeaders()), Prefer: 'return=representation' },
       body: JSON.stringify(payload),
     });
     if (!res.ok) {
@@ -219,7 +228,7 @@ export const adminApi = {
 
   async delete(table, eq) {
     let url = `${restUrl(table)}?${eq.col}=eq.${encodeURIComponent(eq.val)}`;
-    const res = await fetch(url, { method: 'DELETE', headers: anonHeaders() });
+    const res = await fetch(url, { method: 'DELETE', headers: await getAuthHeaders() });
     if (!res.ok) {
       const err = await res.json().catch(() => ({ message: res.statusText }));
       throw new Error(err.message || `[${table}] DELETE ${res.status}`);
