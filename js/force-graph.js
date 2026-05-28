@@ -32,6 +32,7 @@ export class ForceGraph {
     this.hoveredNode = null;
     this.highlightedCatId = null;
     this._touchStartNode = null;
+    this._transform = { x: 0, y: 0, k: 1 };
 
     this.canvas = document.createElement('canvas');
     this.ctx = this.canvas.getContext('2d');
@@ -41,6 +42,7 @@ export class ForceGraph {
     this._dpr = Math.min(window.devicePixelRatio || 1, 2);
     this._resize();
 
+    this._setupZoom();
     this._bindEvents();
     this._setupSimulation();
   }
@@ -73,6 +75,25 @@ export class ForceGraph {
     }
   }
 
+  /** 自动缩放以适应全部节点 */
+  fitView(padding = 60) {
+    if (!this.nodes.length) return;
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+    this.nodes.forEach(n => {
+      if (n.x < minX) minX = n.x;
+      if (n.y < minY) minY = n.y;
+      if (n.x > maxX) maxX = n.x;
+      if (n.y > maxY) maxY = n.y;
+    });
+    const graphW = maxX - minX + padding * 2;
+    const graphH = maxY - minY + padding * 2;
+    const scale = Math.min(this.width / graphW, this.height / graphH, 1.5);
+    const tx = (this.width - (minX + maxX) * scale) / 2;
+    const ty = (this.height - (minY + maxY) * scale) / 2;
+    this._transform = { x: tx, y: ty, k: scale };
+    d3.select(this.canvas).call(this._zoom.transform, d3.zoomIdentity.translate(tx, ty).scale(scale));
+  }
+
   destroy() {
     cancelAnimationFrame(this._animFrame);
     if (this.simulation) this.simulation.stop();
@@ -99,12 +120,32 @@ export class ForceGraph {
     window.addEventListener('resize', () => this.resize());
   }
 
+  _setupZoom() {
+    this._zoom = d3.zoom()
+      .scaleExtent([0.2, 6])
+      .on('zoom', (e) => {
+        this._transform = e.transform;
+      });
+    d3.select(this.canvas).call(this._zoom);
+  }
+
   _setupSimulation() {
+    const self = this;
     this.simulation = d3.forceSimulation()
       .force('center', d3.forceCenter(this.width / 2, this.height / 2))
       .force('charge', d3.forceManyBody().strength(-80))
       .force('collide', d3.forceCollide().radius(d => (d.type === 'category' ? CATEGORY_RADIUS + 4 : MAJOR_RADIUS + 2)))
       .force('link', d3.forceLink().id(d => d.id).distance(d => d.type === 'cat-cat' ? 180 : 90))
+      .force('bounds', () => {
+        const margin = 80;
+        for (const n of self.nodes) {
+          const r = n.type === 'category' ? CATEGORY_RADIUS : MAJOR_RADIUS;
+          if (n.x < margin + r) n.vx += (margin + r - n.x) * 0.015;
+          if (n.x > self.width - margin - r) n.vx -= (n.x - self.width + margin + r) * 0.015;
+          if (n.y < margin + r) n.vy += (margin + r - n.y) * 0.015;
+          if (n.y > self.height - margin - r) n.vy -= (n.y - self.height + margin + r) * 0.015;
+        }
+      })
       .alphaDecay(0.02)
       .on('tick', () => { /* render handled by rAF */ });
   }
@@ -197,6 +238,9 @@ export class ForceGraph {
     // Pre-warm: run 200 ticks silently
     for (let i = 0; i < 200; i++) this.simulation.tick();
     this.simulation.alpha(0.1).alphaDecay(0.01);
+
+    // Auto-fit view to show all nodes
+    setTimeout(() => this.fitView(), 100);
   }
 
   // --- Private: Render Loop ---
@@ -225,11 +269,17 @@ export class ForceGraph {
 
   _draw() {
     const ctx = this.ctx;
+    const t = this._transform;
     ctx.clearRect(0, 0, this.width, this.height);
 
     // Background
     ctx.fillStyle = BG_COLOR;
     ctx.fillRect(0, 0, this.width, this.height);
+
+    // Apply zoom/pan transform
+    ctx.save();
+    ctx.translate(t.x, t.y);
+    ctx.scale(t.k, t.k);
 
     // Draw links
     this.links.forEach((l) => {
@@ -304,15 +354,21 @@ export class ForceGraph {
         ctx.globalAlpha = 1;
       }
     });
+
+    ctx.restore();
   }
 
   // --- Private: Interaction ---
 
   _findNodeAt(mx, my) {
+    // Convert screen coords to graph coords (inverse zoom transform)
+    const t = this._transform;
+    const gx = (mx - t.x) / t.k;
+    const gy = (my - t.y) / t.k;
     const sorted = [...this.nodes].sort((a, b) => b.zIndex - a.zIndex);
     for (const n of sorted) {
       if (n.currentOpacity < 0.05) continue;
-      const dx = mx - n.x, dy = my - n.y;
+      const dx = gx - n.x, dy = gy - n.y;
       const r = Math.max(n.currentR, n.type === 'category' ? CATEGORY_RADIUS : MAJOR_RADIUS) + 4;
       if (dx * dx + dy * dy <= r * r) return n;
     }
@@ -364,7 +420,7 @@ export class ForceGraph {
         } else if (connectedIds.has(n.id)) {
           n.targetR = baseR * 1.3;
           n.targetOpacity = 0.85;
-          n.targetLabelOpacity = n.type === 'category' ? 0.9 : 0.6;
+          n.targetLabelOpacity = 0;
           n.targetZIndex = 8;
         } else {
           n.targetR = baseR * 0.4;
