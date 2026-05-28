@@ -134,21 +134,83 @@
         }
         
         header {
-            text-align: center;
-            padding: 60px 40px;
-            background: var(--surface-container);
+            display: none;
+        }
+        /* Force Graph Container */
+        .force-graph-wrap {
+            position: relative;
+            width: 100%;
+            height: 78vh;
+            min-height: 500px;
+            background: var(--surface);
             border-radius: 24px;
-            margin-bottom: 40px;
+            overflow: hidden;
+            margin-bottom: 24px;
             box-shadow: 0 4px 24px var(--shadow);
         }
-        header h1 {
-            font-family: "Literata", serif;
-            font-size: 44px;
-            font-weight: 700;
-            color: var(--secondary);
-            margin-bottom: 16px;
+        .force-graph-wrap canvas {
+            display: block;
         }
-        header p { font-size: 16px; color: var(--on-surface-variant); max-width: 700px; margin: 0 auto; }
+        .graph-overlay {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 10;
+            display: flex;
+            gap: 12px;
+            pointer-events: none;
+        }
+        .graph-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(8px);
+            box-shadow: 0 2px 8px var(--shadow);
+            color: var(--secondary);
+        }
+        .graph-tag .num {
+            font-family: "Literata", serif;
+            font-size: 20px;
+            color: var(--primary);
+        }
+        .graph-hint {
+            position: absolute;
+            bottom: 16px;
+            right: 20px;
+            z-index: 10;
+            font-size: 12px;
+            color: var(--on-surface-variant);
+            background: rgba(255,255,255,0.8);
+            padding: 6px 12px;
+            border-radius: 12px;
+            pointer-events: none;
+        }
+        .graph-legend {
+            position: absolute;
+            bottom: 16px;
+            left: 20px;
+            z-index: 10;
+            display: flex;
+            gap: 16px;
+            font-size: 12px;
+            color: var(--on-surface-variant);
+            pointer-events: none;
+        }
+        .legend-dot {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 4px;
+            vertical-align: middle;
+        }
+        .legend-dot.cat { background: var(--primary); width: 14px; height: 14px; }
+        .legend-dot.major { background: var(--secondary); }
         
         .stats-banner {
             display: flex;
@@ -700,10 +762,12 @@
         }
         
         @media (max-width: 768px) {
-            header { padding: 40px 24px; }
-            header h1 { font-size: 32px; }
-            .stats-banner { gap: 48px; }
-            .stat-number { font-size: 40px; }
+            .force-graph-wrap { height: 55vh; min-height: 350px; border-radius: 16px; }
+            .graph-overlay { top: 10px; left: 10px; gap: 8px; }
+            .graph-tag { font-size: 11px; padding: 6px 10px; }
+            .graph-tag .num { font-size: 16px; }
+            .graph-hint { bottom: 8px; right: 8px; font-size: 10px; }
+            .graph-legend { bottom: 8px; left: 8px; gap: 10px; font-size: 10px; }
             .container { padding: 24px; }
             .featured-grid { grid-template-columns: 1fr; }
             .info-grid { grid-template-columns: repeat(2, 1fr); }
@@ -725,22 +789,17 @@
             </div>
         </nav>
         
-        <header>
-            <h1>专业星图</h1>
-            <p>温暖、专业的大学专业选择指南 · 帮助你找到最适合的专业</p>
-            <p style="margin-top:12px;font-size:14px;">⚠️ 本网站数据均为参考，建议结合自身情况选择</p>
-            
-            <div class="stats-banner">
-                <div class="stat-item">
-                    <div class="stat-number" id="totalMajors">--</div>
-                    <div class="stat-label">专业收录</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number" id="totalCategories">--</div>
-                    <div class="stat-label">学科门类</div>
-                </div>
+        <div class="force-graph-wrap" id="forceGraphContainer">
+            <div class="graph-overlay">
+                <span class="graph-tag">📚 <span class="num" id="totalMajors">--</span> 个专业</span>
+                <span class="graph-tag">🎓 <span class="num" id="totalCategories">--</span> 个学科门类</span>
             </div>
-        </header>
+            <div class="graph-legend">
+                <span><span class="legend-dot cat"></span> 学科门类</span>
+                <span><span class="legend-dot major"></span> 专业</span>
+            </div>
+            <div class="graph-hint">🖱️ 悬停探索 · 点击门类高亮专业 · 点击专业查看详情</div>
+        </div>
         
         <section class="search-section">
             <div class="search-box">
@@ -910,6 +969,7 @@
         </div>
     </div>
 
+    <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script type="module" src="/js/pages/index.js"></script>
 </body>

@@ -7,8 +7,10 @@ import '../auth.js';
 import '../common.js';
 import '../reports.js';
 import '../error-report.js';
+import { ForceGraph } from '../force-graph.js';
 
 let majorsData = [];
+let forceGraph = null;
 
 const featuredMajorCodes = [
   '080901', '080701', '100201K',
@@ -65,6 +67,28 @@ function initializeUI() {
 
   const featuredMajors = featuredMajorCodes.map((code) => majorsData.find((m) => m.code === code)).filter(Boolean);
   displayFeaturedMajors(featuredMajors);
+
+  // 初始化力导向关系图
+  initForceGraph();
+}
+
+function initForceGraph() {
+  const container = document.getElementById('forceGraphContainer');
+  if (!container || !majorsData.length) return;
+
+  if (forceGraph) forceGraph.destroy();
+
+  forceGraph = new ForceGraph(container, {
+    onMajorClick(major) {
+      if (typeof window.openModal === 'function') {
+        window.openModal(major);
+      }
+    },
+    onCategoryClick(categoryName) {
+      // 点击学科门类：图谱内部已处理高亮逻辑
+    },
+  });
+  forceGraph.setData(majorsData);
 }
 
 function displayFeaturedMajors(majors) {
