@@ -3,18 +3,7 @@
 // 提取自 index.html 和 majors.html 的重复代码
 // ============================================================
 
-function formatXuefengComment(comment) {
-  if (!comment) return '';
-  let html = comment;
-  html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-  html = html.replace(/\n\n/g, '</p><p>');
-  html = html.replace(/\n/g, '<br>');
-  html = html.replace(/^- /gm, '<span style="display:inline-block;width:16px;">•</span>');
-  html = html.replace(/^\d+\.\s/gm, '<span style="display:inline-block;width:24px;font-weight:bold;">$&</span>');
-  html = '<p>' + html + '</p>';
-  html = html.replace(/<p><\/p>/g, '');
-  return html;
-}
+import { escapeHtml, getJsonArray, formatXuefengComment, debounce, renderErrorState } from './utils.js';
 
 async function updateUserArea() {
   const userArea = document.getElementById('navUserArea');
@@ -39,7 +28,7 @@ async function updateUserArea() {
                 <a href="/user/dashboard.html" class="user-avatar-link" title="个人中心">
                   <div class="user-avatar">👤</div>
                 </a>
-                <a href="/user/dashboard.html" class="user-name-link" title="个人中心">${displayName}</a>
+                <a href="/user/dashboard.html" class="user-name-link" title="个人中心">${escapeHtml(displayName)}</a>
                 <button class="btn-sm btn-primary-sm" id="logoutBtn">退出</button>
             </div>
         `;
@@ -62,14 +51,6 @@ async function updateUserArea() {
 }
 
 let _previouslyFocused = null;
-
-function getJsonArray(obj, key) {
-  if (!obj || !obj[key]) return [];
-  try {
-    const v = typeof obj[key] === 'string' ? JSON.parse(obj[key]) : obj[key];
-    return Array.isArray(v) ? v : [];
-  } catch { return []; }
-}
 
 function openModal(major) {
   window._currentMajor = major;
@@ -99,7 +80,7 @@ function openModal(major) {
     const dirEl = document.getElementById(id);
     if (dirEl) {
       dirEl.innerHTML = dirs.length
-        ? dirs.map((d) => `<span style="background:var(--surface-container);padding:6px 14px;border-radius:20px;font-size:13px;color:var(--on-surface);">${d}</span>`).join('')
+        ? dirs.map((d) => `<span style="background:var(--surface-container);padding:6px 14px;border-radius:20px;font-size:13px;color:var(--on-surface);">${escapeHtml(d)}</span>`).join('')
         : '';
     }
   });
@@ -125,7 +106,7 @@ function openModal(major) {
       const courses =
         typeof major.yearly_courses === 'string' ? JSON.parse(major.yearly_courses) : major.yearly_courses;
       for (const [year, items] of Object.entries(courses)) {
-        yearlyEl.innerHTML += `<ul class="year-list"><li><strong>${year}：</strong>${items.join('、')}</li></ul>`;
+        yearlyEl.innerHTML += `<ul class="year-list"><li><strong>${escapeHtml(year)}：</strong>${items.map((i) => escapeHtml(i)).join('、')}</li></ul>`;
       }
     }
   }
@@ -143,14 +124,14 @@ function openModal(major) {
       uniEl.innerHTML += `
                 <div class="uni-section">
                     <p class="uni-label">🇨🇳 国内名校</p>
-                    <div class="uni-tags">${unis.domestic.map((u) => `<span class="uni-tag chinese">${u}</span>`).join('')}</div>
+                    <div class="uni-tags">${unis.domestic.map((u) => `<span class="uni-tag chinese">${escapeHtml(u)}</span>`).join('')}</div>
                 </div>`;
     }
     if (unis.international) {
       uniEl.innerHTML += `
                 <div class="uni-section">
                     <p class="uni-label">🌍 国际名校</p>
-                    <div class="uni-tags">${unis.international.map((u) => `<span class="uni-tag foreign">${u}</span>`).join('')}</div>
+                    <div class="uni-tags">${unis.international.map((u) => `<span class="uni-tag foreign">${escapeHtml(u)}</span>`).join('')}</div>
                 </div>`;
     }
   }
@@ -353,10 +334,10 @@ function showReportPreviewModal(major, reportData, alreadyPurchased) {
   body.innerHTML = `
     <div style="margin-bottom:20px;">
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-        <span class="report-code" style="display:inline-block;background:var(--secondary-container);padding:4px 12px;border-radius:20px;font-size:12px;color:var(--secondary);">${major.code || '--'}</span>
-        <span style="color:var(--on-surface-variant);font-size:14px;">${major.category || ''}</span>
+        <span class="report-code" style="display:inline-block;background:var(--secondary-container);padding:4px 12px;border-radius:20px;font-size:12px;color:var(--secondary);">${escapeHtml(major.code || '--')}</span>
+        <span style="color:var(--on-surface-variant);font-size:14px;">${escapeHtml(major.category || '')}</span>
       </div>
-      <h3 style="color:var(--secondary);font-size:18px;margin:0 0 8px;">${major.name}</h3>
+      <h3 style="color:var(--secondary);font-size:18px;margin:0 0 8px;">${escapeHtml(major.name)}</h3>
       <p style="color:var(--on-surface-variant);font-size:14px;line-height:1.6;margin:0;">
         本报告涵盖专业概况、课程设置、就业前景、薪资待遇、适合人群、院校推荐等核心维度，帮助您全面评估该专业。
       </p>
@@ -409,8 +390,8 @@ function showConfirmPaymentModal(major, reportData) {
     <button class="report-flow-back" id="backToPreview">← 返回报告预览</button>
 
     <div style="margin-bottom:20px;">
-      <div style="font-size:16px;font-weight:600;color:var(--secondary);margin-bottom:6px;">${major.name}</div>
-      <div style="color:var(--on-surface-variant);font-size:13px;">专业代码：${major.code || '--'}　|　${major.category || ''}</div>
+      <div style="font-size:16px;font-weight:600;color:var(--secondary);margin-bottom:6px;">${escapeHtml(major.name)}</div>
+      <div style="color:var(--on-surface-variant);font-size:13px;">专业代码：${escapeHtml(major.code || '--')}　|　${escapeHtml(major.category || '')}</div>
     </div>
 
     <div class="report-summary">
@@ -451,18 +432,11 @@ async function performReportPurchase(major, reportData) {
   }
 
   try {
+    // 统一走原子化 RPC 扣点（带防重复检查）
     if (reportData && window.reports && window.reports.unlockReport) {
       await window.reports.unlockReport(reportData.id);
     } else {
-      const profile = await window.auth.getUserProfile();
-      if (!profile || profile.points_balance < 1) {
-        throw new Error('点数不足，请先充值');
-      }
-      const sb = window.auth.getSupabase();
-      await sb.from('user_profiles').update({ points_balance: profile.points_balance - 1 }).eq('id', profile.id);
-      try {
-        await sb.from('download_records').insert({ user_id: profile.id, report_id: reportData?.id || null, points_spent: 1 });
-      } catch (e) { /* FK constraint — non-critical */ }
+      throw new Error('报告模块未就绪，请刷新页面重试');
     }
 
     if (window.auth && window.auth.showToast) {
@@ -500,7 +474,7 @@ function showReportReader(major, chapters) {
   const renderChapter = (idx) => {
     currentChapter = idx;
     const ch = chapters[idx];
-    document.getElementById('readerContent').innerHTML = `<h3>${ch.title}</h3>${ch.content}`;
+    document.getElementById('readerContent').innerHTML = `<h3>${escapeHtml(ch.title)}</h3>${ch.content}`;
     document.querySelectorAll('.reader-tab').forEach((t, i) => t.classList.toggle('active', i === idx));
   };
 
@@ -511,11 +485,11 @@ function showReportReader(major, chapters) {
     </div>
     <div class="reader-tabs" id="readerTabs">
       ${chapters.map((ch, i) => `
-        <button class="reader-tab${i === 0 ? ' active' : ''}" data-index="${i}">${ch.title}</button>
+        <button class="reader-tab${i === 0 ? ' active' : ''}" data-index="${i}">${escapeHtml(ch.title)}</button>
       `).join('')}
     </div>
     <div class="reader-content" id="readerContent">
-      <h3>${chapters[0].title}</h3>${chapters[0].content}
+      <h3>${escapeHtml(chapters[0].title)}</h3>${chapters[0].content}
     </div>
   `;
 
@@ -541,24 +515,6 @@ async function goToReports() {
   window.location.href = 'user/reports.html';
 }
 
-function debounce(fn, delay) {
-  let timer;
-  return function (...args) {
-    clearTimeout(timer);
-    timer = setTimeout(() => fn.apply(this, args), delay);
-  };
-}
-
-function renderErrorState(container, message, retryFn) {
-  container.innerHTML = `
-    <div style="text-align:center;padding:60px;">
-      <div style="font-size:48px;margin-bottom:16px;">😞</div>
-      <p style="color:var(--on-surface-variant);margin-bottom:24px;">${message}</p>
-      <button class="btn btn-primary" id="retryBtn">🔄 重试</button>
-    </div>`;
-  document.getElementById('retryBtn').addEventListener('click', retryFn);
-}
-
 // 导出到全局供 HTML onclick 使用
 if (typeof window !== 'undefined') {
   window.updateUserArea = updateUserArea;
@@ -566,8 +522,6 @@ if (typeof window !== 'undefined') {
   window.closeModal = closeModal;
   window.closePreheatModal = closePreheatModal;
   window.goToReports = goToReports;
-  window.debounce = debounce;
-  window.renderErrorState = renderErrorState;
 }
 
 document.addEventListener('keydown', (e) => {

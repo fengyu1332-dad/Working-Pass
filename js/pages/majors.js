@@ -43,7 +43,7 @@ const HOT_PICK_KEYWORDS = [
 async function fetchMajors() {
   try {
     const { url, key } = window.supabaseClient;
-    const response = await fetch(`${url}/rest/v1/majors?select=*`, {
+    const response = await fetch(`${url}/rest/v1/majors?select=code,name,category,category_icon,salary_range,difficulty,overview,career_outlook,what_you_learn,suitable_for,xuefeng_comment,top_universities,yearly_courses,career_directions,degree,duration`, {
       headers: {
         apikey: key,
         Authorization: `Bearer ${key}`,

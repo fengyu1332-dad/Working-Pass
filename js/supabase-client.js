@@ -1,10 +1,12 @@
 // ============================================================
 // 专业星图 - Supabase 客户端配置（ES Module）
+// 环境变量通过 Vite 注入，参考 .env.example
 // ============================================================
 
-export const SUPABASE_URL = 'https://djteatwxjlnbjylynvjh.supabase.co';
+export const SUPABASE_URL =
+  import.meta.env.VITE_SUPABASE_URL || 'https://djteatwxjlnbjylynvjh.supabase.co';
 export const SUPABASE_ANON_KEY =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRqdGVhdHd4amxuYmp5bHludmpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwODUwOTMsImV4cCI6MjA5NDY2MTA5M30.P6IJW2noTImzeNXtfKsmjJBMp9AJBTw1LamYTdtyd_4';
+  import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 
 let supabaseClient = null;
 
@@ -37,5 +39,6 @@ if (typeof window !== 'undefined') {
     configure: configureSupabase,
     url: SUPABASE_URL,
     key: SUPABASE_ANON_KEY,
+    configure: configureSupabase,
   };
 }

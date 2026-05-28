@@ -162,12 +162,13 @@ def get_supabase_client() -> SupabaseClient:
     if _supabase_client is None:
         url = os.getenv("SUPABASE_URL", "")
         anon_key = os.getenv("SUPABASE_KEY", "")
-        
+
         if not url or not anon_key:
-            # 使用硬编码的测试值（仅用于演示）
-            url = "https://djteatwxjlnbjylynvjh.supabase.co"
-            anon_key = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRqdGVhdHd4amxuYmp5bHludmpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwODUwOTMsImV4cCI6MjA5NDY2MTA5M30.P6IJW2noTImzeNXtfKsmjJBMp9AJBTw1LamYTdtyd_4"
-        
+            raise RuntimeError(
+                "SUPABASE_URL and SUPABASE_KEY environment variables must be set. "
+                "Copy .env.example to .env and fill in your Supabase credentials."
+            )
+
         _supabase_client = SupabaseClient(url, anon_key)
     
     return _supabase_client

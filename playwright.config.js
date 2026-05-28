@@ -27,9 +27,6 @@ export default defineConfig({
       use: {
         ...devices['Desktop Chrome'],
         viewport: { width: 1280, height: 720 },
-        launchOptions: {
-          executablePath: 'C:/Users/fengy/AppData/Local/ms-playwright/chromium-1223/chrome-win64/chrome.exe',
-        },
       },
     },
   ],

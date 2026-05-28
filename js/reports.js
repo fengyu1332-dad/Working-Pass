@@ -38,36 +38,22 @@ export async function unlockReport(reportId) {
   const user = await window.auth.getCurrentUser();
   if (!user) throw new Error('User not logged in');
 
-  const profile = await window.auth.getUserProfile();
-  if (!profile || profile.points_balance < 1) {
-    throw new Error('点数不足，请先充值');
+  // 先检查是否已解锁（避免 RPC 调用报错）
+  const alreadyUnlocked = await checkUnlocked(reportId);
+  if (alreadyUnlocked) {
+    const { data: report } = await sb.from('reports').select(REPORT_COLUMNS).eq('id', reportId).single();
+    return { content: report?.full_content || '', alreadyUnlocked: true };
   }
+
+  // 调用数据库原子化积分消费函数
+  const { data: result, error } = await sb.rpc('spend_points', { p_report_id: reportId });
+
+  if (error) throw new Error(error.message || '解锁失败');
+  if (!result.success) throw new Error(result.error || '解锁失败');
 
   const { data: report } = await sb.from('reports').select(REPORT_COLUMNS).eq('id', reportId).single();
-  if (!report) throw new Error('Report not found');
 
-  const { data: existingRecord } = await sb
-    .from('download_records')
-    .select('id')
-    .eq('user_id', user.id)
-    .eq('report_id', reportId)
-    .maybeSingle();
-
-  if (existingRecord) {
-    return {
-      content: report.full_content || '',
-      alreadyUnlocked: true,
-    };
-  }
-
-  await sb.from('user_profiles').update({ points_balance: profile.points_balance - 1 }).eq('id', user.id);
-  await sb.from('download_records').insert({ user_id: user.id, report_id: reportId, points_spent: 1 });
-  await sb
-    .from('reports')
-    .update({ download_count: (report.download_count || 0) + 1 })
-    .eq('id', reportId);
-
-  return { content: report.full_content || '', alreadyUnlocked: false };
+  return { content: report?.full_content || '', alreadyUnlocked: false };
 }
 
 export async function getUnlockedReportIds() {

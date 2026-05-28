@@ -15,6 +15,7 @@ import {
   renderEmptyState,
   adminApi,
 } from './admin-common.js';
+import '../utils.js';
 
 let allMajors = [];
 let currentPage = 1;
@@ -268,7 +269,7 @@ function openEditModal(major) {
 
   initJsonRows('coursesContainer', 'addCourseRowBtn', parseJsonMap(major, 'yearly_courses'));
   initUniRows('unisContainer', 'addUniRowBtn', parseJsonMap(major, 'top_universities'));
-  initJsonRows('careersContainer', 'addCareerRowBtn', parseJsonArray(major, 'career_directions'));
+  initJsonRows('careersContainer', 'addCareerRowBtn', getJsonArray(major, 'career_directions'));
 
   document.getElementById('cancelMajorBtn').addEventListener('click', closeAdminModal);
 
@@ -314,17 +315,6 @@ function openEditModal(major) {
       window.auth.showToast('保存失败: ' + err.message, 'error');
     }
   });
-}
-
-// --- JSON 辅助：数组格式 ---
-function parseJsonArray(major, key) {
-  if (!major || !major[key]) return [];
-  try {
-    const v = typeof major[key] === 'string' ? JSON.parse(major[key]) : major[key];
-    return Array.isArray(v) ? v : [];
-  } catch {
-    return [major[key]];
-  }
 }
 
 function initJsonRows(containerId, addBtnId, values) {

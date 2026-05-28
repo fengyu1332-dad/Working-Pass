@@ -39,6 +39,8 @@ const MajorModal = {
     commentHtml() {
       const comment = this.major?.xuefeng_comment || '';
       if (!comment) return '';
+      // 使用 window.formatXuefengComment（由 utils.js 全局导出）
+      if (window.formatXuefengComment) return window.formatXuefengComment(comment);
       let html = comment;
       html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
       html = html.replace(/\n\n/g, '</p><p>');

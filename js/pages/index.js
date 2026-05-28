@@ -26,9 +26,8 @@ const badges = [
 
 async function fetchMajors() {
   try {
-    console.log('Fetching majors from Supabase...');
     const { url, key } = window.supabaseClient;
-    const response = await fetch(`${url}/rest/v1/majors?select=*`, {
+    const response = await fetch(`${url}/rest/v1/majors?select=code,name,category,category_icon,salary_range,difficulty,overview,career_outlook,what_you_learn,suitable_for,xuefeng_comment,top_universities,yearly_courses,career_directions,degree,duration`, {
       headers: {
         apikey: key,
         Authorization: `Bearer ${key}`,
@@ -39,7 +38,6 @@ async function fetchMajors() {
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
     majorsData = await response.json();
-    console.log('Fetched', majorsData.length, 'majors');
     initializeUI();
   } catch (error) {
     console.error('Error fetching majors:', error);

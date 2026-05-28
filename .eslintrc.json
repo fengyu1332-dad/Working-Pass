@@ -9,10 +9,10 @@
     "sourceType": "module"
   },
   "rules": {
-    "no-unused-vars": "off",
-    "no-undef": "off",
-    "no-redeclare": "off",
-    "no-console": "off",
+    "no-unused-vars": "warn",
+    "no-undef": "warn",
+    "no-redeclare": "warn",
+    "no-console": "warn",
     "no-extra-semi": "warn",
     "no-empty": "warn",
     "no-constant-condition": "warn",

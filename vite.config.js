@@ -9,6 +9,13 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     emptyOutDir: true,
+    target: 'es2020',
+    assetsInlineLimit: 4096,
+    reportCompressedSize: false,
+    modulePreload: { polyfill: true },
+    minify: 'terser',
+    cssMinify: true,
+    sourcemap: false,
     rollupOptions: {
       input: {
         main: resolve(__dirname, 'index.html'),
@@ -25,10 +32,14 @@ export default defineConfig({
         'admin/majors': resolve(__dirname, 'admin/majors.html'),
         'admin/packages': resolve(__dirname, 'admin/packages.html'),
       },
+      output: {
+        manualChunks(id) {
+          if (id.includes('/js/utils.js')) return 'shared-utils';
+          if (id.includes('/js/common.js')) return 'shared-ui';
+          if (id.includes('/js/pages/admin-')) return 'admin';
+        },
+      },
     },
-    minify: 'terser',
-    cssMinify: true,
-    sourcemap: false,
   },
 
   server: {

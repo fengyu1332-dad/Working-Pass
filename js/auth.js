@@ -88,12 +88,10 @@ export async function getCurrentUser() {
       error,
     } = await sb.auth.getUser();
     if (error) {
-      console.log('No active session:', error.message);
       return null;
     }
     return user;
   } catch (error) {
-    console.log('Error getting current user:', error);
     return null;
   }
 }

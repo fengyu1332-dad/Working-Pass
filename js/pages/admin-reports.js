@@ -329,14 +329,14 @@ function previewReport(report) {
     `
     <div style="display:flex;flex-direction:column;gap:12px;">
       <div style="display:flex;gap:16px;flex-wrap:wrap;font-size:14px;color:var(--on-surface-variant);">
-        <span>代码: <strong>${report.major_code}</strong></span>
-        <span>门类: <strong>${report.category || '--'}</strong></span>
-        <span>状态: <span class="status-badge ${report.status || 'draft'}">${STATUS_LABELS[report.status] || report.status}</span></span>
+        <span>代码: <strong>${escapeHtml(report.major_code)}</strong></span>
+        <span>门类: <strong>${escapeHtml(report.category || '--')}</strong></span>
+        <span>状态: <span class="status-badge ${report.status || 'draft'}">${escapeHtml(STATUS_LABELS[report.status] || report.status)}</span></span>
         <span>解锁: <strong>${report.download_count || 0}</strong> 次</span>
       </div>
       <div class="admin-sub-section">
         <h4 style="margin:0 0 8px;">摘要内容</h4>
-        <div style="white-space:pre-wrap;font-size:14px;line-height:1.8;">${report.preview_content || '(空)'}</div>
+        <div style="white-space:pre-wrap;font-size:14px;line-height:1.8;">${escapeHtml(report.preview_content) || '(空)'}</div>
       </div>
       <div class="admin-sub-section">
         <h4 style="margin:0 0 8px;">完整内容</h4>

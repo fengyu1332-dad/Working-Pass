@@ -4,6 +4,7 @@
 
 import '../supabase-client.js';
 import '../auth.js';
+import '../utils.js';
 
 // --- Auth Guard ---
 export async function requireAdmin() {

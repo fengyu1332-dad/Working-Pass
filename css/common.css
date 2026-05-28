@@ -253,6 +253,10 @@ body {
   }
 }
 
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
 .modal-header {
   display: flex;
   justify-content: space-between;
