@@ -332,7 +332,8 @@ export class ForceGraph {
 
       // Label
       if (n.currentLabelOpacity > 0.01) {
-        const fontSize = n.type === 'category' ? 12 : 10;
+        const isHovered = n === this.hoveredNode;
+        const fontSize = n.type === 'category' ? 12 : (isHovered ? 20 : 10);
         ctx.font = `${fontSize}px "PingFang SC", "Microsoft YaHei", sans-serif`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
@@ -417,6 +418,12 @@ export class ForceGraph {
           n.targetOpacity = 1;
           n.targetLabelOpacity = 1;
           n.targetZIndex = 10;
+        } else if (hovered.type === 'category' && n.type === 'category') {
+          // Hovering a category: other categories stay fully visible
+          n.targetR = baseR;
+          n.targetOpacity = 1;
+          n.targetLabelOpacity = 1;
+          n.targetZIndex = 2;
         } else if (connectedIds.has(n.id)) {
           n.targetR = baseR * 1.3;
           n.targetOpacity = 0.85;
@@ -460,7 +467,8 @@ export class ForceGraph {
       if (!hovered && !highlightedCat) {
         l.targetOpacity = 1;
       } else if (hovered) {
-        l.targetOpacity = (connectedIds.has(srcId) || connectedIds.has(tgtId)) ? 1 : 0.03;
+        const isCatCat = l.type === 'cat-cat';
+        l.targetOpacity = (isCatCat || connectedIds.has(srcId) || connectedIds.has(tgtId)) ? 1 : 0.03;
       } else if (highlightedCat) {
         const isHighlightedLink = highlightedMajors.has(srcId) || highlightedMajors.has(tgtId)
           || srcId === `cat-${highlightedCat}` || tgtId === `cat-${highlightedCat}`;
