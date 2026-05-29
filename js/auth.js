@@ -155,6 +155,7 @@ export function showToast(message, type = 'success') {
 
   const toast = document.createElement('div');
   toast.className = `toast toast-${type}`;
+  toast.setAttribute('role', 'status');
   toast.textContent = message;
   container.appendChild(toast);
 
@@ -164,8 +165,49 @@ export function showToast(message, type = 'success') {
 function createToastContainer() {
   const container = document.createElement('div');
   container.className = 'toast-container';
+  container.setAttribute('aria-live', 'polite');
+  container.setAttribute('aria-atomic', 'false');
   document.body.appendChild(container);
   return container;
+}
+
+// --- 社交登录 ---
+
+export async function signInWithGoogle() {
+  const sb = getSupabase();
+  if (!sb) throw new Error('Supabase not initialized');
+
+  const { data, error } = await sb.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo: window.location.origin + '/user/dashboard.html',
+      queryParams: { access_type: 'offline', prompt: 'consent' },
+    },
+  });
+  if (error) throw error;
+  return data;
+}
+
+// --- 密码重置 ---
+
+export async function sendPasswordResetEmail(email) {
+  const sb = getSupabase();
+  if (!sb) throw new Error('Supabase not initialized');
+
+  const { data, error } = await sb.auth.resetPasswordForEmail(email, {
+    redirectTo: window.location.origin + '/update-password.html',
+  });
+  if (error) throw error;
+  return data;
+}
+
+export async function updatePassword(newPassword) {
+  const sb = getSupabase();
+  if (!sb) throw new Error('Supabase not initialized');
+
+  const { data, error } = await sb.auth.updateUser({ password: newPassword });
+  if (error) throw error;
+  return data;
 }
 
 // 向后兼容：挂载到全局 window
@@ -184,5 +226,8 @@ if (typeof window !== 'undefined') {
     checkAuthAndRedirect,
     isAdmin,
     showToast,
+    sendPasswordResetEmail,
+    updatePassword,
+    signInWithGoogle,
   };
 }

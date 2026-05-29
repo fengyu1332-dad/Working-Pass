@@ -7,7 +7,10 @@ import '../auth.js';
 import '../common.js';
 import '../reports.js';
 import '../error-report.js';
+import '../web-vitals.js';
 import { ForceGraph } from '../force-graph.js';
+
+const { initWebVitals } = window.__starmap_webVitals || {};
 
 let majorsData = [];
 let forceGraph = null;
@@ -120,6 +123,7 @@ function displayFeaturedMajors(majors) {
 
 document.addEventListener('DOMContentLoaded', () => {
   if (window.auth) window.auth.initSupabase();
+  if (initWebVitals) initWebVitals();
   updateUserArea();
   fetchMajors();
 

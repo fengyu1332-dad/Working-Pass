@@ -7,6 +7,9 @@ import '../auth.js';
 import '../common.js';
 import '../reports.js';
 import '../error-report.js';
+import '../web-vitals.js';
+
+const { initWebVitals } = window.__starmap_webVitals || {};
 
 // ---- 数据 & 状态 ----
 let majorsData = [];
@@ -670,6 +673,7 @@ function createListItem(major) {
 // ====== 入口 ======
 document.addEventListener('DOMContentLoaded', () => {
   window.auth.initSupabase();
+  if (initWebVitals) initWebVitals();
   updateUserArea();
 
   window.addEventListener('hashchange', () => {

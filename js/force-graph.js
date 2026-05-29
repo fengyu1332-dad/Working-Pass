@@ -30,6 +30,7 @@ export class ForceGraph {
     this.categoryMap = {};
     this.simulation = null;
     this.hoveredNode = null;
+    this.focusedNode = null;
     this.highlightedCatId = null;
     this._touchStartNode = null;
     this._transform = { x: 0, y: 0, k: 1 };
@@ -37,7 +38,18 @@ export class ForceGraph {
     this.canvas = document.createElement('canvas');
     this.ctx = this.canvas.getContext('2d');
     this.canvas.style.display = 'block';
+    this.canvas.setAttribute('role', 'application');
+    this.canvas.setAttribute('aria-label', '专业关系图谱。使用 Tab 键聚焦后，可用方向键在节点间导航，按 Enter 键选择节点。');
+    this.canvas.tabIndex = 0;
     this.container.appendChild(this.canvas);
+
+    // Live region for screen reader announcements
+    this._liveRegion = document.createElement('div');
+    this._liveRegion.setAttribute('aria-live', 'polite');
+    this._liveRegion.setAttribute('aria-atomic', 'true');
+    this._liveRegion.className = 'sr-only';
+    this._liveRegion.style.cssText = 'position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;';
+    this.container.appendChild(this._liveRegion);
 
     this._dpr = Math.min(window.devicePixelRatio || 1, 2);
     this._resize();
@@ -121,6 +133,9 @@ export class ForceGraph {
     this.canvas.addEventListener('touchstart', (e) => this._onTouchStart(e), { passive: false });
     this.canvas.addEventListener('touchmove', (e) => this._onTouchMove(e), { passive: false });
     this.canvas.addEventListener('touchend', (e) => this._onTouchEnd(e));
+    this.canvas.addEventListener('keydown', (e) => this._onKeyDown(e));
+    this.canvas.addEventListener('focus', () => this._onCanvasFocus());
+    this.canvas.addEventListener('blur', () => this._onCanvasBlur());
     window.addEventListener('resize', () => this.resize());
   }
 
@@ -576,6 +591,126 @@ export class ForceGraph {
           ? window.openModalByCode(node.code)
           : window.open(`majors.html?code=${node.code}`, '_self');
       }
+    }
+  }
+
+  // --- Private: Keyboard Navigation ---
+
+  _onKeyDown(e) {
+    const visible = this.nodes.filter(n => n.currentOpacity > 0.1);
+    if (!visible.length) return;
+
+    if (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+      e.preventDefault();
+      const next = this._findNodeInDirection(e.key);
+      if (next) {
+        this.focusedNode = next;
+        this.hoveredNode = next;
+        this._updateAllTargets();
+        this._announceNode(next);
+        this._scrollToNode(next);
+      }
+    } else if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      if (this.focusedNode) {
+        this._activateNode(this.focusedNode);
+      }
+    } else if (e.key === 'Escape') {
+      if (this.highlightedCatId) {
+        this.clearHighlight();
+        this._liveRegion.textContent = '已取消门类高亮';
+      }
+    }
+  }
+
+  _onCanvasFocus() {
+    if (!this.focusedNode && this.nodes.length > 0) {
+      // Default to the first category node
+      const firstCat = this.nodes.find(n => n.type === 'category' && n.currentOpacity > 0.1);
+      if (firstCat) {
+        this.focusedNode = firstCat;
+        this.hoveredNode = firstCat;
+        this._updateAllTargets();
+        this._announceNode(firstCat);
+      }
+    }
+    this.canvas.style.outline = '2px solid #E67E22';
+    this.canvas.style.outlineOffset = '2px';
+  }
+
+  _onCanvasBlur() {
+    this.canvas.style.outline = '';
+  }
+
+  _findNodeInDirection(key) {
+    const current = this.focusedNode;
+    const visible = this.nodes.filter(n => n.currentOpacity > 0.1);
+    if (!visible.length) return null;
+
+    if (!current) return visible[0];
+
+    const cx = current.x, cy = current.y;
+    let best = null;
+    let bestScore = Infinity;
+
+    visible.forEach(n => {
+      if (n === current) return;
+      const dx = n.x - cx, dy = n.y - cy;
+      let score;
+      switch (key) {
+        case 'ArrowUp':    score = dy >= 0 ? Infinity : Math.abs(dx) * 1.5 - dy; break;
+        case 'ArrowDown':  score = dy <= 0 ? Infinity : Math.abs(dx) * 1.5 + dy; break;
+        case 'ArrowLeft':  score = dx >= 0 ? Infinity : Math.abs(dy) * 1.5 - dx; break;
+        case 'ArrowRight': score = dx <= 0 ? Infinity : Math.abs(dy) * 1.5 + dx; break;
+        default: score = Math.abs(dx) + Math.abs(dy);
+      }
+      if (score < bestScore) {
+        bestScore = score;
+        best = n;
+      }
+    });
+
+    return best;
+  }
+
+  _activateNode(node) {
+    if (node.type === 'category') {
+      if (this.highlightedCatId === node.name) {
+        this.clearHighlight();
+        this._liveRegion.textContent = '已取消门类 ' + node.name + ' 的高亮';
+      } else {
+        this.highlightCategory(node.name);
+        this._liveRegion.textContent = '已高亮门类 ' + node.name + '，包含 ' +
+          this.nodes.filter(n => n.type === 'major' && n.category === node.name).length + ' 个专业';
+      }
+      if (this.options.onCategoryClick) this.options.onCategoryClick(node.name);
+    } else if (node.type === 'major') {
+      this._liveRegion.textContent = '已选择专业 ' + node.name;
+      if (this.options.onMajorClick) {
+        this.options.onMajorClick(node.majorData);
+      } else if (node.code) {
+        window.openModalByCode
+          ? window.openModalByCode(node.code)
+          : window.open(`majors.html?code=${node.code}`, '_self');
+      }
+    }
+  }
+
+  _announceNode(node) {
+    const type = node.type === 'category' ? '门类' : '专业';
+    this._liveRegion.textContent = type + ' ' + node.name;
+  }
+
+  _scrollToNode(node) {
+    const t = this._transform;
+    const sx = node.x * t.k + t.x;
+    const sy = node.y * t.k + t.y;
+    const margin = 100;
+    if (sx < margin || sx > this.width - margin || sy < margin || sy > this.height - margin) {
+      const targetX = this.width / 2 - node.x * t.k;
+      const targetY = this.height / 2 - node.y * t.k;
+      const transform = d3.zoomIdentity.translate(targetX, targetY).scale(t.k);
+      d3.select(this.canvas).transition().duration(200).call(this._zoom.transform, transform);
     }
   }
 }

@@ -22,6 +22,8 @@ export default defineConfig({
         majors: resolve(__dirname, 'majors.html'),
         login: resolve(__dirname, 'login.html'),
         register: resolve(__dirname, 'register.html'),
+        'reset-password': resolve(__dirname, 'reset-password.html'),
+        'update-password': resolve(__dirname, 'update-password.html'),
         dashboard: resolve(__dirname, 'user/dashboard.html'),
         reports: resolve(__dirname, 'user/reports.html'),
         purchase: resolve(__dirname, 'user/purchase.html'),
