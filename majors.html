@@ -732,17 +732,6 @@
 
         .summary-box { background: var(--secondary-container); padding: 20px; border-radius: 16px; margin-top: 20px; color: var(--on-surface); font-size: 14px; line-height: 1.8; }
 
-        .cta-section { margin-top: 32px; text-align: center; }
-        .cta-button {
-            background: linear-gradient(135deg, #E67E22 0%, #D35400 100%);
-            color: white; border: none;
-            padding: 16px 48px; border-radius: 9999px;
-            font-size: 16px; font-weight: 600; cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 4px 20px rgba(230, 126, 34, 0.4);
-        }
-        .cta-button:hover { transform: translateY(-3px); box-shadow: 0 6px 30px rgba(230, 126, 34, 0.5); }
-
         .preheat-modal {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.6); display: none;
@@ -1032,6 +1021,7 @@
                         <h2 id="modalTitle">--</h2>
                     </div>
                 </div>
+                <button class="modal-cta-btn" id="modalCtaBtn" onclick="goToReports()" title="查看深度分析报告">🔥 深度报告</button>
                 <button class="modal-close" id="closeModal">✕</button>
             </div>
             <div class="modal-body">
@@ -1148,6 +1138,8 @@
             </button>
         </div>
     </div>
+
+    <a href="user/reports.html" class="fab-cta" id="fabCta" title="查看深度分析报告">📊 查看深度报告</a>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script type="module" src="/js/pages/majors.js"></script>

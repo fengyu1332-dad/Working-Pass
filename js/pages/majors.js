@@ -643,8 +643,14 @@ function createGridCard(major) {
     </div>
     <span class="salary-tag">${(major.salary_range || '薪资面议').replace('¥', '')}</span>
     <p class="employment-desc">${(major.overview || '').substring(0, 60)}...</p>
+    <button class="card-cta-link">📊 查看报告 →</button>
   `;
   card.addEventListener('click', () => openModal(major));
+  card.querySelector('.card-cta-link').addEventListener('click', (e) => {
+    e.stopPropagation();
+    window._currentMajor = major;
+    goToReports(major.code);
+  });
   return card;
 }
 
@@ -664,9 +670,15 @@ function createListItem(major) {
     <div class="list-item-right">
       <span class="list-salary">${(major.salary_range || '薪资面议').replace('¥', '')}</span>
       <p class="list-difficulty">${major.difficulty || ''}</p>
+      <button class="card-cta-link" style="margin-top:6px;">📊 查看报告 →</button>
     </div>
   `;
   item.addEventListener('click', () => openModal(major));
+  item.querySelector('.card-cta-link').addEventListener('click', (e) => {
+    e.stopPropagation();
+    window._currentMajor = major;
+    goToReports(major.code);
+  });
   return item;
 }
 

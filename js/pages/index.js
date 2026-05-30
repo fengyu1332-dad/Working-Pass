@@ -180,8 +180,16 @@ function displayFeaturedMajors(majors) {
         <span class="featured-salary">${(major.salary_range || '薪资面议').replace('¥', '')}</span>
         <p class="featured-preview">${(major.overview || '').substring(0, 80)}...</p>
       </div>
+      <div class="featured-footer">
+        <button class="card-cta-link">📊 查看报告 →</button>
+      </div>
     `;
     card.addEventListener('click', () => openModal(major));
+    card.querySelector('.card-cta-link').addEventListener('click', (e) => {
+      e.stopPropagation();
+      window._currentMajor = major;
+      goToReports(major.code);
+    });
     grid.appendChild(card);
   });
 }

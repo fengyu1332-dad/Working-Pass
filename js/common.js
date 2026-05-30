@@ -55,6 +55,9 @@ let _previouslyFocused = null;
 function openModal(major) {
   window._currentMajor = major;
 
+  const ctaBtn = document.getElementById('modalCtaBtn');
+  if (ctaBtn) ctaBtn.classList.add('visible');
+
   const setText = (id, text) => {
     const el = document.getElementById(id);
     if (el) el.textContent = text;
@@ -157,6 +160,8 @@ function closeModal() {
   const modal = document.getElementById('modal');
   if (modal) modal.classList.remove('show');
   window._currentMajor = null;
+  const ctaBtn = document.getElementById('modalCtaBtn');
+  if (ctaBtn) ctaBtn.classList.remove('visible');
   if (_previouslyFocused && typeof _previouslyFocused.focus === 'function') {
     _previouslyFocused.focus();
     _previouslyFocused = null;
