@@ -165,7 +165,12 @@ const MajorModal = {
         }
         return;
       }
-      window.location.href = 'user/reports.html';
+      const majorCode = this.major?.code;
+      if (majorCode) {
+        window.location.href = `user/reports.html?code=${encodeURIComponent(majorCode)}`;
+      } else {
+        window.location.href = 'user/reports.html';
+      }
     },
   },
 };

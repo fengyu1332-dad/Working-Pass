@@ -22,6 +22,21 @@ export async function getReports(category = null, search = null) {
   return data;
 }
 
+export async function getReportByMajorCode(majorCode) {
+  const sb = window.auth ? window.auth.getSupabase() : null;
+  if (!sb) throw new Error('Supabase not initialized');
+
+  const { data, error } = await sb
+    .from('reports')
+    .select(REPORT_COLUMNS)
+    .eq('major_code', majorCode)
+    .eq('status', 'published')
+    .maybeSingle();
+
+  if (error) throw error;
+  return data;
+}
+
 export async function getReport(reportId) {
   const sb = window.auth ? window.auth.getSupabase() : null;
   if (!sb) throw new Error('Supabase not initialized');
@@ -94,6 +109,7 @@ if (typeof window !== 'undefined') {
   window.reports = {
     getReports,
     getReport,
+    getReportByMajorCode,
     getUnlockedReportIds,
     unlockReport,
     downloadReport: unlockReport,

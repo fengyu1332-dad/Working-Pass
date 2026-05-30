@@ -27,10 +27,53 @@ const badges = [
   '🚀 潜力无限', '💼 就业无忧', '🎓 名校首选',
 ];
 
-async function fetchMajors() {
+// --- localStorage 缓存 ---
+const CACHE_KEY = 'starmap_majors_cache';
+const CACHE_TTL = 24 * 60 * 60 * 1000; // 24 小时
+
+function getCachedMajors() {
+  try {
+    const raw = localStorage.getItem(CACHE_KEY);
+    if (!raw) return null;
+    const cache = JSON.parse(raw);
+    if (Date.now() - cache.timestamp > CACHE_TTL) {
+      localStorage.removeItem(CACHE_KEY);
+      return null;
+    }
+    return cache.data;
+  } catch {
+    return null;
+  }
+}
+
+function setCachedMajors(data) {
+  try {
+    localStorage.setItem(CACHE_KEY, JSON.stringify({ data, timestamp: Date.now() }));
+  } catch { /* 存储满了则静默失败 */ }
+}
+
+const MAJORS_QUERY = 'select=code,name,category,category_icon,salary_range,difficulty,overview,career_outlook,what_you_learn,suitable_for,xuefeng_comment,top_universities,yearly_courses,career_directions,degree,duration';
+
+async function fetchMajors(forceRefresh = false) {
+  // 优先使用缓存
+  if (!forceRefresh) {
+    const cached = getCachedMajors();
+    if (cached && cached.length > 0) {
+      majorsData = cached;
+      initializeUI();
+      // 后台静默更新缓存
+      fetchFreshMajors();
+      return;
+    }
+  }
+
+  await fetchFreshMajors();
+}
+
+async function fetchFreshMajors() {
   try {
     const { url, key } = window.supabaseClient;
-    const response = await fetch(`${url}/rest/v1/majors?select=code,name,category,category_icon,salary_range,difficulty,overview,career_outlook,what_you_learn,suitable_for,xuefeng_comment,top_universities,yearly_courses,career_directions,degree,duration`, {
+    const response = await fetch(`${url}/rest/v1/majors?${MAJORS_QUERY}`, {
       headers: {
         apikey: key,
         Authorization: `Bearer ${key}`,
@@ -40,13 +83,29 @@ async function fetchMajors() {
 
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
-    majorsData = await response.json();
-    initializeUI();
+    const fresh = await response.json();
+    if (fresh.length > 0) {
+      majorsData = fresh;
+      setCachedMajors(fresh);
+    }
+    // 如果 UI 尚未初始化（首次加载没有缓存），初始化
+    if (!forceGraph) initializeUI();
   } catch (error) {
     console.error('Error fetching majors:', error);
-    const loading = document.getElementById('loading');
-    if (loading) {
-      renderErrorState(loading, `加载失败: ${error.message}`, fetchMajors);
+    // 首次加载且无缓存时，走缓存兜底
+    if (!majorsData.length) {
+      const stale = getCachedMajors();
+      if (stale && stale.length > 0) {
+        majorsData = stale;
+        initializeUI();
+        return;
+      }
+    }
+    if (!majorsData.length) {
+      const loading = document.getElementById('loading');
+      if (loading) {
+        renderErrorState(loading, `加载失败: ${error.message}`, fetchMajors);
+      }
     }
   }
 }
@@ -75,6 +134,7 @@ function initializeUI() {
 
 function initForceGraph() {
   const container = document.getElementById('forceGraphContainer');
+  const loadingEl = document.getElementById('graphLoading');
   if (!container || !majorsData.length) return;
 
   if (forceGraph) forceGraph.destroy();
@@ -90,6 +150,11 @@ function initForceGraph() {
     },
   });
   forceGraph.setData(majorsData);
+
+  if (loadingEl) {
+    loadingEl.classList.add('done');
+    setTimeout(() => { loadingEl.style.display = 'none'; }, 500);
+  }
 }
 
 function displayFeaturedMajors(majors) {

@@ -26,6 +26,21 @@ let currentReportSort = 'name';
 
   await loadReports();
 
+  // 如果 URL 携带 ?code= 参数，自动定位到对应专业报告
+  const urlParams = new URLSearchParams(window.location.search);
+  const targetCode = urlParams.get('code');
+  if (targetCode) {
+    const targetReport = currentReports.find(
+      (r) => r.major_code === targetCode
+    );
+    if (targetReport) {
+      showReportDetail(targetReport.id);
+    } else {
+      // 报告不存在时静默回退到列表页，不做额外提示
+      window.history.replaceState(null, '', window.location.pathname);
+    }
+  }
+
   document.getElementById('logoutBtn').addEventListener('click', async (e) => {
     e.preventDefault();
     try { await window.auth.logout(); } catch (error) { window.auth.showToast('退出失败', 'error'); }

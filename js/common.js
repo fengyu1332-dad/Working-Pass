@@ -362,9 +362,15 @@ function showReportPreviewModal(major, reportData, alreadyPurchased) {
     ${alreadyPurchased ? `
       <button class="btn btn-primary btn-block" id="viewFullReportBtn">📖 查看完整报告</button>
       <p style="text-align:center;margin:12px 0 0;font-size:13px;color:var(--on-surface-variant);">您已解锁此报告，可随时查看</p>
-    ` : `
+    ` : reportData ? `
       <button class="btn btn-primary btn-block" id="unlockReportBtn">💎 消耗 1 点解锁完整报告</button>
       <p style="text-align:center;margin:12px 0 0;font-size:13px;color:var(--on-surface-variant);">解锁后可在个人中心随时查看</p>
+    ` : `
+      <div class="confirm-warning">
+        <span style="font-size:20px;flex-shrink:0;">📝</span>
+        <span>该专业的深度分析报告<strong>正在筹备中</strong>，敬请期待。您也可以<strong>浏览其他专业的已上线报告</strong>。</span>
+      </div>
+      <a href="user/reports.html" class="btn btn-primary btn-block" style="display:flex;text-decoration:none;">📋 浏览已上线报告</a>
     `}
   `;
 
@@ -372,7 +378,7 @@ function showReportPreviewModal(major, reportData, alreadyPurchased) {
     document.getElementById('viewFullReportBtn').addEventListener('click', () => {
       showReportReader(major, buildFullContentChapters(major));
     });
-  } else {
+  } else if (reportData) {
     document.getElementById('unlockReportBtn').addEventListener('click', () => {
       showConfirmPaymentModal(major, reportData);
     });
@@ -498,7 +504,7 @@ function showReportReader(major, chapters) {
   });
 }
 
-async function goToReports() {
+async function goToReports(majorCode) {
   let user = null;
   if (window.auth && window.auth.getCurrentUser) {
     user = await window.auth.getCurrentUser();
@@ -510,9 +516,38 @@ async function goToReports() {
     return;
   }
 
-  // 统一跳转到报告浏览页
+  if (!majorCode && window._currentMajor) {
+    majorCode = window._currentMajor.code;
+  }
+
+  // 在 closeModal 清除 _currentMajor 之前保存数据
+  const major = window._currentMajor;
+
   if (typeof closeModal === 'function') closeModal();
-  window.location.href = 'user/reports.html';
+
+  if (majorCode) {
+    // 先检查数据库是否有该专业的报告
+    let report = null;
+    try {
+      if (window.reports?.getReportByMajorCode) {
+        report = await window.reports.getReportByMajorCode(majorCode);
+      }
+    } catch {
+      // 查询失败时回退到跳转 reports 页面
+    }
+
+    if (report) {
+      // 数据库有报告 → 跳转到报告浏览页
+      window.location.href = `user/reports.html?code=${encodeURIComponent(majorCode)}`;
+    } else if (major) {
+      // 无报告但有专业数据 → 就地展示预览弹窗
+      showReportPreviewModal(major, null, false);
+    } else {
+      window.location.href = 'user/reports.html';
+    }
+  } else {
+    window.location.href = 'user/reports.html';
+  }
 }
 
 // 导出到全局供 HTML onclick 使用
