@@ -2,6 +2,8 @@
 
 > 最后更新：2026-05-29 | 版本：v1.0
 > 适用范围：`majors` 表全部 883 条专业数据的生成、修复和验证
+> 
+> **配套文档：** [REPORT_GENERATION_GUIDE.md](./REPORT_GENERATION_GUIDE.md) — 批量报告生成经验总结与操作手册（教训/参数/故障速查）
 
 ---
 
