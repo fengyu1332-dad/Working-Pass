@@ -74,7 +74,7 @@ ${safeStr(m.xuefeng_comment)}
 ${safeStr(m.top_universities)}
 
 ======= 报告结构要求 =======
-严格按以下13章生成（每章<h2>标题须完全一致），总字数≥8000汉字，用具体数字而非模糊描述：
+严格按以下13章生成（每章<h2>标题须完全一致），总字数10000汉字左右，用具体数字而非模糊描述：
 
 <h2>一、专业概述</h2>
 - 1.1 专业定义与学科定位（150-200字）
@@ -165,7 +165,7 @@ ${safeStr(m.top_universities)}
 ======= 重要提醒 =======
 1. 必须输出全部13个章节
 2. 数据必须具体（数字、百分比、金额、排名），不用"较高""较多"
-3. 总字数≥8000汉字
+3. 总字数10000汉字左右
 4. 用HTML标签排版（h2/h3/p/ul/li/table/thead/tbody/tr/th/td/strong/em/blockquote）
 5. 数据来源标注：*数据来源：XXX*
 6. 表格用 <table style="width:100%;border-collapse:collapse;margin:12px 0;">，th/td加 border="1" style="padding:8px;text-align:left;"
