@@ -39,6 +39,5 @@ if (typeof window !== 'undefined') {
     configure: configureSupabase,
     url: SUPABASE_URL,
     key: SUPABASE_ANON_KEY,
-    configure: configureSupabase,
   };
 }

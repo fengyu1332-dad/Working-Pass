@@ -31,6 +31,7 @@ export function renderAdminSidebar(activePage) {
     ['reports', '/admin/reports.html', '📚 报告管理'],
     ['majors', '/admin/majors.html', '🎓 专业库管理'],
     ['packages', '/admin/packages.html', '💎 点数套餐'],
+    ['orders', '/admin/orders.html', '📦 订单管理'],
   ];
 
   nav.innerHTML = `

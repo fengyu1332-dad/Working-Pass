@@ -85,7 +85,8 @@ export class ForceGraph {
       this.simulation.force('x', d3.forceX(this.width / 2).strength(0.006));
       this.simulation.force('y', d3.forceY(this.height / 2).strength(0.006));
       this.simulation.alpha(0.3).restart();
-      setTimeout(() => this.fitView(), 250);
+      clearTimeout(this._fitViewTimer);
+      this._fitViewTimer = setTimeout(() => this.fitView(), 250);
     }
   }
 
@@ -111,6 +112,7 @@ export class ForceGraph {
   }
 
   destroy() {
+    clearTimeout(this._fitViewTimer);
     cancelAnimationFrame(this._animFrame);
     if (this.simulation) this.simulation.stop();
     this.canvas.remove();

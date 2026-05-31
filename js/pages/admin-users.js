@@ -97,8 +97,31 @@ function renderUsers(users) {
       const ok = await showConfirmDialog(`确定删除用户 "<strong>${btn.dataset.name}</strong>" 吗？此操作不可恢复。`);
       if (!ok) return;
       try {
-        // Delete user_profiles first (FK constraints), then auth.users
+        // 1. Delete user_profiles first (FK constraints), then auth.users via Edge Function
         await adminApi.delete('user_profiles', { col: 'id', val: btn.dataset.uid });
+
+        // 2. Delete auth.users record via Edge Function (uses service_role internally)
+        try {
+          const sb = window.auth.getSupabase();
+          const { data: { session } } = await sb.auth.getSession();
+          const jwt = session?.access_token;
+          const { url: supabaseUrl, key: anonKey } = window.supabaseClient;
+
+          if (jwt) {
+            const res = await fetch(`${supabaseUrl}/functions/v1/admin-delete-user`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${jwt}`, apikey: anonKey },
+              body: JSON.stringify({ user_id: btn.dataset.uid }),
+            });
+            const result = await res.json().catch(() => ({}));
+            if (!res.ok) {
+              console.warn('auth.users 删除失败（user_profiles 已删除）:', result.error || res.statusText);
+            }
+          }
+        } catch (authErr) {
+          console.warn('调用 admin-delete-user 失败（user_profiles 已删除）:', authErr.message);
+        }
+
         window.auth.showToast('用户已删除', 'success');
         await loadUsers();
       } catch (err) {

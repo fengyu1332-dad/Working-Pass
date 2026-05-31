@@ -2,6 +2,8 @@
 // 专业星图 - 支付模块（ES Module）
 // ============================================================
 
+import { SUPABASE_URL } from './supabase-client.js';
+
 export async function getPointPackages() {
   const sb = window.auth ? window.auth.getSupabase() : null;
   if (!sb) throw new Error('Supabase not initialized');
@@ -36,26 +38,42 @@ export async function createOrder(packageId) {
   return order;
 }
 
-export async function completeOrder(orderId) {
+export async function createAlipayOrder(packageId) {
   const sb = window.auth ? window.auth.getSupabase() : null;
   if (!sb) throw new Error('Supabase not initialized');
 
-  const user = await window.auth.getCurrentUser();
-  if (!user) throw new Error('User not logged in');
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) throw new Error('请先登录');
 
-  const { data: order } = await sb.from('orders').select('*, point_packages(*)').eq('id', orderId).single();
-  if (!order) throw new Error('Order not found');
+  const response = await fetch(`${SUPABASE_URL}/functions/v1/create-alipay-order`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${session.access_token}`,
+    },
+    body: JSON.stringify({ package_id: packageId }),
+  });
 
-  const { data: profile } = await sb.from('user_profiles').select('points_balance').eq('id', user.id).single();
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({}));
+    throw new Error(err.error || `请求失败 (${response.status})`);
+  }
 
-  await sb
-    .from('user_profiles')
-    .update({ points_balance: (profile.points_balance || 0) + order.points })
-    .eq('id', user.id);
+  return response.json();
+}
 
-  await sb.from('orders').update({ status: 'paid', paid_at: new Date().toISOString() }).eq('id', orderId);
+export async function queryOrderStatus(orderId) {
+  const sb = window.auth ? window.auth.getSupabase() : null;
+  if (!sb) throw new Error('Supabase not initialized');
 
-  return true;
+  const { data, error } = await sb
+    .from('orders')
+    .select('status, points')
+    .eq('id', orderId)
+    .single();
+
+  if (error) throw error;
+  return data;
 }
 
 export async function getOrders() {
@@ -94,5 +112,5 @@ export async function getDownloadRecords() {
 
 // 向后兼容
 if (typeof window !== 'undefined') {
-  window.payments = { getPointPackages, createOrder, completeOrder, getOrders, getDownloadRecords };
+  window.payments = { getPointPackages, createOrder, createAlipayOrder, queryOrderStatus, getOrders, getDownloadRecords };
 }

@@ -88,8 +88,12 @@ async function fetchFreshMajors() {
       majorsData = fresh;
       setCachedMajors(fresh);
     }
-    // 如果 UI 尚未初始化（首次加载没有缓存），初始化
-    if (!forceGraph) initializeUI();
+    // 如果 UI 已初始化（缓存命中后后台刷新），更新图谱数据；否则初始化
+    if (forceGraph) {
+      forceGraph.setData(majorsData);
+    } else {
+      initializeUI();
+    }
   } catch (error) {
     console.error('Error fetching majors:', error);
     // 首次加载且无缓存时，走缓存兜底

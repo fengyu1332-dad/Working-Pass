@@ -323,7 +323,7 @@ function initJsonRows(containerId, addBtnId, values) {
     .map(
       (v, i) => `
     <div class="json-row">
-      <input type="text" class="form-input" value="${(typeof v === 'string' ? v : JSON.stringify(v)).replace(/"/g, '&quot;')}">
+      <input type="text" class="form-input" value="${window.escapeHtml(typeof v === 'string' ? v : JSON.stringify(v))}">
       <button type="button" class="btn btn-sm btn-danger json-remove-btn" data-idx="${i}">x</button>
     </div>`
     )

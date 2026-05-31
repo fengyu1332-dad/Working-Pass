@@ -84,28 +84,24 @@ async function purchasePackage(pkg) {
   if (purchasing) return;
   purchasing = true;
 
-  // 视觉反馈
   const card = document.getElementById(`pkg-${pkg.id}`);
   card.classList.add('busy');
   const originalText = card.querySelector('.package-desc').textContent;
-  card.querySelector('.package-desc').textContent = '处理中...';
+  card.querySelector('.package-desc').textContent = '创建订单...';
 
   try {
-    const order = await window.payments.createOrder(pkg.id);
-    await window.payments.completeOrder(order.id);
+    const result = await window.payments.createAlipayOrder(pkg.id);
 
-    card.querySelector('.package-desc').textContent = '✓ 购买成功！';
-    showFeedback(`购买成功！${pkg.points} 点数已到账`, 'success');
-    await refreshBalance();
+    // 保存订单 ID 供回调页面使用
+    sessionStorage.setItem('pendingOrderId', result.order.id);
+
+    // 跳转到支付宝支付页
+    window.location.href = result.payment_url;
   } catch (error) {
     console.error('Purchase error:', error);
     card.querySelector('.package-desc').textContent = originalText;
-    showFeedback(error.message || '购买失败，请重试', 'error');
-  } finally {
+    showFeedback(error.message || '创建订单失败，请重试', 'error');
     card.classList.remove('busy');
     purchasing = false;
-    if (card.querySelector('.package-desc').textContent === '✓ 购买成功！') {
-      setTimeout(() => { card.querySelector('.package-desc').textContent = originalText; }, 2000);
-    }
   }
 }

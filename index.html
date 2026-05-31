@@ -686,24 +686,41 @@
             line-height: 1.9;
         }
         
-        .cta-section { margin-top: 32px; text-align: center; }
-        .cta-button {
+        .modal-header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-shrink: 0;
+        }
+        .modal-cta-btn {
             background: linear-gradient(135deg, #E67E22 0%, #D35400 100%);
             color: white;
             border: none;
-            padding: 16px 48px;
+            padding: 10px 20px;
             border-radius: 9999px;
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
-            box-shadow: 0 4px 20px rgba(230, 126, 34, 0.4);
+            box-shadow: 0 2px 12px rgba(230, 126, 34, 0.35);
+            white-space: nowrap;
+            font-family: inherit;
         }
-        .cta-button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 30px rgba(230, 126, 34, 0.5);
+        .modal-cta-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(230, 126, 34, 0.5);
+            background: linear-gradient(135deg, #F08C3A 0%, #E67E22 100%);
         }
-        
+        @media (max-width: 600px) {
+            .modal-cta-btn {
+                padding: 8px 14px;
+                font-size: 12px;
+            }
+            .modal-header-actions {
+                gap: 6px;
+            }
+        }
+
         .preheat-modal {
             position: fixed;
             top: 0;
@@ -890,7 +907,10 @@
                         <h2 id="modalTitle">--</h2>
                     </div>
                 </div>
-                <button class="modal-close" id="closeModal">✕</button>
+                <div class="modal-header-actions">
+                    <button class="modal-cta-btn" onclick="goToReports()">🔥 获取专业深度分析报告</button>
+                    <button class="modal-close" id="closeModal">✕</button>
+                </div>
             </div>
             <div class="modal-body">
                 <div class="tab-buttons">
@@ -980,9 +1000,6 @@
                         <div class="summary-box" id="detailXuefengComment" style="font-size: 15px; line-height: 1.9; color: #5d4037;">--</div>
                     </div>
                     
-                    <div class="cta-section">
-                        <button class="cta-button" onclick="goToReports()">🔥 获取深度分析报告</button>
-                    </div>
                 </div>
             </div>
         </div>

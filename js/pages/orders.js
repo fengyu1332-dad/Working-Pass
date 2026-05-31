@@ -71,7 +71,8 @@ async function loadOrders() {
           <div class="record-title">${order.point_packages?.name || order.package_name || '点数充值'}</div>
           <div class="record-meta">
             ${formatDate(order.created_at)} ·
-            ${order.status === 'paid' ? '✓ 已支付' : order.status === 'pending' ? '⏳ 待支付' : order.status === 'cancelled' ? '✗ 已取消' : order.status}
+            ${order.status === 'paid' ? '✓ 已支付' : order.status === 'pending' ? '⏳ 待支付' : order.status === 'cancelled' ? '✗ 已取消' : order.status === 'expired' ? '⏰ 已过期' : order.status}
+            ${order.alipay_trade_no ? ` · 交易号: ${order.alipay_trade_no.slice(-16)}` : ''}
           </div>
         </div>
         <div class="record-points positive">
