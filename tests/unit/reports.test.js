@@ -28,6 +28,13 @@ beforeEach(async () => {
   });
 
   globalThis.supabase = { createClient: vi.fn().mockReturnValue(mockSB) };
+
+  // Direct import path: getCurrentUser() calls sb.auth.getUser()
+  mockSB.auth.getUser.mockResolvedValue({
+    data: { user: { id: 'user-1', email: 'u@test.com' } },
+    error: null,
+  });
+
   window.supabaseClient = {
     init: vi.fn().mockReturnValue(mockSB),
     get: vi.fn().mockReturnValue(mockSB),
@@ -159,7 +166,7 @@ describe('reports — getUnlockedReportIds', () => {
   });
 
   it('未登录返回空数组', async () => {
-    window.auth.getCurrentUser.mockResolvedValue(null);
+    mockSB.auth.getUser.mockResolvedValue({ data: { user: null }, error: null });
     const rpt = await loadReports();
     const ids = await rpt.getUnlockedReportIds();
     expect(ids).toEqual([]);

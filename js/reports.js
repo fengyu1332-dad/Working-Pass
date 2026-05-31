@@ -3,11 +3,19 @@
 // 报告解锁后在线阅读，不提供下载
 // ============================================================
 
+import { getSupabase } from './supabase-client.js';
+import { getCurrentUser } from './auth.js';
+
+function requireSB() {
+  const sb = getSupabase();
+  if (!sb) throw new Error('Supabase not initialized');
+  return sb;
+}
+
 const REPORT_COLUMNS = 'id, major_code, major_name, category, preview_content, full_content, download_count, status';
 
 export async function getReports(category = null, search = null) {
-  const sb = window.auth ? window.auth.getSupabase() : null;
-  if (!sb) throw new Error('Supabase not initialized');
+  const sb = requireSB();
 
   let query = sb
     .from('reports')
@@ -23,8 +31,7 @@ export async function getReports(category = null, search = null) {
 }
 
 export async function getReportByMajorCode(majorCode) {
-  const sb = window.auth ? window.auth.getSupabase() : null;
-  if (!sb) throw new Error('Supabase not initialized');
+  const sb = requireSB();
 
   const { data, error } = await sb
     .from('reports')
@@ -38,8 +45,7 @@ export async function getReportByMajorCode(majorCode) {
 }
 
 export async function getReport(reportId) {
-  const sb = window.auth ? window.auth.getSupabase() : null;
-  if (!sb) throw new Error('Supabase not initialized');
+  const sb = requireSB();
 
   const { data, error } = await sb.from('reports').select(REPORT_COLUMNS).eq('id', reportId).single();
   if (error) throw error;
@@ -47,10 +53,9 @@ export async function getReport(reportId) {
 }
 
 export async function unlockReport(reportId) {
-  const sb = window.auth ? window.auth.getSupabase() : null;
-  if (!sb) throw new Error('Supabase not initialized');
+  const sb = requireSB();
 
-  const user = await window.auth.getCurrentUser();
+  const user = await getCurrentUser();
   if (!user) throw new Error('User not logged in');
 
   // 先检查是否已解锁（避免 RPC 调用报错）
@@ -75,7 +80,7 @@ export async function getUnlockedReportIds() {
   const sb = window.auth ? window.auth.getSupabase() : null;
   if (!sb) return [];
 
-  const user = await window.auth.getCurrentUser();
+  const user = await getCurrentUser();
   if (!user) return [];
 
   const { data, error } = await sb
@@ -91,7 +96,7 @@ export async function checkUnlocked(reportId) {
   const sb = window.auth ? window.auth.getSupabase() : null;
   if (!sb) return false;
 
-  const user = await window.auth.getCurrentUser();
+  const user = await getCurrentUser();
   if (!user) return false;
 
   const { data } = await sb

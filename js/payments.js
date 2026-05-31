@@ -2,11 +2,17 @@
 // 专业星图 - 支付模块（ES Module）
 // ============================================================
 
-import { SUPABASE_URL } from './supabase-client.js';
+import { SUPABASE_URL, getSupabase } from './supabase-client.js';
+import { getCurrentUser } from './auth.js';
+
+function requireSB() {
+  const sb = getSupabase();
+  if (!sb) throw new Error('Supabase not initialized');
+  return sb;
+}
 
 export async function getPointPackages() {
-  const sb = window.auth ? window.auth.getSupabase() : null;
-  if (!sb) throw new Error('Supabase not initialized');
+  const sb = requireSB();
 
   const { data, error } = await sb
     .from('point_packages')
@@ -19,10 +25,8 @@ export async function getPointPackages() {
 }
 
 export async function createOrder(packageId) {
-  const sb = window.auth ? window.auth.getSupabase() : null;
-  if (!sb) throw new Error('Supabase not initialized');
-
-  const user = await window.auth.getCurrentUser();
+  const sb = requireSB();
+  const user = await getCurrentUser();
   if (!user) throw new Error('User not logged in');
 
   const { data: pkg } = await sb.from('point_packages').select('*').eq('id', packageId).single();
@@ -39,8 +43,7 @@ export async function createOrder(packageId) {
 }
 
 export async function createAlipayOrder(packageId) {
-  const sb = window.auth ? window.auth.getSupabase() : null;
-  if (!sb) throw new Error('Supabase not initialized');
+  const sb = requireSB();
 
   const { data: { session } } = await sb.auth.getSession();
   if (!session) throw new Error('请先登录');
@@ -63,8 +66,7 @@ export async function createAlipayOrder(packageId) {
 }
 
 export async function queryOrderStatus(orderId) {
-  const sb = window.auth ? window.auth.getSupabase() : null;
-  if (!sb) throw new Error('Supabase not initialized');
+  const sb = requireSB();
 
   const { data, error } = await sb
     .from('orders')
@@ -77,10 +79,9 @@ export async function queryOrderStatus(orderId) {
 }
 
 export async function getOrders() {
-  const sb = window.auth ? window.auth.getSupabase() : null;
-  if (!sb) throw new Error('Supabase not initialized');
+  const sb = requireSB();
 
-  const user = await window.auth.getCurrentUser();
+  const user = await getCurrentUser();
   if (!user) throw new Error('User not logged in');
 
   const { data, error } = await sb
@@ -94,10 +95,9 @@ export async function getOrders() {
 }
 
 export async function getDownloadRecords() {
-  const sb = window.auth ? window.auth.getSupabase() : null;
-  if (!sb) throw new Error('Supabase not initialized');
+  const sb = requireSB();
 
-  const user = await window.auth.getCurrentUser();
+  const user = await getCurrentUser();
   if (!user) throw new Error('User not logged in');
 
   const { data, error } = await sb
