@@ -59,6 +59,32 @@ tmp/
 temp/
 *.tmp
 
+# Debug artifacts
+*.png
+!public/**/*.png
+*snapshot.yml
+api-response.json
+temp_*.json
+temp_report.html
+test_reports/
+
+# Playwright
+.playwright-mcp/
+playwright-report/
+test-results/
+
+# Supabase local state
+supabase/.temp/
+
+# Quality check artifacts
+quality_check*.txt
+quality_report.txt
+
+# Batch processing state (keep tracked but ignore future changes)
+data/batch_failed.json
+data/batch_failed_main.json
+data/batch_progress.json
+
 # Testing
 .pytest_cache/
 .coverage
