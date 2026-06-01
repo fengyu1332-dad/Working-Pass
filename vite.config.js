@@ -39,6 +39,8 @@ export default defineConfig({
         manualChunks(id) {
           if (id.includes('/js/utils.js')) return 'shared-utils';
           if (id.includes('/js/common.js')) return 'shared-ui';
+          if (id.includes('/js/supabase-client.js')) return 'supabase-client';
+          if (id.includes('/js/auth.js')) return 'auth';
           if (id.includes('/js/pages/admin-')) return 'admin';
         },
       },
