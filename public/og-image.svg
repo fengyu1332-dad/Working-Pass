@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#E67E22"/>
+      <stop offset="100%" stop-color="#FAD7B2"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <circle cx="900" cy="300" r="250" fill="rgba(255,255,255,0.1)"/>
+  <circle cx="950" cy="220" r="120" fill="rgba(255,255,255,0.08)"/>
+  <text x="80" y="200" font-family="serif" font-size="72" font-weight="700" fill="#FFFFFF">专业星图</text>
+  <text x="80" y="310" font-family="sans-serif" font-size="36" fill="rgba(255,255,255,0.9)">温暖、专业的大学专业选择指南</text>
+  <line x1="80" y1="350" x2="380" y2="350" stroke="rgba(255,255,255,0.6)" stroke-width="3"/>
+  <text x="80" y="430" font-family="sans-serif" font-size="28" fill="rgba(255,255,255,0.8)">
+    883 个专业 · 14 大学科门类 · 就业前景 · 薪资分析
+  </text>
+  <text x="80" y="510" font-family="sans-serif" font-size="22" fill="rgba(255,255,255,0.6)">working-pass.vercel.app</text>
+</svg>
