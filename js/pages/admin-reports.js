@@ -11,6 +11,7 @@ import {
   renderEmptyState,
   adminApi,
 } from './admin-common.js';
+import { sanitizeHTML } from '../sanitize-html.js';
 import { SUPABASE_URL } from '../supabase-client.js';
 
 const STATUS_LABELS = { published: '已发布', draft: '草稿', archived: '已归档' };
@@ -339,7 +340,7 @@ function previewReport(report) {
       </div>
       <div class="admin-sub-section">
         <h4 style="margin:0 0 8px;">摘要内容</h4>
-        <div style="white-space:pre-wrap;font-size:14px;line-height:1.8;">${escapeHtml(report.preview_content) || '(空)'}</div>
+        <div style="white-space:pre-wrap;font-size:14px;line-height:1.8;">${sanitizeHTML(report.preview_content) || '(空)'}</div>
       </div>
       <div class="admin-sub-section">
         <h4 style="margin:0 0 8px;">完整内容</h4>

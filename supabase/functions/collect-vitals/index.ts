@@ -20,7 +20,7 @@ Deno.serve(async (req: Request) => {
       return new Response("fail", { status: 400 });
     }
 
-    const supabaseUrl = "https://djteatwxjlnbjylynvjh.supabase.co";
+    const supabaseUrl = Deno.env.get("PROJECT_URL") || "https://djteatwxjlnbjylynvjh.supabase.co";
     const serviceRoleKey = Deno.env.get("PROJECT_SERVICE_ROLE_KEY") || "";
     if (!serviceRoleKey) {
       return new Response(JSON.stringify({ error: "not configured" }), { status: 500 });

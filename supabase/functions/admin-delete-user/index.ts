@@ -33,8 +33,8 @@ Deno.serve(async (req: Request) => {
     }
 
     const jwt = authHeader.replace("Bearer ", "");
-    const supabaseUrl = Deno.env.get("SUPABASE_URL") || "";
-    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY") || "";
+    const supabaseUrl = Deno.env.get("PROJECT_URL") || "";
+    const supabaseAnonKey = Deno.env.get("PROJECT_ANON_KEY") || "";
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
 
     const anonClient = createClient(supabaseUrl, supabaseAnonKey, {

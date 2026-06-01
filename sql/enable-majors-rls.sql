@@ -13,22 +13,12 @@ CREATE POLICY "公开查看专业库" ON majors
   FOR SELECT
   USING (true);
 
--- 3. 管理员写入策略（仅 admin 角色可增删改）
+-- 3. 管理员写入策略（复用 is_admin() 安全函数，避免递归）
 DROP POLICY IF EXISTS "管理员管理专业库" ON majors;
 CREATE POLICY "管理员管理专业库" ON majors
   FOR ALL
-  USING (
-    EXISTS (
-      SELECT 1 FROM user_profiles up
-      WHERE up.id = auth.uid() AND up.role = 'admin'
-    )
-  )
-  WITH CHECK (
-    EXISTS (
-      SELECT 1 FROM user_profiles up
-      WHERE up.id = auth.uid() AND up.role = 'admin'
-    )
-  );
+  USING (is_admin())
+  WITH CHECK (is_admin());
 
 -- 4. 验证
 DO $$

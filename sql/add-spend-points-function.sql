@@ -10,6 +10,7 @@ CREATE OR REPLACE FUNCTION spend_points(p_report_id UUID)
 RETURNS JSONB
 LANGUAGE plpgsql
 SECURITY DEFINER
+SET search_path = ''
 AS $$
 DECLARE
   v_user_id UUID;
@@ -25,7 +26,7 @@ BEGIN
 
   -- 检查报告是否存在且已发布
   SELECT EXISTS(
-    SELECT 1 FROM reports WHERE id = p_report_id AND status = 'published'
+    SELECT 1 FROM public.reports WHERE id = p_report_id AND status = 'published'
   ) INTO v_report_exists;
 
   IF NOT v_report_exists THEN
@@ -34,14 +35,14 @@ BEGIN
 
   -- 检查是否已解锁（避免重复扣点）
   IF EXISTS(
-    SELECT 1 FROM download_records
+    SELECT 1 FROM public.download_records
     WHERE user_id = v_user_id AND report_id = p_report_id
   ) THEN
     RETURN jsonb_build_object('success', false, 'error', '已解锁过此报告');
   END IF;
 
   -- 原子化扣点：使用 UPDATE + RETURNING 确保并发安全
-  UPDATE user_profiles
+  UPDATE public.user_profiles
   SET points_balance = points_balance - 1,
       updated_at = NOW()
   WHERE id = v_user_id
@@ -54,11 +55,11 @@ BEGIN
   END IF;
 
   -- 创建下载记录
-  INSERT INTO download_records (user_id, report_id, points_spent)
+  INSERT INTO public.download_records (user_id, report_id, points_spent)
   VALUES (v_user_id, p_report_id, 1);
 
   -- 增加报告下载计数
-  UPDATE reports
+  UPDATE public.reports
   SET download_count = download_count + 1,
       updated_at = NOW()
   WHERE id = p_report_id;

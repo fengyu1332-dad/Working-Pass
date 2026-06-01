@@ -266,8 +266,8 @@ Deno.serve(async (req: Request) => {
     }
 
     const jwt = authHeader.replace("Bearer ", "");
-    const supabaseUrl = Deno.env.get("SUPABASE_URL") || "";
-    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY") || "";
+    const supabaseUrl = Deno.env.get("PROJECT_URL") || "";
+    const supabaseAnonKey = Deno.env.get("PROJECT_ANON_KEY") || "";
 
     // --- 2. Optional admin check (verifies JWT is valid) ---
     // Anon key is sufficient for auth.getUser() which validates the JWT

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>服务暂时不可用 - 专业星图</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: "Inter", -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
+      background: #FFF8F5;
+      display: flex; align-items: center; justify-content: center;
+      min-height: 100vh; color: #2C2621;
+    }
+    .error-container { text-align: center; padding: 40px 20px; max-width: 480px; }
+    .error-icon { font-size: 80px; margin-bottom: 24px; }
+    .error-title { font-family: "Literata", Georgia, serif; font-size: 28px; font-weight: 700; color: #705A49; margin-bottom: 16px; }
+    .error-desc { font-size: 16px; color: #8B7E74; line-height: 1.8; margin-bottom: 32px; }
+    .error-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .btn {
+      display: inline-block; padding: 12px 28px; border-radius: 12px;
+      font-size: 15px; font-weight: 600; text-decoration: none; cursor: pointer;
+      transition: all 0.3s; border: none;
+    }
+    .btn-primary { background: #E67E22; color: #fff; }
+    .btn-primary:hover { background: #D35400; transform: translateY(-2px); }
+    .btn-secondary { background: #EBE0D6; color: #705A49; }
+    .btn-secondary:hover { background: #DED0C6; transform: translateY(-2px); }
+  </style>
+</head>
+<body>
+  <div class="error-container">
+    <div class="error-icon">🔧</div>
+    <h1 class="error-title">服务暂时不可用</h1>
+    <p class="error-desc">
+      我们正在进行服务器维护或遇到临时故障。请稍后重试，通常几分钟内即可恢复。
+    </p>
+    <div class="error-actions">
+      <a href="/" class="btn btn-primary">返回首页</a>
+      <button class="btn btn-secondary" onclick="location.reload()">刷新页面</button>
+    </div>
+  </div>
+</body>
+</html>

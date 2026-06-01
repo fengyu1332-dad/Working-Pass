@@ -6,6 +6,7 @@ import '../supabase-client.js';
 import '../auth.js';
 import '../reports.js';
 import '../error-report.js';
+import { sanitizeHTML } from '../sanitize-html.js';
 
 let currentReports = [];
 let currentProfile = null;
@@ -246,7 +247,7 @@ async function showReportDetail(reportId) {
       <div style="flex:1;display:flex;flex-direction:column;min-height:0;overflow-y:auto;">
         <div class="report-preview-content" id="previewScroll">
           <div style="font-weight: 600; margin-bottom: 12px; color: var(--secondary); font-size: 16px;">👁️ 免费预览</div>
-          ${report.preview_content || '暂无预览内容'}
+          ${sanitizeHTML(report.preview_content || '暂无预览内容')}
         </div>
         <div class="report-locked-area">
           <div style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">🔒 解锁完整深度分析报告</div>
@@ -295,7 +296,7 @@ async function loadFullReport(reportId) {
     const container = document.getElementById('reportReaderContainer');
     if (container) {
       if (result.content) {
-        container.innerHTML = result.content;
+        container.innerHTML = sanitizeHTML(result.content);
       } else {
         container.innerHTML = '<p style="text-align:center;color:var(--on-surface-variant);padding:40px;">暂无报告内容</p>';
       }

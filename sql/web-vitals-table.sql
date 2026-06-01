@@ -27,9 +27,4 @@ CREATE POLICY "公开写入性能数据" ON web_vitals
 DROP POLICY IF EXISTS "管理员查看性能数据" ON web_vitals;
 CREATE POLICY "管理员查看性能数据" ON web_vitals
   FOR SELECT
-  USING (
-    EXISTS (
-      SELECT 1 FROM user_profiles up
-      WHERE up.id = auth.uid() AND up.role = 'admin'
-    )
-  );
+  USING (is_admin());

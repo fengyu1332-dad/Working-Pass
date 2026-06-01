@@ -10,7 +10,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 Deno.serve(async (req: Request) => {
   try {
-    const supabaseUrl = "https://djteatwxjlnbjylynvjh.supabase.co";
+    const supabaseUrl = Deno.env.get("PROJECT_URL") || "https://djteatwxjlnbjylynvjh.supabase.co";
     const serviceRoleKey = Deno.env.get("PROJECT_SERVICE_ROLE_KEY") || "";
 
     if (!serviceRoleKey) {

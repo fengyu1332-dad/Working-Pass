@@ -24,22 +24,12 @@ ALTER TABLE admin_audit_logs ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "管理员查看审计日志" ON admin_audit_logs;
 CREATE POLICY "管理员查看审计日志" ON admin_audit_logs
   FOR SELECT
-  USING (
-    EXISTS (
-      SELECT 1 FROM user_profiles up
-      WHERE up.id = auth.uid() AND up.role = 'admin'
-    )
-  );
+  USING (is_admin());
 
 DROP POLICY IF EXISTS "管理员写入审计日志" ON admin_audit_logs;
 CREATE POLICY "管理员写入审计日志" ON admin_audit_logs
   FOR INSERT
-  WITH CHECK (
-    EXISTS (
-      SELECT 1 FROM user_profiles up
-      WHERE up.id = auth.uid() AND up.role = 'admin'
-    )
-  );
+  WITH CHECK (is_admin());
 
 -- 3. 便捷函数：记录审计日志
 CREATE OR REPLACE FUNCTION log_admin_action(
