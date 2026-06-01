@@ -127,30 +127,34 @@
       function showSuccess(order) {
         document.getElementById('statusIcon').textContent = '✅';
         document.getElementById('statusTitle').textContent = '支付成功！';
-        document.getElementById('statusText').textContent =
-          `点数已到账，快去查看深度分析报告吧！`;
+        const points = order?.points || '--';
+        const amount = order?.amount ? `¥${parseFloat(order.amount).toFixed(2)}` : '--';
+        document.getElementById('statusText').innerHTML =
+          `支付金额 <strong>${amount}</strong>，到账点数 <strong>${points}</strong><br>快去查看深度分析报告吧！`;
         document.getElementById('spinner').style.display = 'none';
 
         const actions = document.getElementById('callbackActions');
         actions.style.display = 'flex';
         actions.innerHTML = `
-          <a href="/user/dashboard.html" class="btn btn-primary" style="text-decoration:none;">前往个人中心</a>
-          <a href="/user/reports.html" class="btn btn-outline" style="text-decoration:none;">浏览报告</a>
+          <a href="/user/reports.html" class="btn btn-primary" style="text-decoration:none;">浏览报告</a>
+          <a href="/user/dashboard.html" class="btn btn-outline" style="text-decoration:none;">个人中心</a>
+          <a href="/user/purchase.html" class="btn btn-outline" style="text-decoration:none;">继续购买</a>
         `;
       }
 
       function showTimeout(order) {
         document.getElementById('statusIcon').textContent = '⏱️';
         document.getElementById('statusTitle').textContent = '支付处理中';
-        document.getElementById('statusText').textContent =
-          '支付结果确认超时，但请不要担心——支付宝会在确认后自动到账。您可以前往订单记录查看最新状态。';
+        document.getElementById('statusText').innerHTML =
+          '支付确认超时，支付宝异步通知可能有延迟。<br><strong>请放心——支付宝确认后会自动到账，不会丢失。</strong><br>您可以在订单记录中查看最新状态。';
         document.getElementById('spinner').style.display = 'none';
 
         const actions = document.getElementById('callbackActions');
         actions.style.display = 'flex';
         actions.innerHTML = `
-          <a href="/user/orders.html" class="btn btn-primary" style="text-decoration:none;">查看订单记录</a>
-          <a href="/user/dashboard.html" class="btn btn-outline" style="text-decoration:none;">前往个人中心</a>
+          <a href="/user/orders.html" class="btn btn-primary" style="text-decoration:none;">查看订单</a>
+          <a href="/user/dashboard.html" class="btn btn-outline" style="text-decoration:none;">个人中心</a>
+          <a href="/" class="btn btn-outline" style="text-decoration:none;">返回首页</a>
         `;
       }
 
@@ -163,8 +167,8 @@
         const actions = document.getElementById('callbackActions');
         actions.style.display = 'flex';
         actions.innerHTML = `
-          <a href="/user/purchase.html" class="btn btn-primary" style="text-decoration:none;">返回购买</a>
-          <a href="/user/orders.html" class="btn btn-outline" style="text-decoration:none;">查看订单记录</a>
+          <a href="/user/purchase.html" class="btn btn-primary" style="text-decoration:none;">重新购买</a>
+          <a href="/user/orders.html" class="btn btn-outline" style="text-decoration:none;">查看订单</a>
         `;
       }
 

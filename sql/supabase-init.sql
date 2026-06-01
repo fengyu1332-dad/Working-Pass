@@ -82,7 +82,7 @@ CREATE TABLE IF NOT EXISTS orders (
     amount DECIMAL(10, 2) NOT NULL,
     points INTEGER NOT NULL,
     status VARCHAR(20) DEFAULT 'pending',
-    payment_method VARCHAR(20) DEFAULT 'mock',
+    payment_method VARCHAR(20) DEFAULT 'alipay',
     paid_at TIMESTAMP WITH TIME ZONE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
     expires_at TIMESTAMP WITH TIME ZONE

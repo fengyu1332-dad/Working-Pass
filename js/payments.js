@@ -24,24 +24,6 @@ export async function getPointPackages() {
   return data;
 }
 
-export async function createOrder(packageId) {
-  const sb = requireSB();
-  const user = await getCurrentUser();
-  if (!user) throw new Error('User not logged in');
-
-  const { data: pkg } = await sb.from('point_packages').select('*').eq('id', packageId).single();
-  if (!pkg) throw new Error('Package not found');
-
-  const { data: order, error } = await sb
-    .from('orders')
-    .insert({ user_id: user.id, package_id: packageId, points: pkg.points, amount: pkg.price, status: 'pending' })
-    .select()
-    .single();
-
-  if (error) throw error;
-  return order;
-}
-
 export async function createAlipayOrder(packageId) {
   const sb = requireSB();
 
@@ -112,5 +94,5 @@ export async function getDownloadRecords() {
 
 // 向后兼容
 if (typeof window !== 'undefined') {
-  window.payments = { getPointPackages, createOrder, createAlipayOrder, queryOrderStatus, getOrders, getDownloadRecords };
+  window.payments = { getPointPackages, createAlipayOrder, queryOrderStatus, getOrders, getDownloadRecords };
 }

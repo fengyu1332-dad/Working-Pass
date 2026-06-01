@@ -23,6 +23,7 @@ UPDATE point_packages SET original_price = 99.90, featured = false WHERE name = 
 -- 4. 收紧 orders RLS：用户只能取消自己的待支付订单
 DROP POLICY IF EXISTS "用户可以更新自己的订单" ON orders;
 DROP POLICY IF EXISTS "orders_user_cancel" ON orders;
+DROP POLICY IF EXISTS "orders_own_update" ON orders;
 
 CREATE POLICY "orders_user_cancel" ON orders
   FOR UPDATE
@@ -41,11 +42,11 @@ SECURITY DEFINER
 SET search_path = ''
 AS $$
 DECLARE
-  v_order orders%ROWTYPE;
+  v_order public.orders%ROWTYPE;
   v_new_balance INTEGER;
 BEGIN
   -- 锁定订单行，防止并发修改
-  SELECT * INTO v_order FROM orders WHERE id = p_order_id FOR UPDATE;
+  SELECT * INTO v_order FROM public.orders WHERE id = p_order_id FOR UPDATE;
 
   IF NOT FOUND THEN
     RETURN jsonb_build_object('success', false, 'error', '订单不存在');
@@ -77,7 +78,7 @@ BEGIN
   END IF;
 
   -- 更新订单状态
-  UPDATE orders SET
+  UPDATE public.orders SET
     status = 'paid',
     payment_method = 'alipay',
     alipay_trade_no = p_alipay_trade_no,
@@ -85,7 +86,7 @@ BEGIN
   WHERE id = p_order_id;
 
   -- 原子增量更新用户余额
-  UPDATE user_profiles
+  UPDATE public.user_profiles
   SET points_balance = points_balance + v_order.points,
       updated_at = NOW()
   WHERE id = v_order.user_id

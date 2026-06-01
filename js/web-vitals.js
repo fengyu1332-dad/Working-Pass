@@ -3,7 +3,7 @@
 // 使用 PerformanceObserver API，零依赖
 // ============================================================
 
-const METRICS_ENDPOINT = null; // 预留：分析服务端点
+const METRICS_ENDPOINT = 'https://djteatwxjlnbjylynvjh.supabase.co/functions/v1/collect-vitals';
 const SAMPLE_RATE = 1.0;       // 采样率
 
 function shouldSample() {
@@ -19,14 +19,17 @@ function sendMetric(name, value, rating) {
     timestamp: Date.now(),
   };
 
+  const isDev = typeof import.meta !== 'undefined' && import.meta.env?.DEV;
+  const isProd = typeof import.meta !== 'undefined' && import.meta.env?.PROD;
+
   // 开发环境：打印到控制台
-  if (import.meta.env.DEV) {
+  if (isDev) {
     const emoji = rating === 'good' ? '🟢' : rating === 'needs-improvement' ? '🟡' : '🔴';
     console.debug(`[WebVitals] ${emoji} ${name}: ${metric.value} (${rating})`);
   }
 
   // 生产环境：发送到分析服务
-  if (METRICS_ENDPOINT && import.meta.env.PROD && shouldSample()) {
+  if (METRICS_ENDPOINT && isProd && shouldSample()) {
     navigator.sendBeacon(METRICS_ENDPOINT, JSON.stringify(metric));
   }
 

@@ -33,6 +33,7 @@ export default defineConfig({
         'admin/reports': resolve(__dirname, 'admin/reports.html'),
         'admin/majors': resolve(__dirname, 'admin/majors.html'),
         'admin/packages': resolve(__dirname, 'admin/packages.html'),
+        'admin/orders': resolve(__dirname, 'admin/orders.html'),
       },
       output: {
         manualChunks(id) {

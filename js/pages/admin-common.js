@@ -236,6 +236,24 @@ export const adminApi = {
       throw new Error(err.message || `[${table}] DELETE ${res.status}`);
     }
   },
+
+  // 审计日志
+  async logAction(action, resource, resourceId = null, detail = null) {
+    const body = {
+      p_action: action,
+      p_resource: resource,
+      p_resource_id: resourceId,
+      p_detail: detail,
+    };
+    const res = await fetch(`${restUrl('rpc/log_admin_action')}`, {
+      method: 'POST',
+      headers: { ...(await getAuthHeaders()), 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) {
+      console.error('[Audit] log failed:', res.status);
+    }
+  },
 };
 
 // --- Global Escape key for admin modal + confirm dialog ---

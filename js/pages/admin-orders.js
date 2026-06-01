@@ -4,7 +4,7 @@
 
 import '../supabase-client.js';
 import '../auth.js';
-import { requireAdmin, renderAdminSidebar, formatDate, showConfirmDialog } from './admin-common.js';
+import { requireAdmin, renderAdminSidebar, formatDate, showConfirmDialog, adminApi } from './admin-common.js';
 
 let currentFilter = 'all';
 let currentPage = 0;
@@ -137,7 +137,7 @@ async function loadOrders() {
           <td>${order.paid_at ? formatDate(order.paid_at) : '--'}</td>
           <td>
             ${order.status === 'pending'
-              ? `<button class="btn btn-outline" style="padding:4px 12px;font-size:12px;" onclick="window.cancelOrder('${order.id}')">取消</button>`
+              ? `<button class="btn btn-outline" style="padding:4px 8px;font-size:12px;margin-right:4px;" onclick="window.confirmPayment('${order.id}',${order.amount},${order.points})">确认支付</button><button class="btn btn-outline" style="padding:4px 8px;font-size:12px;" onclick="window.cancelOrder('${order.id}')">取消</button>`
               : '--'}
           </td>
         </tr>`;
@@ -190,6 +190,7 @@ window.cancelOrder = async function (orderId) {
     }
 
     window.auth.showToast('订单已取消', 'success');
+    adminApi.logAction('cancel_order', 'order', orderId);
     // 重新加载
     currentPage = 0;
     document.getElementById('ordersTableBody').innerHTML = '';
@@ -198,6 +199,53 @@ window.cancelOrder = async function (orderId) {
   } catch (error) {
     console.error('Cancel order error:', error);
     window.auth.showToast('取消失败: ' + error.message, 'error');
+  }
+};
+
+// 管理员手动确认支付
+window.confirmPayment = async function (orderId, amount, points) {
+  const confirmed = await showConfirmDialog(
+    `确认将此订单标记为已支付？\n\n金额：¥${parseFloat(amount).toFixed(2)}\n点数：${points}\n订单：${orderId.slice(0, 8)}...\n\n此操作将调用 complete_alipay_order 函数，原子化更新订单状态并增加用户余额。`
+  );
+  if (!confirmed) return;
+
+  const tradeNo = prompt('请输入支付宝交易号（生产环境会自动获取，手动操作请填入备注）：', `MANUAL-${Date.now()}`);
+  if (!tradeNo) return;
+
+  const { url, key } = window.supabaseClient;
+  const sb = window.auth.getSupabase();
+  const { data: { session } } = await sb.auth.getSession();
+  const headers = {
+    apikey: key,
+    Authorization: `Bearer ${session.access_token}`,
+    'Content-Type': 'application/json',
+  };
+
+  try {
+    const res = await fetch(`${url}/rest/v1/rpc/complete_alipay_order`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({
+        p_order_id: orderId,
+        p_alipay_trade_no: tradeNo,
+        p_payment_amount: amount,
+      }),
+    });
+
+    const result = await res.json();
+    if (!res.ok || (result && result.success === false)) {
+      throw new Error(result?.error || `HTTP ${res.status}`);
+    }
+
+    window.auth.showToast(result?.already_paid ? '订单已支付（幂等）' : '支付确认成功', 'success');
+    adminApi.logAction('confirm_payment', 'order', orderId, { trade_no: tradeNo, amount });
+    currentPage = 0;
+    document.getElementById('ordersTableBody').innerHTML = '';
+    await loadOrders();
+    await loadStats();
+  } catch (error) {
+    console.error('Confirm payment error:', error);
+    window.auth.showToast('确认支付失败: ' + error.message, 'error');
   }
 };
 

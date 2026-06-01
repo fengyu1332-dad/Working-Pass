@@ -186,6 +186,7 @@ async function openGenerateModal() {
       const result = await generateWithAI(major);
 
       closeAdminModal();
+      adminApi.logAction('generate_report', 'report', major.code || major.id, { major_name: major.name });
 
       // 若该专业已有报告则更新，否则新建
       const existingReport = allReports.find(r => r.major_code === (major.code || ''));
@@ -309,9 +310,11 @@ function openEditModalForm(isNew, data, existingId) {
 
     try {
       if (isNew) {
-        await adminApi.insert('reports', payload);
+        const created = await adminApi.insert('reports', payload);
+        adminApi.logAction('create_report', 'report', created?.[0]?.id || majorCode, { major_name: majorName, status: payload.status });
       } else {
         await adminApi.update('reports', payload, { col: 'id', val: existingId });
+        adminApi.logAction('update_report', 'report', existingId, { major_name: majorName, status: payload.status });
       }
       closeAdminModal();
       window.auth.showToast(isNew ? '报告已创建' : '报告已更新', 'success');
@@ -350,6 +353,7 @@ function previewReport(report) {
 async function deleteReport(id) {
   try {
     await adminApi.delete('reports', { col: 'id', val: id });
+    adminApi.logAction('delete_report', 'report', id);
     window.auth.showToast('报告已删除', 'success');
     await loadAllData();
   } catch (err) {

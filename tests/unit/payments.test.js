@@ -84,23 +84,6 @@ describe('payments — getPointPackages', () => {
   });
 });
 
-describe('payments — createOrder', () => {
-  it('创建待支付订单', async () => {
-    packagesChain.single.mockResolvedValueOnce({ data: { id: 1, points: 10, price: 0.99 }, error: null });
-    ordersChain.single.mockResolvedValueOnce({ data: { id: 'order-1', status: 'pending' }, error: null });
-
-    const pm = await loadPayments();
-    const order = await pm.createOrder(1);
-    expect(order.status).toBe('pending');
-  });
-
-  it('用户未登录抛出异常', async () => {
-    mockSB.auth.getUser.mockResolvedValue({ data: { user: null }, error: null });
-    const pm = await loadPayments();
-    await expect(pm.createOrder(1)).rejects.toThrow('User not logged in');
-  });
-});
-
 describe('payments — createAlipayOrder', () => {
   it('调用 Edge Function 创建支付宝订单', async () => {
     globalThis.fetch = vi.fn().mockResolvedValue({

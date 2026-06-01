@@ -69,8 +69,8 @@ Deno.serve(async (req: Request) => {
     }
 
     // 5. 调用原子化入账函数（使用 service_role 绕过 RLS）
-    const supabaseUrl = Deno.env.get("SUPABASE_URL") || "";
-    const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
+    const supabaseUrl = "https://djteatwxjlnbjylynvjh.supabase.co";
+    const serviceRoleKey = Deno.env.get("PROJECT_SERVICE_ROLE_KEY") || "";
     const supabase = createClient(supabaseUrl, serviceRoleKey);
 
     const { data, error } = await supabase.rpc("complete_alipay_order", {

@@ -34,8 +34,8 @@ Deno.serve(async (req: Request) => {
     }
 
     const jwt = authHeader.replace("Bearer ", "");
-    const supabaseUrl = Deno.env.get("SUPABASE_URL") || "";
-    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY") || "";
+    const supabaseUrl = "https://djteatwxjlnbjylynvjh.supabase.co";
+    const supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRqdGVhdHd4amxuYmp5bHludmpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwODUwOTMsImV4cCI6MjA5NDY2MTA5M30.P6IJW2noTImzeNXtfKsmjJBMp9AJBTw1LamYTdtyd_4";
     const supabase = createClient(supabaseUrl, supabaseAnonKey, {
       global: { headers: { Authorization: `Bearer ${jwt}` } },
     });
@@ -98,6 +98,19 @@ Deno.serve(async (req: Request) => {
     // 5. 构建支付宝请求参数
     const alipayAppId = Deno.env.get("ALIPAY_APP_ID") || "";
     const alipayPrivateKey = Deno.env.get("ALIPAY_PRIVATE_KEY") || "";
+
+    if (!alipayPrivateKey) {
+      return new Response(JSON.stringify({
+        error: "ALIPAY_PRIVATE_KEY 未配置，请在 Supabase Dashboard → Settings → Edge Functions → Secrets 中添加"
+      }), {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const keyFormat = alipayPrivateKey.includes("BEGIN RSA PRIVATE KEY") ? "PKCS1" :
+                      alipayPrivateKey.includes("BEGIN PRIVATE KEY") ? "PKCS8" : "UNKNOWN";
+
     const alipayGateway = Deno.env.get("ALIPAY_GATEWAY") || "https://openapi-sandbox.dl.alipaydev.com/gateway.do";
     const frontendUrl = Deno.env.get("FRONTEND_URL") || "http://localhost:5173";
     const notifyUrl = Deno.env.get("ALIPAY_NOTIFY_URL") ||
@@ -123,7 +136,17 @@ Deno.serve(async (req: Request) => {
       biz_content: bizContent,
     };
 
-    const signedQuery = await signAlipayParams(alipayParams, alipayPrivateKey);
+    try {
+      var signedQuery = await signAlipayParams(alipayParams, alipayPrivateKey);
+    } catch (signErr: unknown) {
+      const msg = signErr instanceof Error ? signErr.message : String(signErr);
+      return new Response(JSON.stringify({
+        error: `签名失败 [格式:${keyFormat}, 密钥长度:${alipayPrivateKey.length}]: ${msg}`
+      }), {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
     const paymentUrl = `${alipayGateway}?${signedQuery}`;
 
     return new Response(JSON.stringify({
@@ -141,8 +164,9 @@ Deno.serve(async (req: Request) => {
 
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : String(err);
-    console.error("create-alipay-order error:", message);
-    return new Response(JSON.stringify({ error: "服务器内部错误，请稍后重试" }), {
+    const stack = err instanceof Error ? err.stack : '';
+    console.error("create-alipay-order error:", message, stack);
+    return new Response(JSON.stringify({ error: `服务器错误: ${message}` }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });

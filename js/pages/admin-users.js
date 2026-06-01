@@ -76,7 +76,9 @@ function renderUsers(users) {
       const uid = sel.dataset.uid;
       const newRole = sel.value;
       try {
+        const oldRole = allUsers.find(u => u.id === uid)?.role || 'unknown';
         await adminApi.update('user_profiles', { role: newRole }, { col: 'id', val: uid });
+        adminApi.logAction('update_role', 'user', uid, { old_role: oldRole, new_role: newRole });
         window.auth.showToast('角色已更新', 'success');
       } catch (err) {
         window.auth.showToast('更新失败: ' + err.message, 'error');
@@ -123,6 +125,7 @@ function renderUsers(users) {
         }
 
         window.auth.showToast('用户已删除', 'success');
+        adminApi.logAction('delete_user', 'user', btn.dataset.uid, { name: btn.dataset.name });
         await loadUsers();
       } catch (err) {
         window.auth.showToast('删除失败: ' + err.message, 'error');
@@ -201,6 +204,7 @@ function openAddUserModal() {
     }
 
     closeAdminModal();
+    adminApi.logAction('create_user', 'user', result.user_id, { email, role });
     window.auth.showToast('用户创建成功', 'success');
     await loadUsers();
   });
@@ -246,6 +250,7 @@ function openAdjustModal(userId, name, currentPoints) {
       await adminApi.update('user_profiles', { points_balance: newBalance }, { col: 'id', val: userId });
 
       closeAdminModal();
+      adminApi.logAction('adjust_points', 'user', userId, { amount, new_balance: newBalance, reason: document.getElementById('adjustReason').value.trim() });
       window.auth.showToast(`点数已调整 (${amount >= 0 ? '+' : ''}${amount})`, 'success');
       await loadUsers();
     } catch (err) {
