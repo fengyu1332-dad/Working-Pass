@@ -111,7 +111,7 @@ Deno.serve(async (req: Request) => {
     const keyFormat = alipayPrivateKey.includes("BEGIN RSA PRIVATE KEY") ? "PKCS1" :
                       alipayPrivateKey.includes("BEGIN PRIVATE KEY") ? "PKCS8" : "UNKNOWN";
 
-    const alipayGateway = Deno.env.get("ALIPAY_GATEWAY") || "https://openapi-sandbox.dl.alipaydev.com/gateway.do";
+    const alipayGateway = Deno.env.get("ALIPAY_GATEWAY") || "https://openapi.alipay.com/gateway.do";
     const frontendUrl = Deno.env.get("FRONTEND_URL") || "http://localhost:5173";
     const notifyUrl = Deno.env.get("ALIPAY_NOTIFY_URL") ||
       `${supabaseUrl}/functions/v1/alipay-notify`;
