@@ -35,7 +35,7 @@ Deno.serve(async (req: Request) => {
 
     const jwt = authHeader.replace("Bearer ", "");
     const supabaseUrl = Deno.env.get("PROJECT_URL") || "https://djteatwxjlnbjylynvjh.supabase.co";
-    const supabaseAnonKey = Deno.env.get("PROJECT_ANON_KEY") || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRqdGVhdHd4amxuYmp5bHludmpoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzkwODUwOTMsImV4cCI6MjA5NDY2MTA5M30.P6IJW2noTImzeNXtfKsmjJBMp9AJBTw1LamYTdtyd_4";
+    const supabaseAnonKey = Deno.env.get("PROJECT_ANON_KEY") || "sb_publishable_sYRe7nRGVKbB9SRAXcuV0w_rog9eGLq";
     const supabase = createClient(supabaseUrl, supabaseAnonKey, {
       global: { headers: { Authorization: `Bearer ${jwt}` } },
     });
