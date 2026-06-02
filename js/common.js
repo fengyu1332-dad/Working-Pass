@@ -212,13 +212,11 @@ function injectReportFlowStyles() {
     .report-flow-close:hover{background:var(--surface-container);color:var(--on-surface);}
     .report-flow-body{padding:24px;}
     .chapter-list{list-style:none;padding:0;margin:0 0 20px;}
-    .chapter-item{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-radius:8px;margin-bottom:4px;background:var(--surface-container-low);font-size:14px;}
+    .chapter-item{display:flex;justify-content:space-between;align-items:flex-start;padding:10px 14px;border-radius:8px;margin-bottom:4px;background:var(--surface-container-low);font-size:14px;gap:12px;}
     .chapter-item:nth-child(even){background:var(--surface-container);}
     .chapter-name{font-weight:500;color:var(--on-surface);}
-    .chapter-pages{font-size:12px;color:var(--on-surface-variant);white-space:nowrap;margin-left:12px;}
-    .report-summary{background:var(--primary-container);border-radius:12px;padding:16px 20px;margin-bottom:20px;display:flex;justify-content:space-around;text-align:center;}
-    .summary-value{font-size:24px;font-weight:700;color:var(--primary);}
-    .summary-label{font-size:13px;color:var(--on-surface-variant);margin-top:2px;}
+    .chapter-desc{font-size:12px;color:var(--on-surface-variant);margin-top:2px;line-height:1.4;}
+    .report-summary{background:var(--primary-container);border-radius:12px;padding:16px 20px;margin-bottom:20px;line-height:1.7;font-size:14px;color:var(--on-surface);}
     .confirm-warning{background:#FFF3E0;border:1px solid #FFB74D;border-radius:12px;padding:14px 18px;margin-bottom:20px;color:#E65100;font-size:14px;line-height:1.6;display:flex;align-items:flex-start;gap:10px;}
     .reader-tabs{display:flex;gap:2px;border-bottom:2px solid var(--outline);margin-bottom:20px;overflow-x:auto;position:sticky;top:69px;background:var(--surface);z-index:1;}
     .reader-tab{padding:10px 14px;border:none;background:none;cursor:pointer;font-size:13px;font-weight:500;white-space:nowrap;color:var(--on-surface-variant);border-bottom:3px solid transparent;margin-bottom:-2px;transition:all 0.2s;font-family:inherit;}
@@ -273,24 +271,30 @@ function openReportFlow() {
   }, 100);
 }
 
-function generateChapterOutline(major) {
-  const chapters = [];
-  if (major.overview) chapters.push({ name: '专业概览', field: 'overview' });
-  if (major.what_you_learn) chapters.push({ name: '核心课程与技能', field: 'what_you_learn' });
-  if (major.career_outlook) chapters.push({ name: '职业发展前景', field: 'career_outlook' });
-  if (major.salary_range) chapters.push({ name: '薪资待遇分析', field: 'salary_range' });
-  if (major.suitable_for) chapters.push({ name: '适合人群分析', field: 'suitable_for' });
-  if (major.xuefeng_comment) chapters.push({ name: '雪峰老师点评', field: 'xuefeng_comment' });
-  if (major.top_universities) chapters.push({ name: '推荐院校指南', field: 'top_universities' });
-  if (major.yearly_courses) chapters.push({ name: '学年课程规划', field: 'yearly_courses' });
-  return chapters;
+// 13章报告结构（与 AI 生成报告一致）
+const REPORT_CHAPTERS = [
+  { name: '专业概述', desc: '学科定位、培养目标与核心价值' },
+  { name: '课程安排与学习内容', desc: '分年级课程体系、核心课程详解与实践环节' },
+  { name: '就业前景分析', desc: '就业率、主要方向、行业分布与绿牌/红牌评估' },
+  { name: '薪资水平与职业发展', desc: '应届到资深各阶段薪资、城市差异与晋升路径' },
+  { name: '考研与深造分析', desc: '考研必要性评估、推荐方向与 A+/A/A- 院校推荐' },
+  { name: '考公考编分析', desc: '对口岗位梳理、竞争比、上岸难度与体制内待遇' },
+  { name: '行业发展与人才需求', desc: '行业生命周期、政策支持力度、人才缺口与5年趋势' },
+  { name: '适合人群与适配度', desc: '特质画像、核心能力星级评估与不适合人群警示' },
+  { name: '学业难度与学习建议', desc: '课程难度星级、挂科率预警与高效学习策略' },
+  { name: '家庭背景与投入回报', desc: '教育总成本、回报周期与普通家庭适合度评估' },
+  { name: '城市与地区适配', desc: '首选城市 Top5、产业重镇分布与地区薪资对比' },
+  { name: 'AI 影响与未来趋势', desc: 'AI 替代风险评估、新机遇与不可替代核心能力' },
+  { name: '雪峰点评', desc: '核心优势、真实痛点、报考建议与一句话总结' },
+];
+
+function generateChapterOutline(_major) {
+  // 始终返回完整的 13 章结构，不再依赖 major 数据字段
+  return REPORT_CHAPTERS;
 }
 
-function estimateChapterPages(major, field) {
-  const val = major[field];
-  if (!val) return 1;
-  const text = typeof val === 'string' ? val : JSON.stringify(val);
-  return Math.max(1, Math.ceil(text.length / 500));
+function buildReportSummary(major) {
+  return `本报告从专业概述、课程学习到就业前景、薪资发展，从考研深造、考公考编到行业趋势、城市选择，覆盖 13 个核心维度，为你系统评估「${major.name || '该专业'}」是否适合自己，做出更明智的学业与职业选择。`;
 }
 
 function buildFullContentChapters(major) {
@@ -329,7 +333,7 @@ function showReportPreviewModal(major, reportData, alreadyPurchased) {
 
   title.textContent = '深度分析报告';
   const chapters = generateChapterOutline(major);
-  const totalPages = chapters.reduce((sum, ch) => sum + estimateChapterPages(major, ch.field), 0);
+  const summaryText = buildReportSummary(major);
 
   body.innerHTML = `
     <div style="margin-bottom:20px;">
@@ -338,25 +342,22 @@ function showReportPreviewModal(major, reportData, alreadyPurchased) {
         <span style="color:var(--on-surface-variant);font-size:14px;">${escapeHtml(major.category || '')}</span>
       </div>
       <h3 style="color:var(--secondary);font-size:18px;margin:0 0 8px;">${escapeHtml(major.name)}</h3>
-      <p style="color:var(--on-surface-variant);font-size:14px;line-height:1.6;margin:0;">
-        本报告涵盖专业概况、课程设置、就业前景、薪资待遇、适合人群、院校推荐等核心维度，帮助您全面评估该专业。
-      </p>
     </div>
 
-    <h4 style="color:var(--secondary);margin:0 0 12px;font-size:15px;">📑 报告章节</h4>
+    <h4 style="color:var(--secondary);margin:0 0 12px;font-size:15px;">📑 报告章节（共 13 章）</h4>
     <ul class="chapter-list">
       ${chapters.map((ch, i) => `
         <li class="chapter-item">
-          <span class="chapter-name">${i + 1}. ${ch.name}</span>
-          <span class="chapter-pages">≈ ${estimateChapterPages(major, ch.field)} 页</span>
+          <div>
+            <span class="chapter-name">${i + 1}. ${ch.name}</span>
+            <span class="chapter-desc">${ch.desc}</span>
+          </div>
         </li>
       `).join('')}
     </ul>
 
-    <div class="report-summary">
-      <div><div class="summary-value">${chapters.length}</div><div class="summary-label">章节数</div></div>
-      <div><div class="summary-value">≈ ${totalPages}</div><div class="summary-label">总页数</div></div>
-      <div><div class="summary-value">1 💎</div><div class="summary-label">消耗点数</div></div>
+    <div class="report-summary" style="text-align:left;font-size:14px;line-height:1.7;color:var(--on-surface);">
+      📊 ${escapeHtml(summaryText)}
     </div>
 
     ${alreadyPurchased ? `
