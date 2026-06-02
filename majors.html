@@ -707,6 +707,31 @@
             width: 80px; height: 80px; border-radius: 16px;
             background: var(--outline); flex-shrink: 0;
         }
+        .skeleton-cat-card {
+            background: var(--surface-container);
+            border-radius: 20px;
+            padding: 32px 20px;
+            text-align: center;
+            border: 2px solid var(--outline);
+            animation: skeleton-pulse 1.5s ease-in-out infinite;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+        .skeleton-cat-icon {
+            width: 64px; height: 64px; border-radius: 20px;
+            background: var(--outline);
+        }
+        .browse-loading-badge {
+            display: inline-block;
+            background: var(--outline);
+            color: transparent;
+            border-radius: 12px;
+            animation: skeleton-pulse 1.5s ease-in-out infinite;
+            min-width: 60px;
+            vertical-align: middle;
+        }
         @keyframes skeleton-pulse {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.4; }
@@ -893,7 +918,7 @@
     <div class="browse-view" id="browseView">
         <section class="browse-hero">
             <h1>探索你的大学专业</h1>
-            <p>14大学科门类，<span id="browseTotalCount">--</span>个专业，从这里开始</p>
+            <p>14大学科门类，<span id="browseTotalCount" class="browse-loading-badge">--</span>个专业，从这里开始</p>
             <div class="search-box">
                 <input type="text" class="search-input" id="browseSearchInput" placeholder="搜索专业名称...">
                 <button class="search-clear" id="browseSearchClear" style="display:none;" aria-label="清除搜索">✕</button>
@@ -917,13 +942,28 @@
 
         <h2 class="section-heading">📖 按学科门类浏览</h2>
         <div class="category-grid" id="categoryGrid">
-            <!-- Dynamic category cards -->
+            <div class="skeleton-cat-card"><div class="skeleton-cat-icon"></div><div class="skeleton-line medium"></div><div class="skeleton-line short"></div></div>
+            <div class="skeleton-cat-card"><div class="skeleton-cat-icon"></div><div class="skeleton-line medium"></div><div class="skeleton-line short"></div></div>
+            <div class="skeleton-cat-card"><div class="skeleton-cat-icon"></div><div class="skeleton-line medium"></div><div class="skeleton-line short"></div></div>
+            <div class="skeleton-cat-card"><div class="skeleton-cat-icon"></div><div class="skeleton-line medium"></div><div class="skeleton-line short"></div></div>
+            <div class="skeleton-cat-card"><div class="skeleton-cat-icon"></div><div class="skeleton-line medium"></div><div class="skeleton-line short"></div></div>
+            <div class="skeleton-cat-card"><div class="skeleton-cat-icon"></div><div class="skeleton-line medium"></div><div class="skeleton-line short"></div></div>
+            <div class="skeleton-cat-card"><div class="skeleton-cat-icon"></div><div class="skeleton-line medium"></div><div class="skeleton-line short"></div></div>
+            <div class="skeleton-cat-card"><div class="skeleton-cat-icon"></div><div class="skeleton-line medium"></div><div class="skeleton-line short"></div></div>
         </div>
 
         <section class="hot-picks-section">
             <h2 class="section-heading">🔥 热门精选</h2>
             <div class="hot-picks-grid" id="hotPicksGrid">
-                <!-- Dynamic hot picks -->
+                <div class="skeleton-card"><div style="display:flex;gap:14px;margin-bottom:16px;"><div class="skeleton-circle"></div><div style="flex:1;"><div class="skeleton-line"></div><div class="skeleton-line short"></div></div></div><div class="skeleton-line short" style="height:28px;border-radius:9999px;"></div><div class="skeleton-line medium"></div><div class="skeleton-line short"></div></div>
+                <div class="skeleton-card"><div style="display:flex;gap:14px;margin-bottom:16px;"><div class="skeleton-circle"></div><div style="flex:1;"><div class="skeleton-line"></div><div class="skeleton-line short"></div></div></div><div class="skeleton-line short" style="height:28px;border-radius:9999px;"></div><div class="skeleton-line medium"></div><div class="skeleton-line short"></div></div>
+                <div class="skeleton-card"><div style="display:flex;gap:14px;margin-bottom:16px;"><div class="skeleton-circle"></div><div style="flex:1;"><div class="skeleton-line"></div><div class="skeleton-line short"></div></div></div><div class="skeleton-line short" style="height:28px;border-radius:9999px;"></div><div class="skeleton-line medium"></div><div class="skeleton-line short"></div></div>
+                <div class="skeleton-card"><div style="display:flex;gap:14px;margin-bottom:16px;"><div class="skeleton-circle"></div><div style="flex:1;"><div class="skeleton-line"></div><div class="skeleton-line short"></div></div></div><div class="skeleton-line short" style="height:28px;border-radius:9999px;"></div><div class="skeleton-line medium"></div><div class="skeleton-line short"></div></div>
+                <div class="skeleton-card"><div style="display:flex;gap:14px;margin-bottom:16px;"><div class="skeleton-circle"></div><div style="flex:1;"><div class="skeleton-line"></div><div class="skeleton-line short"></div></div></div><div class="skeleton-line short" style="height:28px;border-radius:9999px;"></div><div class="skeleton-line medium"></div><div class="skeleton-line short"></div></div>
+                <div class="skeleton-card"><div style="display:flex;gap:14px;margin-bottom:16px;"><div class="skeleton-circle"></div><div style="flex:1;"><div class="skeleton-line"></div><div class="skeleton-line short"></div></div></div><div class="skeleton-line short" style="height:28px;border-radius:9999px;"></div><div class="skeleton-line medium"></div><div class="skeleton-line short"></div></div>
+                <div class="skeleton-card"><div style="display:flex;gap:14px;margin-bottom:16px;"><div class="skeleton-circle"></div><div style="flex:1;"><div class="skeleton-line"></div><div class="skeleton-line short"></div></div></div><div class="skeleton-line short" style="height:28px;border-radius:9999px;"></div><div class="skeleton-line medium"></div><div class="skeleton-line short"></div></div>
+                <div class="skeleton-card"><div style="display:flex;gap:14px;margin-bottom:16px;"><div class="skeleton-circle"></div><div style="flex:1;"><div class="skeleton-line"></div><div class="skeleton-line short"></div></div></div><div class="skeleton-line short" style="height:28px;border-radius:9999px;"></div><div class="skeleton-line medium"></div><div class="skeleton-line short"></div></div>
+                <div class="skeleton-card"><div style="display:flex;gap:14px;margin-bottom:16px;"><div class="skeleton-circle"></div><div style="flex:1;"><div class="skeleton-line"></div><div class="skeleton-line short"></div></div></div><div class="skeleton-line short" style="height:28px;border-radius:9999px;"></div><div class="skeleton-line medium"></div><div class="skeleton-line short"></div></div>
             </div>
         </section>
 
@@ -1024,6 +1064,7 @@
                 </section>
 
                 <div id="loading">
+                    <p style="text-align:center;color:var(--on-surface-variant);font-size:15px;margin-bottom:20px;">⏳ 正在加载专业数据，请稍候...</p>
                     <div class="majors-grid">
                         <div class="skeleton-card"><div style="display:flex;gap:14px;margin-bottom:16px;"><div class="skeleton-circle"></div><div style="flex:1;"><div class="skeleton-line"></div><div class="skeleton-line short"></div></div></div><div class="skeleton-line short" style="height:28px;border-radius:9999px;"></div><div class="skeleton-line medium"></div><div class="skeleton-line short"></div></div>
                         <div class="skeleton-card"><div style="display:flex;gap:14px;margin-bottom:16px;"><div class="skeleton-circle"></div><div style="flex:1;"><div class="skeleton-line"></div><div class="skeleton-line short"></div></div></div><div class="skeleton-line short" style="height:28px;border-radius:9999px;"></div><div class="skeleton-line medium"></div><div class="skeleton-line short"></div></div>

@@ -106,7 +106,9 @@ function initBrowseView() {
   document.getElementById('listView').style.display = 'none';
 
   const totalCount = majorsData.length;
-  document.getElementById('browseTotalCount').textContent = totalCount;
+  const countEl = document.getElementById('browseTotalCount');
+  countEl.textContent = totalCount;
+  countEl.classList.remove('browse-loading-badge');
   document.getElementById('browseCount').textContent = totalCount;
 
   renderCategoryCards();
@@ -265,6 +267,10 @@ function showListView(options = {}) {
     initListView();
     _listInitialized = true;
   } else {
+    // 显示骨架屏，渲染完成后由 displayMajors 隐藏
+    document.getElementById('loading').style.display = '';
+    document.getElementById('majorsGrid').style.display = 'none';
+    document.getElementById('majorsList').style.display = 'none';
     syncFilterUI();
     applyFiltersAndSort();
   }
@@ -285,8 +291,6 @@ function showBrowseView() {
 }
 
 function initListView() {
-  document.getElementById('loading').style.display = 'none';
-
   const categories = [...new Set(majorsData.map((m) => m.category))];
   document.getElementById('resultsCount').textContent = `${majorsData.length} 个专业`;
 
@@ -528,6 +532,7 @@ function applyFiltersAndSort(resetPage = true) {
 }
 
 function displayMajors(majors) {
+  document.getElementById('loading').style.display = 'none';
   const grid = document.getElementById('majorsGrid');
   const list = document.getElementById('majorsList');
   const totalPages = Math.ceil(majors.length / PAGE_SIZE);
