@@ -89,7 +89,14 @@ document.addEventListener('DOMContentLoaded', () => {
       showSuccess('注册成功！请检查邮箱并点击确认链接，然后即可登录。即将跳转到登录页...');
 
       setTimeout(() => {
-        window.location.href = 'login.html';
+        const urlParams = new URLSearchParams(window.location.search);
+        const code = urlParams.get('code');
+        const redirect = urlParams.get('redirect');
+        const loginParams = new URLSearchParams();
+        if (code) loginParams.set('code', code);
+        if (redirect) loginParams.set('redirect', redirect);
+        const qs = loginParams.toString();
+        window.location.href = 'login.html' + (qs ? '?' + qs : '');
       }, 3000);
     } catch (error) {
       console.error('Registration error:', error);
@@ -107,7 +114,14 @@ document.addEventListener('DOMContentLoaded', () => {
   window.auth.initSupabase();
   window.auth.checkAuthState(async (session) => {
     if (session) {
-      window.location.href = 'index.html';
+      const urlParams = new URLSearchParams(window.location.search);
+      const code = urlParams.get('code');
+      const redirect = urlParams.get('redirect') || 'index.html';
+      if (code) {
+        window.location.href = `${redirect}?code=${encodeURIComponent(code)}`;
+      } else {
+        window.location.href = 'index.html';
+      }
     }
   });
 });

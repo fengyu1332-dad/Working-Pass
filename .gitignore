@@ -96,3 +96,4 @@ htmlcov/
 *.pem
 *.key
 credentials.json
+.vercel

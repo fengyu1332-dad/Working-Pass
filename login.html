@@ -313,7 +313,7 @@
 
             <div class="link-section">
                 <span class="link-text">还没有账号？</span>
-                <a href="register.html" class="link">立即注册</a>
+                <a href="register.html" class="link" id="registerLink">立即注册</a>
             </div>
             <div class="link-section" style="margin-top:4px;">
                 <a href="reset-password.html" class="link" style="font-size:13px;">忘记密码？</a>
@@ -322,6 +322,16 @@
     </div>
     
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+      // 将 URL 参数（如 code）传递到注册链接
+      (function() {
+        var qs = window.location.search;
+        if (qs) {
+          var link = document.getElementById('registerLink');
+          if (link) link.href = 'register.html' + qs;
+        }
+      })();
+    </script>
     <script type="module" src="/js/pages/login.js"></script>
 </body>
 </html>

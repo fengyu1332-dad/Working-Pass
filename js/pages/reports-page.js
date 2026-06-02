@@ -7,12 +7,15 @@ import '../auth.js';
 import '../reports.js';
 import '../error-report.js';
 import { sanitizeHTML } from '../sanitize-html.js';
+import { highlightMatch } from '../search-utils.js';
 
 let currentReports = [];
 let currentProfile = null;
 let unlockedReports = new Set();
 let currentCategory = 'all';
 let currentReportSort = 'name';
+let currentSearchTerm = '';
+let searchTimer = null;
 
 (async function () {
   window.auth.initSupabase();
@@ -58,13 +61,26 @@ let currentReportSort = 'name';
   });
 
   document.getElementById('searchBtn').addEventListener('click', () => {
-    const search = document.getElementById('searchInput').value;
-    loadReports(search);
+    const search = document.getElementById('searchInput').value.trim();
+    currentSearchTerm = search;
+    loadReports(search || null);
+  });
+
+  document.getElementById('searchInput').addEventListener('input', (e) => {
+    const val = e.target.value.trim();
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => {
+      currentSearchTerm = val;
+      loadReports(val || null);
+    }, 350);
   });
 
   document.getElementById('searchInput').addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
-      loadReports(e.target.value);
+      clearTimeout(searchTimer);
+      const val = e.target.value.trim();
+      currentSearchTerm = val;
+      loadReports(val || null);
     }
   });
 
@@ -133,10 +149,23 @@ function renderReports(reports) {
   const grid = document.getElementById('reportsGrid');
 
   if (!reports || reports.length === 0) {
+    const emptyMsg = currentSearchTerm
+      ? `未找到匹配"${currentSearchTerm}"的报告，请尝试其他关键词`
+      : '暂无报告数据';
+    const emptyIcon = currentSearchTerm ? '🔍' : '📭';
     grid.innerHTML = `
       <div style="grid-column: 1/-1; text-align: center; padding: 60px; color: var(--on-surface-variant);">
-        📭 暂无报告数据
+        <div style="font-size:48px;margin-bottom:12px;">${emptyIcon}</div>
+        <div>${emptyMsg}</div>
+        ${currentSearchTerm ? '<button class="btn btn-secondary" style="margin-top:16px;" id="clearSearchBtn">清除搜索</button>' : ''}
       </div>`;
+    if (currentSearchTerm) {
+      document.getElementById('clearSearchBtn').addEventListener('click', () => {
+        document.getElementById('searchInput').value = '';
+        currentSearchTerm = '';
+        loadReports(null);
+      });
+    }
     return;
   }
 
@@ -144,12 +173,12 @@ function renderReports(reports) {
     .map(
       (report) => `
     <div class="card report-card" id="report-${report.id}">
-      <div class="report-code">${report.major_code || ''}</div>
+      <div class="report-code">${highlightMatch(report.major_code || '', currentSearchTerm)}</div>
       <div class="report-title">
-        ${report.major_name || '未命名报告'}
+        ${highlightMatch(report.major_name || '未命名报告', currentSearchTerm)}
         ${unlockedReports.has(report.id) ? '<span class="downloaded-badge">✓ 已解锁</span>' : ''}
       </div>
-      <div style="color: var(--on-surface-variant); font-size: 13px; margin-bottom: 8px;">${report.category || ''}</div>
+      <div style="color: var(--on-surface-variant); font-size: 13px; margin-bottom: 8px;">${highlightMatch(report.category || '', currentSearchTerm)}</div>
       <div style="color: var(--on-surface-variant); font-size: 13px; line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
         ${report.preview_content || ''}
       </div>

@@ -41,6 +41,7 @@ export default defineConfig({
           if (id.includes('/js/common.js')) return 'shared-ui';
           if (id.includes('/js/supabase-client.js')) return 'supabase-client';
           if (id.includes('/js/auth.js')) return 'auth';
+          if (id.includes('/js/sanitize-html.js')) return 'sanitize-html';
           if (id.includes('/js/pages/admin-')) return 'admin';
         },
       },

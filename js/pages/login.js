@@ -65,7 +65,14 @@ document.addEventListener('DOMContentLoaded', () => {
       await window.auth.loginWithEmail(email, password);
       showSuccess('登录成功！即将跳转...');
       setTimeout(() => {
-        window.location.href = 'index.html';
+        const urlParams = new URLSearchParams(window.location.search);
+        const code = urlParams.get('code');
+        const redirect = urlParams.get('redirect') || 'index.html';
+        if (code) {
+          window.location.href = `${redirect}?code=${encodeURIComponent(code)}`;
+        } else {
+          window.location.href = 'index.html';
+        }
       }, 1000);
     } catch (error) {
       console.error('Login error:', error);
@@ -85,7 +92,14 @@ document.addEventListener('DOMContentLoaded', () => {
   window.auth.initSupabase();
   window.auth.checkAuthState(async (session) => {
     if (session) {
-      window.location.href = 'index.html';
+      const urlParams = new URLSearchParams(window.location.search);
+      const code = urlParams.get('code');
+      const redirect = urlParams.get('redirect') || 'index.html';
+      if (code) {
+        window.location.href = `${redirect}?code=${encodeURIComponent(code)}`;
+      } else {
+        window.location.href = 'index.html';
+      }
     }
   });
 });

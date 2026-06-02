@@ -9,6 +9,8 @@ import '../reports.js';
 import '../error-report.js';
 import '../web-vitals.js';
 import { ForceGraph } from '../force-graph.js';
+import { debounce } from '../utils.js';
+import { searchMajors, highlightMatch, getRecentSearches, addRecentSearch, clearRecentSearches } from '../search-utils.js';
 
 const { initWebVitals } = window.__starmap_webVitals || {};
 
@@ -60,6 +62,7 @@ async function fetchMajors(forceRefresh = false) {
     const cached = getCachedMajors();
     if (cached && cached.length > 0) {
       majorsData = cached;
+      window._majorsData = majorsData;
       initializeUI();
       // 后台静默更新缓存
       fetchFreshMajors();
@@ -86,11 +89,13 @@ async function fetchFreshMajors() {
     const fresh = await response.json();
     if (fresh.length > 0) {
       majorsData = fresh;
+      window._majorsData = majorsData;
       setCachedMajors(fresh);
     }
     // 如果 UI 已初始化（缓存命中后后台刷新），更新图谱数据；否则初始化
     if (forceGraph) {
       forceGraph.setData(majorsData);
+      checkCodeParam();
     } else {
       initializeUI();
     }
@@ -101,6 +106,7 @@ async function fetchFreshMajors() {
       const stale = getCachedMajors();
       if (stale && stale.length > 0) {
         majorsData = stale;
+        window._majorsData = majorsData;
         initializeUI();
         return;
       }
@@ -111,6 +117,28 @@ async function fetchFreshMajors() {
         renderErrorState(loading, `加载失败: ${error.message}`, fetchMajors);
       }
     }
+  }
+}
+
+let _codeParamChecked = false;
+
+function checkCodeParam() {
+  if (_codeParamChecked) return;
+  _codeParamChecked = true;
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const code = urlParams.get('code');
+  if (!code) return;
+
+  const major = majorsData.find((m) => m.code === code);
+  if (major) {
+    window._currentMajor = major;
+    // 清除 URL 参数
+    window.history.replaceState(null, '', window.location.pathname);
+    // 延迟确保 auth 已初始化
+    setTimeout(() => {
+      if (window.goToReports) window.goToReports(code);
+    }, 500);
   }
 }
 
@@ -134,6 +162,8 @@ function initializeUI() {
 
   // 初始化力导向关系图
   initForceGraph();
+
+  checkCodeParam();
 }
 
 function initForceGraph() {
@@ -198,40 +228,169 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const searchBtn = document.getElementById('searchBtn');
   const searchInput = document.getElementById('searchInput');
+  const searchDropdown = document.getElementById('searchDropdown');
+  const searchClear = document.getElementById('searchClear');
+  let dropdownActiveIndex = -1;
+
   if (searchBtn && searchInput) {
+    // 搜索按钮：跳转到全部专业页查看完整结果
     searchBtn.addEventListener('click', () => {
-      const searchTerm = searchInput.value.trim();
-      if (searchTerm) {
-        const matches = majorsData.filter(
-          (m) =>
-            m.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            m.category.toLowerCase().includes(searchTerm.toLowerCase())
-        );
-        if (matches.length === 1) {
-          openModal(matches[0]);
-        } else if (matches.length > 1) {
-          window.location.href = `majors.html?search=${encodeURIComponent(searchTerm)}`;
-        } else {
-          window.location.href = 'majors.html';
-        }
+      const term = searchInput.value.trim();
+      if (term) addRecentSearch(term);
+      closeDropdown();
+      if (term) {
+        window.location.href = `majors.html?search=${encodeURIComponent(term)}`;
       } else {
         window.location.href = 'majors.html';
       }
     });
 
-    searchInput.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') searchBtn.click();
+    // 输入时显示下拉建议
+    searchInput.addEventListener('input', debounce(() => {
+      const term = searchInput.value.trim();
+      searchClear.style.display = term ? 'flex' : 'none';
+      if (term) {
+        renderSearchDropdown(term);
+      } else {
+        renderRecentSearches();
+      }
+    }, 200));
+
+    // 键盘导航
+    searchInput.addEventListener('keydown', (e) => {
+      const items = searchDropdown.querySelectorAll('.search-dropdown-item');
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        dropdownActiveIndex = Math.min(dropdownActiveIndex + 1, items.length - 1);
+        updateDropdownActive(items);
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        dropdownActiveIndex = Math.max(dropdownActiveIndex - 1, 0);
+        updateDropdownActive(items);
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        if (dropdownActiveIndex >= 0 && items.length > 0) {
+          items[dropdownActiveIndex]?.click();
+        } else {
+          searchBtn.click();
+        }
+      } else if (e.key === 'Escape') {
+        closeDropdown();
+      }
     });
 
-    const searchClear = document.getElementById('searchClear');
+    // 聚焦时显示最近搜索
+    searchInput.addEventListener('focus', () => {
+      if (!searchInput.value.trim()) {
+        renderRecentSearches();
+      }
+    });
+
+    // 清除按钮
     if (searchClear) {
-      searchInput.addEventListener('input', () => {
-        searchClear.style.display = searchInput.value ? 'flex' : 'none';
-      });
       searchClear.addEventListener('click', () => {
         searchInput.value = '';
         searchClear.style.display = 'none';
+        closeDropdown();
         searchInput.focus();
+      });
+    }
+
+    // 点击外部关闭下拉
+    document.addEventListener('click', (e) => {
+      if (!searchInput.contains(e.target) && !searchDropdown.contains(e.target) && e.target !== searchBtn) {
+        closeDropdown();
+      }
+    });
+  }
+
+  function closeDropdown() {
+    searchDropdown.classList.remove('show');
+    dropdownActiveIndex = -1;
+  }
+
+  function updateDropdownActive(items) {
+    items.forEach((item, i) => {
+      item.classList.toggle('active', i === dropdownActiveIndex);
+      if (i === dropdownActiveIndex) item.scrollIntoView({ block: 'nearest' });
+    });
+  }
+
+  function renderSearchDropdown(term) {
+    const results = searchMajors(majorsData, term).slice(0, 8);
+    dropdownActiveIndex = -1;
+    if (results.length === 0) {
+      searchDropdown.innerHTML = `<div class="search-dropdown-empty">未找到匹配的专业，试试其他关键词</div>`;
+    } else {
+      const items = results.map((m) => {
+        const icon = m.category_icon || '📚';
+        const hlName = highlightMatch(m.name, term);
+        const hlCode = highlightMatch(m.code || '', term);
+        const salary = (m.salary_range || '').replace('¥', '');
+        return `<div class="search-dropdown-item" data-code="${m.code}">
+          <span class="sd-icon">${icon}</span>
+          <div class="sd-info">
+            <div class="sd-name">${hlName}</div>
+            <div class="sd-meta">${hlCode} · ${m.category}</div>
+          </div>
+          <span class="sd-salary">${salary}</span>
+        </div>`;
+      }).join('');
+      const footer = `<div class="search-dropdown-footer">
+        <a href="majors.html?search=${encodeURIComponent(term)}">查看全部 ${results.length} 个结果 →</a>
+      </div>`;
+      searchDropdown.innerHTML = items + footer;
+    }
+    searchDropdown.classList.add('show');
+
+    // 点击结果项
+    searchDropdown.querySelectorAll('.search-dropdown-item').forEach((itemEl) => {
+      itemEl.addEventListener('click', () => {
+        const code = itemEl.dataset.code;
+        const major = majorsData.find(m => m.code === code);
+        if (major) {
+          addRecentSearch(term);
+          closeDropdown();
+          searchInput.value = '';
+          searchClear.style.display = 'none';
+          openModal(major);
+        }
+      });
+    });
+  }
+
+  function renderRecentSearches() {
+    const recent = getRecentSearches();
+    if (recent.length === 0) {
+      closeDropdown();
+      return;
+    }
+    const items = recent.map((t) =>
+      `<div class="search-recent-item" data-term="${t.replace(/"/g, '&quot;')}">
+        <span>🕐</span><span>${t}</span>
+      </div>`
+    ).join('');
+    const footer = `<div class="search-dropdown-footer">
+      <span>最近搜索</span>
+      <button id="clearRecentBtn">清除记录</button>
+    </div>`;
+    searchDropdown.innerHTML = items + footer;
+    searchDropdown.classList.add('show');
+    dropdownActiveIndex = -1;
+
+    searchDropdown.querySelectorAll('.search-recent-item').forEach((el) => {
+      el.addEventListener('click', () => {
+        const term = el.dataset.term;
+        searchInput.value = term;
+        searchClear.style.display = 'flex';
+        renderSearchDropdown(term);
+      });
+    });
+    const clearBtn = document.getElementById('clearRecentBtn');
+    if (clearBtn) {
+      clearBtn.addEventListener('click', () => {
+        clearRecentSearches();
+        closeDropdown();
       });
     }
   }

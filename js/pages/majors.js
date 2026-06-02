@@ -8,6 +8,7 @@ import '../common.js';
 import '../reports.js';
 import '../error-report.js';
 import '../web-vitals.js';
+import { searchMajors, highlightMatch, getRecentSearches, addRecentSearch, clearRecentSearches } from '../search-utils.js';
 
 const { initWebVitals } = window.__starmap_webVitals || {};
 
@@ -57,6 +58,21 @@ async function fetchMajors() {
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
     majorsData = await response.json();
+    window._majorsData = majorsData;
+
+    // 检查 URL 中是否有 ?code= 参数（来自登录后跳转）
+    const initUrlParams = new URLSearchParams(window.location.search);
+    const initCode = initUrlParams.get('code');
+    if (initCode) {
+      const major = majorsData.find((m) => m.code === initCode);
+      if (major) {
+        window._currentMajor = major;
+        window.history.replaceState(null, '', window.location.pathname);
+        setTimeout(() => {
+          if (window.goToReports) window.goToReports(initCode);
+        }, 500);
+      }
+    }
 
     const urlParams = new URLSearchParams(window.location.search);
     const hashParams = new URLSearchParams(window.location.hash.replace('#', ''));
@@ -174,6 +190,7 @@ function setupBrowseEvents() {
   document.getElementById('browseSearchBtn').addEventListener('click', () => {
     const term = document.getElementById('browseSearchInput').value.trim();
     if (term) {
+      addRecentSearch(term);
       showListView({ search: term });
     } else {
       showListView();
@@ -183,6 +200,7 @@ function setupBrowseEvents() {
   document.getElementById('browseSearchInput').addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
       const term = e.target.value.trim();
+      if (term) addRecentSearch(term);
       showListView(term ? { search: term } : {});
     }
   });
@@ -324,14 +342,20 @@ function setupListEvents() {
   // 搜索
   const searchInput = document.getElementById('searchInput');
   const searchClear = document.getElementById('searchClear');
-  searchInput.addEventListener('input', debounce((e) => {
-    currentFilters.search = e.target.value;
-    applyFiltersAndSort();
-  }, 300));
+  let searchDebounceTimer;
+  searchInput.addEventListener('input', (e) => {
+    searchClear.style.display = e.target.value ? 'flex' : 'none';
+    clearTimeout(searchDebounceTimer);
+    searchDebounceTimer = setTimeout(() => {
+      currentFilters.search = e.target.value;
+      if (currentFilters.search) addRecentSearch(currentFilters.search);
+      applyFiltersAndSort();
+    }, 300);
+  });
+  searchInput.addEventListener('focus', () => {
+    // 最近搜索可在此展开，列表页保持简洁仅做 placeholder 提示
+  });
   if (searchClear) {
-    searchInput.addEventListener('input', () => {
-      searchClear.style.display = searchInput.value ? 'flex' : 'none';
-    });
     searchClear.addEventListener('click', () => {
       searchInput.value = '';
       searchClear.style.display = 'none';
@@ -458,10 +482,7 @@ function applyFiltersAndSort(resetPage = true) {
   let filtered = [...majorsData];
 
   if (currentFilters.search) {
-    const term = currentFilters.search.toLowerCase();
-    filtered = filtered.filter(
-      (m) => m.name.toLowerCase().includes(term) || m.category.toLowerCase().includes(term)
-    );
+    filtered = searchMajors(filtered, currentFilters.search);
   }
 
   if (currentFilters.category !== 'all') {
@@ -521,9 +542,10 @@ function displayMajors(majors) {
     grid.innerHTML = emptyMsg;
     list.innerHTML = emptyMsg;
   } else {
+    const searchTerm = currentFilters.search || '';
     pageItems.forEach((major) => {
-      grid.appendChild(createGridCard(major));
-      list.appendChild(createListItem(major));
+      grid.appendChild(createGridCard(major, searchTerm));
+      list.appendChild(createListItem(major, searchTerm));
     });
   }
 
@@ -628,7 +650,7 @@ function syncFilterUI() {
   if (sortSelect) sortSelect.value = currentSort;
 }
 
-function createGridCard(major) {
+function createGridCard(major, searchTerm = '') {
   const card = document.createElement('div');
   card.className = 'major-card';
   card.dataset.code = major.code;
@@ -636,19 +658,19 @@ function createGridCard(major) {
     <div class="card-header">
       <div class="card-cat-icon">${major.category_icon || '📚'}</div>
       <div>
-        <h3 class="major-name">${major.name}</h3>
-        <p class="major-code">${major.code}</p>
+        <h3 class="major-name">${highlightMatch(major.name, searchTerm)}</h3>
+        <p class="major-code">${highlightMatch(major.code, searchTerm)}</p>
         <p class="difficulty-stars">${major.difficulty || ''}</p>
       </div>
     </div>
     <span class="salary-tag">${(major.salary_range || '薪资面议').replace('¥', '')}</span>
-    <p class="employment-desc">${(major.overview || '').substring(0, 60)}...</p>
+    <p class="employment-desc">${highlightMatch((major.overview || '').substring(0, 60), searchTerm)}...</p>
   `;
   card.addEventListener('click', () => openModal(major));
   return card;
 }
 
-function createListItem(major) {
+function createListItem(major, searchTerm = '') {
   const item = document.createElement('div');
   item.className = 'major-list-item';
   item.dataset.code = major.code;
@@ -656,8 +678,8 @@ function createListItem(major) {
     <div class="list-item-left">
       <div class="list-icon">${major.category_icon || '📚'}</div>
       <div>
-        <h3 class="list-name">${major.name}</h3>
-        <p class="list-code">${major.code}</p>
+        <h3 class="list-name">${highlightMatch(major.name, searchTerm)}</h3>
+        <p class="list-code">${highlightMatch(major.code, searchTerm)}</p>
         <p class="list-category">${major.category}</p>
       </div>
     </div>

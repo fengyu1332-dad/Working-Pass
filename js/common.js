@@ -374,7 +374,12 @@ function showReportPreviewModal(major, reportData, alreadyPurchased) {
     `}
   `;
 
-  if (alreadyPurchased) {
+  if (alreadyPurchased && reportData) {
+    document.getElementById('viewFullReportBtn').addEventListener('click', () => {
+      showReportReader(major, reportData.full_content || '');
+    });
+  } else if (alreadyPurchased) {
+    // 已购买但无 reportData（异常情况），尝试用 major 数据展示
     document.getElementById('viewFullReportBtn').addEventListener('click', () => {
       showReportReader(major, buildFullContentChapters(major));
     });
@@ -439,14 +444,15 @@ async function performReportPurchase(major, reportData) {
 
   try {
     // 统一走原子化 RPC 扣点（带防重复检查）
+    let result;
     if (reportData && window.reports && window.reports.unlockReport) {
-      await window.reports.unlockReport(reportData.id);
+      result = await window.reports.unlockReport(reportData.id);
     } else {
       throw new Error('报告模块未就绪，请刷新页面重试');
     }
 
     if (window.auth && window.auth.showToast) {
-      window.auth.showToast('解锁成功！', 'success');
+      window.auth.showToast(result?.alreadyUnlocked ? '您已解锁此报告' : '解锁成功！', 'success');
     }
 
     const balanceEl = document.getElementById('userBalance');
@@ -455,7 +461,9 @@ async function performReportPurchase(major, reportData) {
       if (updated) balanceEl.textContent = updated.points_balance || 0;
     }
 
-    showReportReader(major, buildFullContentChapters(major));
+    // 使用数据库中真实的 AI 生成 full_content，而非拼凑章节
+    const realContent = result?.content || reportData?.full_content || '';
+    showReportReader(major, realContent);
   } catch (error) {
     console.error('Purchase error:', error);
     if (window.auth && window.auth.showToast) {
@@ -468,40 +476,55 @@ async function performReportPurchase(major, reportData) {
   }
 }
 
-function showReportReader(major, chapters) {
+function showReportReader(major, content) {
   const body = document.getElementById('reportFlowBody');
   const title = document.getElementById('reportFlowTitle');
   if (!body || !title) return;
 
   title.textContent = major.name;
 
-  let currentChapter = 0;
+  const isHtmlContent = typeof content === 'string';
 
-  const renderChapter = (idx) => {
-    currentChapter = idx;
-    const ch = chapters[idx];
-    document.getElementById('readerContent').innerHTML = `<h3>${escapeHtml(ch.title)}</h3>${ch.content}`;
-    document.querySelectorAll('.reader-tab').forEach((t, i) => t.classList.toggle('active', i === idx));
-  };
+  if (isHtmlContent) {
+    // 真实 AI 生成的 HTML 报告 → 直接渲染
+    body.innerHTML = `
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+        <span class="report-code" style="display:inline-block;background:var(--success-container);padding:4px 12px;border-radius:20px;font-size:12px;color:var(--success);">✓ 已解锁</span>
+        <span style="color:var(--on-surface-variant);font-size:13px;">深度分析报告</span>
+      </div>
+      <div class="reader-content" style="max-height:65vh;">${content || '<p style="text-align:center;color:var(--on-surface-variant);padding:40px;">暂无报告内容</p>'}</div>
+    `;
+  } else {
+    // 向后兼容：章节数组模式（无真实报告时的 fallback）
+    const chapters = content;
+    let currentChapter = 0;
 
-  body.innerHTML = `
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
-      <span class="report-code" style="display:inline-block;background:var(--success-container);padding:4px 12px;border-radius:20px;font-size:12px;color:var(--success);">✓ 已解锁</span>
-      <span style="color:var(--on-surface-variant);font-size:13px;">${chapters.length} 个章节</span>
-    </div>
-    <div class="reader-tabs" id="readerTabs">
-      ${chapters.map((ch, i) => `
-        <button class="reader-tab${i === 0 ? ' active' : ''}" data-index="${i}">${escapeHtml(ch.title)}</button>
-      `).join('')}
-    </div>
-    <div class="reader-content" id="readerContent">
-      <h3>${escapeHtml(chapters[0].title)}</h3>${chapters[0].content}
-    </div>
-  `;
+    const renderChapter = (idx) => {
+      currentChapter = idx;
+      const ch = chapters[idx];
+      document.getElementById('readerContent').innerHTML = `<h3>${escapeHtml(ch.title)}</h3>${ch.content}`;
+      document.querySelectorAll('.reader-tab').forEach((t, i) => t.classList.toggle('active', i === idx));
+    };
 
-  document.querySelectorAll('.reader-tab').forEach((tab) => {
-    tab.addEventListener('click', () => renderChapter(parseInt(tab.dataset.index)));
-  });
+    body.innerHTML = `
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+        <span class="report-code" style="display:inline-block;background:var(--success-container);padding:4px 12px;border-radius:20px;font-size:12px;color:var(--success);">✓ 已解锁</span>
+        <span style="color:var(--on-surface-variant);font-size:13px;">${chapters.length} 个章节</span>
+      </div>
+      <div class="reader-tabs" id="readerTabs">
+        ${chapters.map((ch, i) => `
+          <button class="reader-tab${i === 0 ? ' active' : ''}" data-index="${i}">${escapeHtml(ch.title)}</button>
+        `).join('')}
+      </div>
+      <div class="reader-content" id="readerContent">
+        <h3>${escapeHtml(chapters[0].title)}</h3>${chapters[0].content}
+      </div>
+    `;
+
+    document.querySelectorAll('.reader-tab').forEach((tab) => {
+      tab.addEventListener('click', () => renderChapter(parseInt(tab.dataset.index)));
+    });
+  }
 }
 
 async function goToReports(majorCode) {
@@ -511,7 +534,11 @@ async function goToReports(majorCode) {
   }
   if (!user) {
     if (confirm('查看深度报告需要登录，是否前往登录？')) {
-      window.location.href = 'login.html';
+      const loginParams = new URLSearchParams();
+      if (majorCode) loginParams.set('code', majorCode);
+      loginParams.set('redirect', window.location.pathname);
+      const qs = loginParams.toString();
+      window.location.href = 'login.html' + (qs ? '?' + qs : '');
     }
     return;
   }
@@ -521,26 +548,40 @@ async function goToReports(majorCode) {
   }
 
   // 在 closeModal 清除 _currentMajor 之前保存数据
-  const major = window._currentMajor;
+  let major = window._currentMajor;
+
+  // 如果 _currentMajor 未设置但 majorCode 有值，尝试从全局 majorsData 查找
+  if (!major && majorCode && window._majorsData) {
+    major = window._majorsData.find((m) => m.code === majorCode);
+    if (major) window._currentMajor = major;
+  }
 
   if (typeof closeModal === 'function') closeModal();
 
   if (majorCode) {
-    // 先检查数据库是否有该专业的报告
+    // 检查数据库是否有该专业的报告
     let report = null;
     try {
       if (window.reports?.getReportByMajorCode) {
         report = await window.reports.getReportByMajorCode(majorCode);
       }
     } catch {
-      // 查询失败时回退到跳转 reports 页面
+      // 查询失败回退到无报告展示
     }
 
     if (report) {
-      // 数据库有报告 → 跳转到报告浏览页
-      window.location.href = `user/reports.html?code=${encodeURIComponent(majorCode)}`;
+      // 检查是否已购买
+      let alreadyPurchased = false;
+      try {
+        if (window.reports?.checkUnlocked) {
+          alreadyPurchased = await window.reports.checkUnlocked(report.id);
+        }
+      } catch {
+        // 查询失败默认未购买
+      }
+      showReportPreviewModal(major, report, alreadyPurchased);
     } else if (major) {
-      // 无报告但有专业数据 → 就地展示预览弹窗
+      // 无报告但有专业数据 → 展示"筹备中"弹窗
       showReportPreviewModal(major, null, false);
     } else {
       window.location.href = 'user/reports.html';

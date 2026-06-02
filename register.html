@@ -370,12 +370,22 @@
 
             <div class="link-section">
                 <span class="link-text">已有账号？</span>
-                <a href="login.html" class="link">立即登录</a>
+                <a href="login.html" class="link" id="loginLink">立即登录</a>
             </div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+      // 将 URL 参数（如 code）传递到登录链接
+      (function() {
+        var qs = window.location.search;
+        if (qs) {
+          var link = document.getElementById('loginLink');
+          if (link) link.href = 'login.html' + qs;
+        }
+      })();
+    </script>
     <script type="module" src="/js/pages/register.js"></script>
 </body>
 </html>
