@@ -337,12 +337,20 @@ function showReportPreviewModal(major, reportData, alreadyPurchased) {
 
   body.innerHTML = `
     <div style="margin-bottom:20px;">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap;">
         <span class="report-code" style="display:inline-block;background:var(--secondary-container);padding:4px 12px;border-radius:20px;font-size:12px;color:var(--secondary);">${escapeHtml(major.code || '--')}</span>
         <span style="color:var(--on-surface-variant);font-size:14px;">${escapeHtml(major.category || '')}</span>
+        ${alreadyPurchased ? '<span style="display:inline-block;background:#E8F5E9;color:#2E7D32;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;">✓ 已购买</span>' : ''}
       </div>
       <h3 style="color:var(--secondary);font-size:18px;margin:0 0 8px;">${escapeHtml(major.name)}</h3>
     </div>
+
+    ${alreadyPurchased ? `
+      <div style="background:linear-gradient(135deg,#E8F5E9,#C8E6C9);border-radius:12px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;gap:10px;">
+        <span style="font-size:24px;">✅</span>
+        <span style="font-size:14px;color:#2E7D32;font-weight:500;">您已解锁此报告，可随时查看完整内容</span>
+      </div>
+    ` : ''}
 
     <h4 style="color:var(--secondary);margin:0 0 12px;font-size:15px;">📑 报告章节（共 13 章）</h4>
     <ul class="chapter-list">
@@ -560,26 +568,22 @@ async function goToReports(majorCode) {
   if (typeof closeModal === 'function') closeModal();
 
   if (majorCode) {
-    // 检查数据库是否有该专业的报告
+    // 并行查询报告数据 + 已解锁列表，减少一次往返延迟
     let report = null;
+    let unlockedIds = [];
     try {
-      if (window.reports?.getReportByMajorCode) {
-        report = await window.reports.getReportByMajorCode(majorCode);
-      }
+      const results = await Promise.all([
+        window.reports?.getReportByMajorCode ? window.reports.getReportByMajorCode(majorCode) : Promise.resolve(null),
+        window.reports?.getUnlockedReportIds ? window.reports.getUnlockedReportIds() : Promise.resolve([]),
+      ]);
+      report = results[0];
+      unlockedIds = results[1] || [];
     } catch {
       // 查询失败回退到无报告展示
     }
 
     if (report) {
-      // 检查是否已购买
-      let alreadyPurchased = false;
-      try {
-        if (window.reports?.checkUnlocked) {
-          alreadyPurchased = await window.reports.checkUnlocked(report.id);
-        }
-      } catch {
-        // 查询失败默认未购买
-      }
+      const alreadyPurchased = unlockedIds.includes(report.id);
       showReportPreviewModal(major, report, alreadyPurchased);
     } else if (major) {
       // 无报告但有专业数据 → 展示"筹备中"弹窗

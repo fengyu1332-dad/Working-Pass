@@ -43,6 +43,40 @@
       min-width: 140px;
     }
 
+    .unlocked-toggle {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      color: var(--on-surface-variant);
+      user-select: none;
+    }
+    .unlocked-toggle input { display: none; }
+    .toggle-track {
+      width: 40px; height: 22px;
+      background: var(--outline);
+      border-radius: 11px;
+      position: relative;
+      transition: background 0.3s;
+      flex-shrink: 0;
+    }
+    .toggle-thumb {
+      position: absolute;
+      top: 2px; left: 2px;
+      width: 18px; height: 18px;
+      background: white;
+      border-radius: 50%;
+      transition: transform 0.3s;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+    .unlocked-toggle input:checked + .toggle-track {
+      background: #4CAF50;
+    }
+    .unlocked-toggle input:checked + .toggle-track .toggle-thumb {
+      transform: translateX(18px);
+    }
+
     .reports-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -317,6 +351,15 @@
           <option value="downloads">按解锁量</option>
           <option value="recent">按时间</option>
         </select>
+      </div>
+      <div class="filter-group">
+        <label class="unlocked-toggle">
+          <input type="checkbox" id="unlockedOnlyFilter">
+          <span class="toggle-track">
+            <span class="toggle-thumb"></span>
+          </span>
+          <span>仅显示已解锁</span>
+        </label>
       </div>
     </div>
 

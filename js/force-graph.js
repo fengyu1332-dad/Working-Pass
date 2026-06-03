@@ -3,11 +3,13 @@
 // 22 学科门类 + 611 专业节点 · Canvas 渲染 · D3 物理引擎
 // ============================================================
 
-const CATEGORY_RADIUS = 20;
-const MAJOR_RADIUS = 5;
+const CATEGORY_RADIUS = 34;
+const MAJOR_RADIUS = 9;
 const LINK_COLOR = '#DED0C6';
 const LINK_DIM_COLOR = '#f0ece8';
-const BG_COLOR = '#FFF8F5';
+const BG_COLOR = '#FFFFFF';
+const CURSOR_DEFAULT = "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Cpolygon points='4,4 14,28 18,19 28,15' fill='%23000' stroke='%23fff' stroke-width='1.5'/%3E%3C/svg%3E\") 4 4, auto";
+const CURSOR_POINTER = "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Cpath d='M12 2C10 2 8 4 8 6v14l-3-5-4 1 5 12 3 1 9-3V6c0-2-2-4-4-4z' fill='%23000' stroke='%23fff' stroke-width='1.2'/%3E%3C/svg%3E\") 8 2, pointer";
 const ANIM_SPEED = 0.12;
 
 const CATEGORY_PALETTE = [
@@ -32,12 +34,14 @@ export class ForceGraph {
     this.hoveredNode = null;
     this.focusedNode = null;
     this.highlightedCatId = null;
+    this._focusedCat = null;
     this._touchStartNode = null;
     this._transform = { x: 0, y: 0, k: 1 };
 
     this.canvas = document.createElement('canvas');
     this.ctx = this.canvas.getContext('2d');
     this.canvas.style.display = 'block';
+    this.canvas.style.cursor = CURSOR_DEFAULT;
     this.canvas.setAttribute('role', 'application');
     this.canvas.setAttribute('aria-label', '专业关系图谱。使用 Tab 键聚焦后，可用方向键在节点间导航，按 Enter 键选择节点。');
     this.canvas.tabIndex = 0;
@@ -74,6 +78,11 @@ export class ForceGraph {
 
   clearHighlight() {
     this.highlightedCatId = null;
+    if (this._focusedCat) {
+      this._focusedCat = null;
+      this._animateTransformTo({ x: 0, y: 0, k: 1 });
+      setTimeout(() => this.fitView(), 650);
+    }
     this._updateAllTargets();
   }
 
@@ -111,6 +120,40 @@ export class ForceGraph {
     d3.select(this.canvas).call(this._zoom.transform, d3.zoomIdentity.translate(tx, ty).scale(scale));
   }
 
+  _animateTransformTo(target) {
+    const start = { ...this._transform };
+    const duration = 600;
+    const startTime = performance.now();
+    const self = this;
+
+    function step(now) {
+      const elapsed = now - startTime;
+      const t = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - t, 3); // ease-out cubic
+      self._transform = {
+        x: start.x + (target.x - start.x) * eased,
+        y: start.y + (target.y - start.y) * eased,
+        k: start.k + (target.k - start.k) * eased,
+      };
+      if (t < 1) {
+        requestAnimationFrame(step);
+      }
+    }
+    requestAnimationFrame(step);
+  }
+
+  _focusCategoryView(categoryName) {
+    const catNode = this.nodes.find((n) => n.type === 'category' && n.name === categoryName);
+    if (!catNode) return;
+
+    const scale = 2;
+    const cx = catNode.x;
+    const cy = catNode.y;
+    const tx = this.width / 2 - cx * scale;
+    const ty = this.height / 2 - cy * scale;
+    this._animateTransformTo({ x: tx, y: ty, k: scale });
+  }
+
   destroy() {
     clearTimeout(this._fitViewTimer);
     cancelAnimationFrame(this._animFrame);
@@ -143,7 +186,7 @@ export class ForceGraph {
 
   _setupZoom() {
     this._zoom = d3.zoom()
-      .scaleExtent([0.2, 6])
+      .filter(() => false)
       .on('zoom', (e) => {
         this._transform = e.transform;
       });
@@ -355,7 +398,7 @@ export class ForceGraph {
       // Label
       if (n.currentLabelOpacity > 0.01) {
         const isHovered = n === this.hoveredNode;
-        const fontSize = n.type === 'category' ? 12 : (isHovered ? 20 : 10);
+        const fontSize = n.type === 'category' ? 32 : (isHovered ? 52 : 26);
         ctx.font = `${fontSize}px "PingFang SC", "Microsoft YaHei", sans-serif`;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
@@ -467,7 +510,7 @@ export class ForceGraph {
         } else if (highlightedMajors.has(n.id)) {
           n.targetR = baseR * 1.8;
           n.targetOpacity = 1;
-          n.targetLabelOpacity = 0.7;
+          n.targetLabelOpacity = 0;
           n.targetZIndex = 8;
         } else if (n.type === 'category') {
           n.targetR = baseR * 0.7;
@@ -506,15 +549,15 @@ export class ForceGraph {
 
     if (node !== this.hoveredNode) {
       this.hoveredNode = node;
-      if (node) this.canvas.style.cursor = 'pointer';
-      else this.canvas.style.cursor = 'grab';
+      if (node) this.canvas.style.cursor = CURSOR_POINTER;
+      else this.canvas.style.cursor = CURSOR_DEFAULT;
       this._updateAllTargets();
     }
   }
 
   _onMouseLeave() {
     this.hoveredNode = null;
-    this.canvas.style.cursor = 'default';
+    this.canvas.style.cursor = CURSOR_DEFAULT;
     this._updateAllTargets();
   }
 
@@ -526,7 +569,7 @@ export class ForceGraph {
       const my = e.touches[0].clientY - rect.top;
       this._touchStartNode = this._findNodeAt(mx, my);
       this.hoveredNode = this._touchStartNode;
-      if (this.hoveredNode) this.canvas.style.cursor = 'pointer';
+      if (this.hoveredNode) this.canvas.style.cursor = CURSOR_POINTER;
       this._updateAllTargets();
     }
   }
@@ -553,6 +596,8 @@ export class ForceGraph {
           this.clearHighlight();
         } else {
           this.highlightCategory(this._touchStartNode.name);
+          this._focusedCat = this._touchStartNode.name;
+          this._focusCategoryView(this._touchStartNode.name);
         }
         if (this.options.onCategoryClick) this.options.onCategoryClick(this._touchStartNode.name);
       } else if (this._touchStartNode.type === 'major') {
@@ -583,6 +628,8 @@ export class ForceGraph {
         this.clearHighlight();
       } else {
         this.highlightCategory(node.name);
+        this._focusedCat = node.name;
+        this._focusCategoryView(node.name);
       }
       if (this.options.onCategoryClick) this.options.onCategoryClick(node.name);
     } else if (node.type === 'major') {

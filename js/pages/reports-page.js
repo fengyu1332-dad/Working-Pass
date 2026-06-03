@@ -15,6 +15,7 @@ let unlockedReports = new Set();
 let currentCategory = 'all';
 let currentReportSort = 'name';
 let currentSearchTerm = '';
+let unlockedOnly = false;
 let searchTimer = null;
 
 (async function () {
@@ -45,6 +46,16 @@ let searchTimer = null;
     }
   }
 
+  // 如果 URL 携带 ?unlocked=1，自动开启"仅显示已解锁"
+  if (urlParams.get('unlocked') === '1') {
+    const unlockedToggle = document.getElementById('unlockedOnlyFilter');
+    if (unlockedToggle) {
+      unlockedToggle.checked = true;
+      unlockedOnly = true;
+      applyReportFilters();
+    }
+  }
+
   document.getElementById('logoutBtn').addEventListener('click', async (e) => {
     e.preventDefault();
     try { await window.auth.logout(); } catch (error) { window.auth.showToast('退出失败', 'error'); }
@@ -57,6 +68,11 @@ let searchTimer = null;
 
   document.getElementById('reportSort').addEventListener('change', (e) => {
     currentReportSort = e.target.value;
+    applyReportFilters();
+  });
+
+  document.getElementById('unlockedOnlyFilter').addEventListener('change', (e) => {
+    unlockedOnly = e.target.checked;
     applyReportFilters();
   });
 
@@ -132,6 +148,10 @@ function applyReportFilters() {
 
   if (currentCategory !== 'all') {
     filtered = filtered.filter((r) => r.category === currentCategory);
+  }
+
+  if (unlockedOnly) {
+    filtered = filtered.filter((r) => unlockedReports.has(r.id));
   }
 
   if (currentReportSort === 'name') {

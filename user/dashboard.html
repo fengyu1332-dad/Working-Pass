@@ -164,7 +164,22 @@
 
       <div class="card stat-card">
         <div class="stat-value" id="totalDownloads">0</div>
-        <div class="stat-label">📖 解锁次数</div>
+        <div class="stat-label">📖 已购报告</div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(300px, 1fr));gap:20px;margin-bottom:36px;">
+      <div class="activity-card">
+        <h2 class="section-title">📦 最近充值</h2>
+        <div class="card" id="recentOrders">
+          <p style="color:var(--on-surface-variant);text-align:center;padding:24px;">加载中...</p>
+        </div>
+      </div>
+      <div class="activity-card">
+        <h2 class="section-title">⭐ 已解锁报告</h2>
+        <div class="card" id="recentDownloads">
+          <p style="color:var(--on-surface-variant);text-align:center;padding:24px;">暂无已解锁报告</p>
+        </div>
       </div>
     </div>
 
@@ -186,6 +201,14 @@
         </div>
       </a>
 
+      <a href="/user/reports.html?unlocked=1" class="action-btn">
+        <div class="action-icon">⭐</div>
+        <div class="action-text">
+          <div class="action-title">我的已购报告</div>
+          <div class="action-desc">查看已解锁的报告</div>
+        </div>
+      </a>
+
       <a href="/user/orders.html" class="action-btn">
         <div class="action-icon">📋</div>
         <div class="action-text">
@@ -201,21 +224,6 @@
           <div class="action-desc">数据管理和运营监控</div>
         </div>
       </a>
-    </div>
-
-    <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(300px, 1fr));gap:20px;">
-      <div class="activity-card">
-        <h2 class="section-title">📦 最近充值</h2>
-        <div class="card" id="recentOrders">
-          <p style="color:var(--on-surface-variant);text-align:center;padding:24px;">加载中...</p>
-        </div>
-      </div>
-      <div class="activity-card">
-        <h2 class="section-title">📖 最近解锁</h2>
-        <div class="card" id="recentDownloads">
-          <p style="color:var(--on-surface-variant);text-align:center;padding:24px;">加载中...</p>
-        </div>
-      </div>
     </div>
   </div>
 

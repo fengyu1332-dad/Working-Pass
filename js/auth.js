@@ -75,10 +75,19 @@ export async function logout() {
   const { error } = await sb.auth.signOut();
   if (error) throw error;
 
+  clearUserCache();
   window.location.href = '/login.html';
 }
 
+let _cachedUser = null;
+let _cachedUserAt = 0;
+const USER_CACHE_TTL = 30000; // 30秒缓存，避免同一流程中重复 auth API 调用
+
 export async function getCurrentUser() {
+  if (_cachedUser && Date.now() - _cachedUserAt < USER_CACHE_TTL) {
+    return _cachedUser;
+  }
+
   const sb = getSupabase();
   if (!sb) return null;
 
@@ -90,10 +99,18 @@ export async function getCurrentUser() {
     if (error) {
       return null;
     }
+    _cachedUser = user;
+    _cachedUserAt = Date.now();
     return user;
   } catch (error) {
     return null;
   }
+}
+
+// 供外部强制刷新缓存（如登录/登出后）
+export function clearUserCache() {
+  _cachedUser = null;
+  _cachedUserAt = 0;
 }
 
 export async function getUserProfile() {
@@ -221,6 +238,7 @@ if (typeof window !== 'undefined') {
     registerWithPhone,
     logout,
     getCurrentUser,
+    clearUserCache,
     getUserProfile,
     checkAuthState,
     checkAuthAndRedirect,
