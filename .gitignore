@@ -98,6 +98,7 @@ scripts/moe-2024-directory.json
 scripts/fix-duplicates-report.json
 scripts/fix-duplicates.sql
 scripts/fix-log.json
+scripts/fix-clinical.sql
 scripts/convert-key.js
 
 # Debug artifacts
