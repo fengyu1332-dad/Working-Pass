@@ -9,7 +9,7 @@ import '../common.js';
 import '../reports.js';
 import '../error-report.js';
 import '../web-vitals.js';
-import { searchMajors, highlightMatch, addRecentSearch } from '../search-utils.js';
+import { searchMajors, highlightMatch, addRecentSearch, didYouMean, trackSearch } from '../search-utils.js';
 
 const { initWebVitals } = window.__starmap_webVitals || {};
 
@@ -252,7 +252,7 @@ function setupListEvents() {
         }
       }
       if (currentLoadedCategory) applyFiltersAndSort();
-    }, 300);
+    }, 250);
   });
   if (searchClear) {
     searchClear.addEventListener('click', () => {
@@ -370,6 +370,7 @@ function applyFiltersAndSort(resetPage = true) {
 
   if (currentFilters.search) {
     filtered = searchMajors(filtered, currentFilters.search);
+    trackSearch(currentFilters.search, filtered.length);
   }
 
   // 分类筛选仅在"全部学科"模式下才有意义（按需加载时数据已过滤）
@@ -427,7 +428,16 @@ function displayMajors(majors) {
   list.innerHTML = '';
 
   if (majors.length === 0) {
-    const emptyMsg = '<p style="text-align:center;padding:60px;color:#8B7E74;font-size:16px;">暂无匹配的专业</p>';
+    let emptyMsg = '<p style="text-align:center;padding:40px 60px;color:#8B7E74;font-size:16px;">暂无匹配的专业</p>';
+    if (currentFilters.search) {
+      const suggestions = didYouMean(majorsData, currentFilters.search, 3);
+      if (suggestions.length > 0) {
+        emptyMsg = `<div style="text-align:center;padding:40px 60px;color:#8B7E74;font-size:16px;">
+          <p style="margin-bottom:8px;">未找到"<strong>${currentFilters.search}</strong>"相关专业</p>
+          <p>你是不是想找：${suggestions.map(s => `<button class="suggestion-link" onclick="document.getElementById('searchInput').value='${s.replace(/'/g, "\\'")}';document.getElementById('searchInput').dispatchEvent(new Event('input'))" style="background:none;border:none;color:#E67E22;cursor:pointer;font-size:16px;text-decoration:underline;">${s}</button>`).join('、')}</p>
+        </div>`;
+      }
+    }
     grid.innerHTML = emptyMsg;
     list.innerHTML = emptyMsg;
   } else {

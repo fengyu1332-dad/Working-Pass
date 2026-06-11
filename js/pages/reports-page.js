@@ -7,7 +7,7 @@ import '../auth.js';
 import '../reports.js';
 import '../error-report.js';
 import { sanitizeHTML } from '../sanitize-html.js';
-import { highlightMatch } from '../search-utils.js';
+import { highlightMatch, trackSearch } from '../search-utils.js';
 
 let currentReports = [];
 let currentProfile = null;
@@ -88,7 +88,7 @@ let searchTimer = null;
     searchTimer = setTimeout(() => {
       currentSearchTerm = val;
       loadReports(val || null);
-    }, 350);
+    }, 250);
   });
 
   document.getElementById('searchInput').addEventListener('keydown', (e) => {
@@ -115,6 +115,7 @@ async function loadReports(search = null) {
     ]);
     currentReports = reports || [];
     unlockedReports = new Set(unlockedIds || []);
+    if (search) trackSearch(search, (reports || []).length);
 
     populateCategoryFilter(currentReports);
     applyReportFilters();

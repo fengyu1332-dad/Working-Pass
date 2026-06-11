@@ -10,7 +10,7 @@ import '../error-report.js';
 import '../web-vitals.js';
 import { ForceGraph } from '../force-graph.js';
 import { debounce } from '../utils.js';
-import { searchMajors, highlightMatch, getRecentSearches, addRecentSearch, clearRecentSearches } from '../search-utils.js';
+import { searchMajors, highlightMatch, getRecentSearches, addRecentSearch, clearRecentSearches, getSearchSuggestions, didYouMean, trackSearch } from '../search-utils.js';
 
 const { initWebVitals } = window.__starmap_webVitals || {};
 
@@ -254,7 +254,7 @@ document.addEventListener('DOMContentLoaded', () => {
       } else {
         renderRecentSearches();
       }
-    }, 200));
+    }, 250));
 
     // 键盘导航
     searchInput.addEventListener('keydown', (e) => {
@@ -319,8 +319,13 @@ document.addEventListener('DOMContentLoaded', () => {
   function renderSearchDropdown(term) {
     const results = searchMajors(majorsData, term).slice(0, 8);
     dropdownActiveIndex = -1;
+    trackSearch(term, results.length);
     if (results.length === 0) {
-      searchDropdown.innerHTML = `<div class="search-dropdown-empty">未找到匹配的专业，试试其他关键词</div>`;
+      const suggestions = didYouMean(majorsData, term, 3);
+      const tip = suggestions.length > 0
+        ? `未找到"${term}"。你是不是想找：<strong>${suggestions.join('、')}</strong>？`
+        : `未找到匹配的专业，试试其他关键词（支持拼音、首字母、英文缩写如 CS/AI）`;
+      searchDropdown.innerHTML = `<div class="search-dropdown-empty">${tip}</div>`;
     } else {
       const items = results.map((m) => {
         const icon = m.category_icon || '📚';
