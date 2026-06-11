@@ -112,7 +112,7 @@ Deno.serve(async (req: Request) => {
                       alipayPrivateKey.includes("BEGIN PRIVATE KEY") ? "PKCS8" : "UNKNOWN";
 
     const alipayGateway = Deno.env.get("ALIPAY_GATEWAY") || "https://openapi.alipay.com/gateway.do";
-    const frontendUrl = Deno.env.get("FRONTEND_URL") || "http://localhost:5173";
+    const frontendUrl = Deno.env.get("FRONTEND_URL") || "https://working-pass.vercel.app";
     const notifyUrl = Deno.env.get("ALIPAY_NOTIFY_URL") ||
       `${supabaseUrl}/functions/v1/alipay-notify`;
 

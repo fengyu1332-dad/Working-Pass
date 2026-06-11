@@ -90,6 +90,21 @@ data/batch_progress.json
 .coverage
 htmlcov/
 
+# MOE reference data (large binary, extracted data is tracked separately)
+scripts/moe-2026-official.pdf
+scripts/moe-2024-directory.json
+
+# One-time fix artifacts
+scripts/fix-duplicates-report.json
+scripts/fix-duplicates.sql
+scripts/fix-log.json
+scripts/convert-key.js
+
+# Debug artifacts
+purchase-full.txt
+auth_response.json
+token.txt
+
 # Secrets (NEVER commit these)
 *secret*
 *password*
