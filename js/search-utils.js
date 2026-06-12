@@ -37,13 +37,33 @@ function toPinyinFull(text) {
   if (pinyinCache.has(text)) return pinyinCache.get(text).full;
   let full = '';
   let initial = '';
-  for (const c of text) {
-    if (typeof window.PINYIN_MAP !== 'undefined' && window.PINYIN_MAP[c] !== undefined) {
-      full += window.PINYIN_MAP[c];
-      initial += window.PINYIN_MAP[c].charAt(0);
-    } else {
-      full += c.toLowerCase();
-      initial += c.toLowerCase();
+  let i = 0;
+  const map = typeof window.PINYIN_MAP !== 'undefined' ? window.PINYIN_MAP : {};
+  const compounds = typeof window.PINYIN_COMPOUND_KEYS !== 'undefined' ? window.PINYIN_COMPOUND_KEYS : [];
+  const compoundMap = typeof window.PINYIN_COMPOUND !== 'undefined' ? window.PINYIN_COMPOUND : {};
+
+  while (i < text.length) {
+    let matched = false;
+    for (const comp of compounds) {
+      if (text.startsWith(comp, i)) {
+        const py = compoundMap[comp];
+        full += py;
+        initial += py.charAt(0);
+        i += comp.length;
+        matched = true;
+        break;
+      }
+    }
+    if (!matched) {
+      const c = text[i];
+      if (map[c] !== undefined) {
+        full += map[c];
+        initial += map[c].charAt(0);
+      } else {
+        full += c.toLowerCase();
+        initial += c.toLowerCase();
+      }
+      i++;
     }
   }
   pinyinCache.set(text, { full, initial });
@@ -71,21 +91,23 @@ export function fuzzyMatch(text, query) {
   const directScore = charMatch(t, q);
   if (directScore >= 100) return directScore;
 
-  // 2) 拼音全拼匹配
+  // 2) 计算所有维度分数
   const pyFull = toPinyinFull(text);
   const pyFullScore = charMatch(pyFull, q);
-  if (pyFullScore > 0) return Math.max(directScore, pyFullScore * 0.9);
-
-  // 3) 拼音首字母匹配
   const pyInit = toPinyinInitial(text);
   const pyInitScore = charMatch(pyInit, q);
-  if (pyInitScore > 0) return Math.max(directScore, pyInitScore * 0.85);
-
-  // 4) 别名匹配
   const aliasScore = aliasMatch(text, q);
-  if (aliasScore > 0) return Math.max(directScore, aliasScore * 0.8);
 
-  return directScore;
+  // 精确别名 key 匹配时提升权重，确保别名优先于拼音首字母
+  const isExactAlias = Object.keys(ALIAS_MAP).some(k => k.toLowerCase() === q);
+  const aliasWeight = isExactAlias ? 0.92 : 0.8;
+
+  return Math.max(
+    directScore,
+    pyFullScore * 0.9,
+    pyInitScore * 0.85,
+    aliasScore * aliasWeight,
+  );
 }
 
 /**
