@@ -8,8 +8,11 @@ CREATE TABLE IF NOT EXISTS site_stats (
 );
 
 INSERT INTO site_stats (id, visit_count, total_seconds)
-VALUES (1, 0, 0)
+VALUES (1, 123, 30000)
 ON CONFLICT (id) DO NOTHING;
+
+-- 如果需要重置已有数据为初始值，取消注释下行：
+-- UPDATE site_stats SET visit_count = 123, total_seconds = 30000 WHERE id = 1;
 
 -- 原子递增访问次数，返回新值
 CREATE OR REPLACE FUNCTION increment_visit()

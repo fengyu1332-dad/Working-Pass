@@ -24,17 +24,14 @@ export async function initSiteStats() {
     }
   } catch { /* RPC 还没部署到数据库 */ }
 
-  // 判断是否新访问（距上次 >30 分钟）
+  // 防作弊已关闭：每次页面加载均计为新访问
   const now = Date.now();
-  const lastVisit = parseInt(localStorage.getItem(VISIT_KEY), 10) || 0;
-  if (!lastVisit || now - lastVisit > SESSION_INTERVAL) {
-    try {
-      const { data, error } = await sb.rpc('increment_visit');
-      if (!error && data !== undefined) {
-        document.getElementById('siteVisitCount').textContent = formatNumber(data);
-      }
-    } catch { /* 忽略 */ }
-  }
+  try {
+    const { data, error } = await sb.rpc('increment_visit');
+    if (!error && data !== undefined) {
+      document.getElementById('siteVisitCount').textContent = formatNumber(data);
+    }
+  } catch { /* 忽略 */ }
   localStorage.setItem(VISIT_KEY, now.toString());
 
   // 心跳上报停留时间
