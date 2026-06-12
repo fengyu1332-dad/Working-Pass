@@ -6,6 +6,7 @@ import '../supabase-client.js';
 import '../auth.js';
 import '../payments.js';
 import '../error-report.js';
+import { t } from '../i18n.js';
 
 let currentTab = 'orders';
 
@@ -22,7 +23,7 @@ let currentTab = 'orders';
     try {
       await window.auth.logout();
     } catch (error) {
-      window.auth.showToast('退出失败', 'error');
+      window.auth.showToast(t('logout_fail', '退出失败'), 'error');
     }
   });
 })();
@@ -58,7 +59,7 @@ async function loadOrders() {
       list.innerHTML = `
         <div class="empty-state">
           <div class="empty-state-icon">📦</div>
-          <div>暂无订单记录</div>
+          <div>${t('no_orders', '暂无订单记录')}</div>
         </div>`;
       return;
     }
@@ -68,10 +69,10 @@ async function loadOrders() {
         (order) => `
       <div class="record-item">
         <div>
-          <div class="record-title">${order.point_packages?.name || order.package_name || '点数充值'}</div>
+          <div class="record-title">${order.point_packages?.name || order.package_name || t('points_recharge', '点数充值')}</div>
           <div class="record-meta">
             ${formatDate(order.created_at)} ·
-            ${order.status === 'paid' ? '✓ 已支付' : order.status === 'pending' ? '⏳ 待支付' : order.status === 'cancelled' ? '✗ 已取消' : order.status === 'expired' ? '⏰ 已过期' : order.status}
+            ${order.status === 'paid' ? '✓ ' + t('order_paid', '已支付') : order.status === 'pending' ? '⏳ ' + t('order_pending', '待支付') : order.status === 'cancelled' ? '✗ ' + t('order_cancelled', '已取消') : order.status === 'expired' ? '⏰ ' + t('order_expired', '已过期') : order.status}
             ${order.alipay_trade_no ? ` · 交易号: ${order.alipay_trade_no.slice(-16)}` : ''}
           </div>
         </div>
@@ -86,7 +87,7 @@ async function loadOrders() {
     list.innerHTML = `
       <div class="empty-state">
         <div class="empty-state-icon">⚠️</div>
-        <div>加载失败，请稍后重试</div>
+        <div>${t('load_error_retry', '加载失败，请稍后重试')}</div>
       </div>`;
   }
 }
@@ -105,7 +106,7 @@ async function loadDownloads() {
       list.innerHTML = `
         <div class="empty-state">
           <div class="empty-state-icon">📚</div>
-          <div>暂无下载记录</div>
+          <div>${t('no_downloads', '暂无下载记录')}</div>
         </div>`;
       return;
     }
@@ -115,7 +116,7 @@ async function loadDownloads() {
         (record) => `
       <div class="record-item">
         <div>
-          <div class="record-title">${record.reports?.major_name || record.report_name || '专业报告'}</div>
+          <div class="record-title">${record.reports?.major_name || record.report_name || t('major_report', '专业报告')}</div>
           <div class="record-meta">
             ${record.reports?.major_code || record.report_code || ''} ·
             ${formatDate(record.created_at)}
@@ -132,7 +133,7 @@ async function loadDownloads() {
     list.innerHTML = `
       <div class="empty-state">
         <div class="empty-state-icon">⚠️</div>
-        <div>加载失败，请稍后重试</div>
+        <div>${t('load_error_retry', '加载失败，请稍后重试')}</div>
       </div>`;
   }
 }

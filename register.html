@@ -296,15 +296,22 @@
             cursor: not-allowed;
         }
 
+        /* 语言切换器 */
+        .lang-switcher{display:flex;align-items:center;gap:2px;}
+        .lang-btn{background:none;border:none;cursor:pointer;font-size:13px;font-weight:600;padding:4px 8px;border-radius:6px;color:var(--on-surface-variant);transition:all 0.2s;font-family:inherit;}
+        .lang-btn:hover{color:var(--primary);background:var(--secondary-container);}
+        .lang-btn.active{color:var(--primary);background:var(--primary-container);}
+        .lang-sep{color:var(--outline);font-size:12px;user-select:none;}
+
         @media (max-width: 768px) {
             .register-card {
                 padding: 32px 24px;
             }
-            
+
             .logo-title {
                 font-size: 28px;
             }
-            
+
             .form-row {
                 flex-direction: column;
             }
@@ -312,25 +319,26 @@
     </style>
 </head>
 <body>
-    <a class="skip-link" href="#main-content">跳到主要内容</a>
+    <a class="skip-link" href="#main-content" data-i18n="skip_to_main">跳到主要内容</a>
     <div class="register-container" id="main-content">
-        <a href="index.html" class="back-link">
+        <a href="index.html" class="back-link" data-i18n="back_home">
             <span>←</span> 返回首页
         </a>
-        
+
         <div class="logo-section">
-            <h1 class="logo-title">专业星图</h1>
-            <p class="logo-subtitle">温暖、专业的大学专业选择指南</p>
+            <h1 class="logo-title" data-i18n="site_name">专业星图</h1>
+            <p class="logo-subtitle" data-i18n="site_tagline">温暖、专业的大学专业选择指南</p>
         </div>
-        
+
         <div class="register-card">
+            <div style="display:flex;justify-content:flex-end;margin-bottom:12px;" id="langSwitcherContainer"></div>
             <div id="errorMessage" class="error-message"></div>
             <div id="successMessage" class="success-message"></div>
             
             <form id="registerForm">
                 <div class="form-group">
-                    <label class="form-label" for="email">邮箱</label>
-                    <input type="email" id="email" class="form-input" placeholder="请输入邮箱地址" required autocomplete="email">
+                    <label class="form-label" for="email" data-i18n="email_label">邮箱</label>
+                    <input type="email" id="email" class="form-input" data-i18n-placeholder="email_placeholder" placeholder="请输入邮箱地址" required autocomplete="email">
                 </div>
 
                 <div class="form-group">
@@ -339,23 +347,23 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label" for="password">密码</label>
-                    <input type="password" id="password" class="form-input" placeholder="请设置密码（至少6位）" required minlength="6" autocomplete="new-password">
+                    <label class="form-label" for="password" data-i18n="password_label">密码</label>
+                    <input type="password" id="password" class="form-input" data-i18n-placeholder="register_password_placeholder" placeholder="请设置密码（至少6位）" required minlength="6" autocomplete="new-password">
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label" for="confirmPassword">确认密码</label>
-                    <input type="password" id="confirmPassword" class="form-input" placeholder="请再次输入密码" required autocomplete="new-password">
+                    <label class="form-label" for="confirmPassword" data-i18n="confirm_password_label">确认密码</label>
+                    <input type="password" id="confirmPassword" class="form-input" data-i18n-placeholder="confirm_password_placeholder" placeholder="请再次输入密码" required autocomplete="new-password">
                 </div>
                 
                 <div class="terms-section">
                     <input type="checkbox" id="terms" class="terms-checkbox" required>
-                    <label for="terms" class="terms-text">
+                    <label for="terms" class="terms-text" data-i18n="terms_agree">
                         我已阅读并同意 <a href="#" class="terms-link">《用户协议》</a> 和 <a href="#" class="terms-link">《隐私政策》</a>
                     </label>
                 </div>
                 
-                <button type="submit" class="btn-primary" id="registerBtn">注册</button>
+                <button type="submit" class="btn-primary" id="registerBtn" data-i18n="register_submit">注册</button>
             </form>
 
 
@@ -369,15 +377,14 @@
             -->
 
             <div class="link-section">
-                <span class="link-text">已有账号？</span>
-                <a href="login.html" class="link" id="loginLink">立即登录</a>
+                <span class="link-text" data-i18n="has_account">已有账号？</span>
+                <a href="login.html" class="link" id="loginLink" data-i18n="go_login">立即登录</a>
             </div>
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-      // 将 URL 参数（如 code）传递到登录链接
       (function() {
         var qs = window.location.search;
         if (qs) {
@@ -386,6 +393,7 @@
         }
       })();
     </script>
+    <script type="module" src="/js/i18n.js"></script>
     <script type="module" src="/js/pages/register.js"></script>
 </body>
 </html>

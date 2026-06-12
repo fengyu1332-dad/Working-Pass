@@ -4,6 +4,16 @@
 // ============================================================
 
 import { escapeHtml, getJsonArray, formatXuefengComment, debounce, renderErrorState } from './utils.js';
+import { t, onLanguageChange } from './i18n.js';
+
+// 语言切换时重新渲染用户区域
+onLanguageChange(() => {
+  updateUserArea();
+  // 如果有打开的专业详情弹窗，重新渲染
+  if (window._currentMajor) {
+    openModal(window._currentMajor);
+  }
+});
 
 async function updateUserArea() {
   const userArea = document.getElementById('navUserArea');
@@ -25,11 +35,11 @@ async function updateUserArea() {
 
     userArea.innerHTML = `
             <div class="user-info">
-                <a href="/user/dashboard.html" class="user-avatar-link" title="个人中心">
+                <a href="/user/dashboard.html" class="user-avatar-link" title="${t('nav_dashboard', '个人中心')}">
                   <div class="user-avatar">👤</div>
                 </a>
-                <a href="/user/dashboard.html" class="user-name-link" title="个人中心">${escapeHtml(displayName)}</a>
-                <button class="btn-sm btn-primary-sm" id="logoutBtn">退出</button>
+                <a href="/user/dashboard.html" class="user-name-link" title="${t('nav_dashboard', '个人中心')}">${escapeHtml(displayName)}</a>
+                <button class="btn-sm btn-primary-sm" id="logoutBtn">${t('nav_logout', '退出')}</button>
             </div>
         `;
 
@@ -44,8 +54,8 @@ async function updateUserArea() {
     }
   } else {
     userArea.innerHTML = `
-            <a href="login.html" class="nav-link">登录</a>
-            <a href="register.html" class="btn-sm btn-primary-sm" style="text-decoration: none;">注册</a>
+            <a href="login.html" class="nav-link">${t('nav_login', '登录')}</a>
+            <a href="register.html" class="btn-sm btn-primary-sm" style="text-decoration: none;">${t('nav_register', '注册')}</a>
         `;
   }
 }
@@ -66,13 +76,13 @@ function openModal(major) {
   setText('infoCategory', major.category);
   setText('infoCode', major.code);
   setText('infoDegree', major.degree || '--');
-  setText('infoDuration', major.duration ? major.duration + '年' : '--');
+  setText('infoDuration', major.duration ? major.duration + t('major_duration_unit', '年') : '--');
   setText('infoDifficulty', major.difficulty);
   setText('infoSalary', major.salary_range);
-  setText('detailOverview', major.overview || '暂无数据');
-  setText('detailWhatYouLearn', major.what_you_learn || '暂无数据');
-  setText('detailSuitable', major.suitable_for || '暂无数据');
-  setText('detailCareerOutlook', major.career_outlook || '暂无数据');
+  setText('detailOverview', major.overview || t('no_data', '暂无数据'));
+  setText('detailWhatYouLearn', major.what_you_learn || t('no_data', '暂无数据'));
+  setText('detailSuitable', major.suitable_for || t('no_data', '暂无数据'));
+  setText('detailCareerOutlook', major.career_outlook || t('no_data', '暂无数据'));
 
   // 就业方向标签
   const dirs = getJsonArray(major, 'career_directions');
@@ -91,12 +101,12 @@ function openModal(major) {
 
   const salaryEl = document.getElementById('detailSalaryRange');
   if (salaryEl) {
-    salaryEl.textContent = '就业薪资范围：' + (major.salary_range || '暂无数据');
+    salaryEl.textContent = t('salary_detail_prefix', '就业薪资范围：') + (major.salary_range || t('no_data', '暂无数据'));
   }
 
   const commentEl = document.getElementById('detailXuefengComment');
   if (commentEl) {
-    commentEl.innerHTML = formatXuefengComment(major.xuefeng_comment) || '暂无数据';
+    commentEl.innerHTML = formatXuefengComment(major.xuefeng_comment) || t('no_data', '暂无数据');
   }
 
   const yearlyEl = document.getElementById('detailYearlyCourses');
@@ -123,14 +133,14 @@ function openModal(major) {
     if (unis.domestic) {
       uniEl.innerHTML += `
                 <div class="uni-section">
-                    <p class="uni-label">🇨🇳 国内名校</p>
+                    <p class="uni-label">🇨🇳 ${t('domestic_unis', '国内名校')}</p>
                     <div class="uni-tags">${unis.domestic.map((u) => `<span class="uni-tag chinese">${escapeHtml(u)}</span>`).join('')}</div>
                 </div>`;
     }
     if (unis.international) {
       uniEl.innerHTML += `
                 <div class="uni-section">
-                    <p class="uni-label">🌍 国际名校</p>
+                    <p class="uni-label">🌍 ${t('international_unis', '国际名校')}</p>
                     <div class="uni-tags">${unis.international.map((u) => `<span class="uni-tag foreign">${escapeHtml(u)}</span>`).join('')}</div>
                 </div>`;
     }
@@ -331,7 +341,7 @@ function showReportPreviewModal(major, reportData, alreadyPurchased) {
   const title = document.getElementById('reportFlowTitle');
   if (!body || !title) return;
 
-  title.textContent = '深度分析报告';
+  title.textContent = t('report_flow_title', '深度分析报告');
   const chapters = generateChapterOutline(major);
   const summaryText = buildReportSummary(major);
 
@@ -542,7 +552,7 @@ async function goToReports(majorCode) {
     user = await window.auth.getCurrentUser();
   }
   if (!user) {
-    if (confirm('查看深度报告需要登录，是否前往登录？')) {
+    if (confirm(t('login_required_report', '查看深度报告需要登录，是否前往登录？'))) {
       const loginParams = new URLSearchParams();
       if (majorCode) loginParams.set('code', majorCode);
       loginParams.set('redirect', window.location.pathname);

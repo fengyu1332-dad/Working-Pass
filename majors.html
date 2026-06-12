@@ -633,14 +633,22 @@
 
         .skip-link { position: absolute; top: -100px; left: 16px; z-index: 10000; padding: 12px 24px; background: var(--primary); color: #fff; font-weight: 600; font-size: 15px; border-radius: 8px; text-decoration: none; transition: top 0.2s; }
         .skip-link:focus { top: 16px; outline: 3px solid #fff; outline-offset: -6px; }
+
+        /* 语言切换器 */
+        .lang-switcher{display:flex;align-items:center;gap:2px;margin-left:12px;}
+        .lang-btn{background:none;border:none;cursor:pointer;font-size:13px;font-weight:600;padding:4px 8px;border-radius:6px;color:var(--on-surface-variant);transition:all 0.2s;font-family:inherit;}
+        .lang-btn:hover{color:var(--primary);background:var(--secondary-container);}
+        .lang-btn.active{color:var(--primary);background:var(--primary-container);}
+        .lang-sep{color:var(--outline);font-size:12px;user-select:none;}
     </style>
 </head>
 <body>
-    <a class="skip-link" href="#main-content">跳到主要内容</a>
+    <a class="skip-link" href="#main-content" data-i18n="skip_to_main">跳到主要内容</a>
     <div class="top-nav">
-        <a href="index.html" class="nav-logo">专业星图</a>
+        <a href="index.html" class="nav-logo" data-i18n="site_name">专业星图</a>
         <div id="navUserArea" class="nav-links">
             <!-- User area populated by JS -->
+            <div id="langSwitcherContainer"></div>
         </div>
     </div>
 
@@ -649,22 +657,22 @@
     <div class="list-container">
             <aside class="sidebar" id="sidebar">
                 <div class="sidebar-header">
-                    <a href="index.html" class="back-btn">← 返回首页</a>
+                    <a href="index.html" class="back-btn" data-i18n="back_home">← 返回首页</a>
                 </div>
 
-                <h2 class="sidebar-title">🔍 筛选条件</h2>
+                <h2 class="sidebar-title" data-i18n="filter_title">🔍 筛选条件</h2>
 
                 <div class="filter-group">
-                    <div class="filter-label">学科门类</div>
+                    <div class="filter-label" data-i18n="filter_category">学科门类</div>
                     <div class="filter-options" id="categoryFilters">
                         <!-- Populated by JS: categories first, "全部学科" at bottom -->
                     </div>
                 </div>
 
                 <div class="filter-group">
-                    <div class="filter-label">学习难度</div>
+                    <div class="filter-label" data-i18n="filter_difficulty">学习难度</div>
                     <div class="difficulty-options" id="difficultyFilters">
-                        <button class="difficulty-btn active" data-difficulty="all">全部</button>
+                        <button class="difficulty-btn active" data-difficulty="all" data-i18n="filter_all">全部</button>
                         <button class="difficulty-btn" data-difficulty="1">⭐</button>
                         <button class="difficulty-btn" data-difficulty="2">⭐⭐</button>
                         <button class="difficulty-btn" data-difficulty="3">⭐⭐⭐</button>
@@ -674,43 +682,43 @@
                 </div>
 
                 <div class="filter-group">
-                    <div class="filter-label">薪资范围</div>
+                    <div class="filter-label" data-i18n="filter_salary">薪资范围</div>
                     <div class="salary-options" id="salaryFilters">
                         <button class="salary-option active" data-salary="all" role="radio" aria-checked="true">
-                            <span>全部薪资</span>
+                            <span data-i18n="salary_all">全部薪资</span>
                         </button>
                         <button class="salary-option" data-salary="10k" role="radio" aria-checked="false">
-                            <span>10k以下</span>
+                            <span data-i18n="salary_below_10k">10k以下</span>
                         </button>
                         <button class="salary-option" data-salary="20k" role="radio" aria-checked="false">
-                            <span>10k-20k</span>
+                            <span data-i18n="salary_10k_20k">10k-20k</span>
                         </button>
                         <button class="salary-option" data-salary="30k" role="radio" aria-checked="false">
-                            <span>20k-30k</span>
+                            <span data-i18n="salary_20k_30k">20k-30k</span>
                         </button>
                         <button class="salary-option" data-salary="above" role="radio" aria-checked="false">
-                            <span>30k以上</span>
+                            <span data-i18n="salary_above_30k">30k以上</span>
                         </button>
                     </div>
                 </div>
 
-                <button class="reset-btn" id="resetFilters">🔄 重置筛选</button>
+                <button class="reset-btn" id="resetFilters" data-i18n="reset_filters">🔄 重置筛选</button>
             </aside>
 
             <main class="main-content">
                 <div class="top-bar">
-                    <button class="sidebar-toggle" id="sidebarToggle" aria-label="打开筛选面板">☰ 筛选</button>
-                    <div class="results-count" id="resultsCount" aria-live="polite" aria-atomic="true">-- 个专业</div>
+                    <button class="sidebar-toggle" id="sidebarToggle" aria-label="打开筛选面板" data-i18n="sidebar_filter">☰ 筛选</button>
+                    <div class="results-count" id="resultsCount" aria-live="polite" aria-atomic="true">-- <span data-i18n="major_count">个专业</span></div>
                     <div class="view-controls">
                         <select class="sort-select" id="sortSelect">
-                            <option value="name">按名称排序</option>
-                            <option value="salary">按薪资排序</option>
-                            <option value="difficulty">按难度排序</option>
+                            <option value="name" data-i18n="sort_name">按名称排序</option>
+                            <option value="salary" data-i18n="sort_salary">按薪资排序</option>
+                            <option value="difficulty" data-i18n="sort_difficulty">按难度排序</option>
                         </select>
                         <button class="sort-direction" id="sortDirection" aria-label="切换排序方向" title="切换升序/降序">⬇️</button>
                         <div class="view-toggle">
-                            <button class="view-btn active" data-view="grid">网格视图</button>
-                            <button class="view-btn" data-view="list">列表视图</button>
+                            <button class="view-btn active" data-view="grid" data-i18n="view_grid">网格视图</button>
+                            <button class="view-btn" data-view="list" data-i18n="view_list">列表视图</button>
                         </div>
                     </div>
                 </div>
@@ -718,8 +726,8 @@
                 <section class="search-section">
                     <div class="search-box">
                         <span class="search-icon">🔍</span>
-                        <input type="text" class="search-input" id="searchInput" placeholder="搜专业 / 拼音 / 首字母 / 缩写（如 CS、AI）...">
-                        <button class="search-clear" id="searchClear" style="display:none;" aria-label="清除搜索">✕</button>
+                        <input type="text" class="search-input" id="searchInput" data-i18n-placeholder="search_placeholder" placeholder="搜专业 / 拼音 / 首字母 / 缩写（如 CS、AI）...">
+                        <button class="search-clear" id="searchClear" style="display:none;" data-i18n-title="clear_search" aria-label="清除搜索">✕</button>
                     </div>
                 </section>
 
@@ -728,7 +736,7 @@
                 </div>
 
                 <div id="loading" style="display:none;">
-                    <p style="text-align:center;color:var(--on-surface-variant);font-size:15px;margin-bottom:20px;">⏳ 正在加载专业数据，请稍候...</p>
+                    <p style="text-align:center;color:var(--on-surface-variant);font-size:15px;margin-bottom:20px;" data-i18n="loading_majors">⏳ 正在加载专业数据，请稍候...</p>
                     <div class="majors-grid">
                         <div class="skeleton-card"><div style="display:flex;gap:14px;margin-bottom:16px;"><div class="skeleton-circle"></div><div style="flex:1;"><div class="skeleton-line"></div><div class="skeleton-line short"></div></div></div><div class="skeleton-line short" style="height:28px;border-radius:9999px;"></div><div class="skeleton-line medium"></div><div class="skeleton-line short"></div></div>
                         <div class="skeleton-card"><div style="display:flex;gap:14px;margin-bottom:16px;"><div class="skeleton-circle"></div><div style="flex:1;"><div class="skeleton-line"></div><div class="skeleton-line short"></div></div></div><div class="skeleton-line short" style="height:28px;border-radius:9999px;"></div><div class="skeleton-line medium"></div><div class="skeleton-line short"></div></div>
@@ -743,8 +751,8 @@
                 <div class="majors-list" id="majorsList" style="display: none;"></div>
 
                 <footer>
-                    <p>专业星图 · 温暖的专业指南</p>
-                    <p style="margin-top:8px;font-size:13px;">数据来源：专业星图数据库 · 请结合自身情况选择</p>
+                    <p data-i18n="footer_tagline">专业星图 · 温暖的专业指南</p>
+                    <p style="margin-top:8px;font-size:13px;" data-i18n="data_source">数据来源：专业星图数据库 · 请结合自身情况选择</p>
                 </footer>
             </main>
     </div>
@@ -761,92 +769,92 @@
                     </div>
                 </div>
                 <div class="modal-header-actions">
-                    <button class="modal-cta-btn" onclick="goToReports()">🔥 获取专业深度分析报告</button>
+                    <button class="modal-cta-btn" onclick="goToReports()" data-i18n="modal_cta">🔥 获取专业深度分析报告</button>
                     <button class="modal-close" id="closeModal">✕</button>
                 </div>
             </div>
             <div class="modal-body">
                 <div class="tab-buttons">
-                    <button class="tab-btn active" data-tab="overview">专业概况</button>
-                    <button class="tab-btn" data-tab="courses">课程安排</button>
-                    <button class="tab-btn" data-tab="careers">就业前景</button>
-                    <button class="tab-btn" data-tab="review">⭐ 雪峰点评</button>
+                    <button class="tab-btn active" data-tab="overview" data-i18n="tab_overview">专业概况</button>
+                    <button class="tab-btn" data-tab="courses" data-i18n="tab_courses">课程安排</button>
+                    <button class="tab-btn" data-tab="careers" data-i18n="tab_careers">就业前景</button>
+                    <button class="tab-btn" data-tab="review" data-i18n="tab_review">⭐ 雪峰点评</button>
                 </div>
 
                 <div id="overviewTab" class="tab-content active">
                     <div class="info-grid">
                         <div class="info-card">
-                            <p class="info-card-label">学科门类</p>
+                            <p class="info-card-label" data-i18n="major_category">学科门类</p>
                             <p class="info-card-value" id="infoCategory">--</p>
                         </div>
                         <div class="info-card">
-                            <p class="info-card-label">专业代码</p>
+                            <p class="info-card-label" data-i18n="major_code">专业代码</p>
                             <p class="info-card-value" id="infoCode">--</p>
                         </div>
                         <div class="info-card">
-                            <p class="info-card-label">学位</p>
+                            <p class="info-card-label" data-i18n="major_degree">学位</p>
                             <p class="info-card-value" id="infoDegree">--</p>
                         </div>
                         <div class="info-card">
-                            <p class="info-card-label">学制</p>
+                            <p class="info-card-label" data-i18n="major_duration">学制</p>
                             <p class="info-card-value" id="infoDuration">--</p>
                         </div>
                         <div class="info-card">
-                            <p class="info-card-label">学习难度</p>
+                            <p class="info-card-label" data-i18n="major_difficulty">学习难度</p>
                             <p class="info-card-value" id="infoDifficulty">--</p>
                         </div>
                         <div class="info-card">
-                            <p class="info-card-label">薪资范围</p>
+                            <p class="info-card-label" data-i18n="major_salary">薪资范围</p>
                             <p class="info-card-value" id="infoSalary">--</p>
                         </div>
                     </div>
 
                     <div class="detail-section">
-                        <h3 class="detail-title">📋 专业概述</h3>
+                        <h3 class="detail-title">📋 <span data-i18n="major_overview">专业概述</span></h3>
                         <p class="detail-content" id="detailOverview">--</p>
                     </div>
                     <div class="detail-section">
-                        <h3 class="detail-title">📚 你将学到</h3>
+                        <h3 class="detail-title">📚 <span data-i18n="major_courses">你将学到</span></h3>
                         <p class="detail-content" id="detailWhatYouLearn">--</p>
                     </div>
                     <div class="detail-section">
-                        <h3 class="detail-title">👤 适合人群</h3>
+                        <h3 class="detail-title">👤 <span data-i18n="major_suitable">适合人群</span></h3>
                         <p class="detail-content" id="detailSuitable">--</p>
                     </div>
                 </div>
 
                 <div id="coursesTab" class="tab-content">
                     <div class="detail-section">
-                        <h3 class="detail-title">📅 四年课程安排</h3>
+                        <h3 class="detail-title">📅 <span data-i18n="yearly_courses">四年课程安排</span></h3>
                         <div id="detailYearlyCourses"></div>
                     </div>
                     <div class="detail-section">
-                        <h3 class="detail-title">🏛️ 名校推荐</h3>
+                        <h3 class="detail-title">🏛️ <span data-i18n="major_universities">名校推荐</span></h3>
                         <div id="detailUniversities"></div>
                     </div>
                 </div>
 
                 <div id="careersTab" class="tab-content">
                     <div class="detail-section">
-                        <h3 class="detail-title">🚀 前景展望</h3>
+                        <h3 class="detail-title">🚀 <span data-i18n="career_outlook">前景展望</span></h3>
                         <p class="detail-content" id="detailCareerOutlook">--</p>
                     </div>
 
                     <div class="detail-section" id="careerDirectionsSection2" style="display:none;">
-                        <h3 class="detail-title">🎯 就业方向</h3>
+                        <h3 class="detail-title">🎯 <span data-i18n="major_directions">就业方向</span></h3>
                         <div id="detailCareerDirections2" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
                     </div>
 
                     <div class="detail-section">
-                        <h3 class="detail-title">💰 薪资范畴</h3>
+                        <h3 class="detail-title">💰 <span data-i18n="detail_salary_range">薪资范畴</span></h3>
                         <p class="detail-content" id="detailSalaryRange">--</p>
                     </div>
                 </div>
 
                 <div id="reviewTab" class="tab-content">
                     <div class="detail-section">
-                        <h3 class="detail-title">🔥 雪峰点评</h3>
-                        <p style="font-size: 12px; color: #9e9e9e; margin-bottom: 12px;">⚠️ 本栏目观点为模拟评论，仅供参考。</p>
+                        <h3 class="detail-title" data-i18n="major_comment">🔥 雪峰点评</h3>
+                        <p style="font-size: 12px; color: #9e9e9e; margin-bottom: 12px;" data-i18n="xuefeng_disclaimer">⚠️ 本栏目观点为模拟评论，仅供参考。</p>
                         <div class="summary-box" style="background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%); border-left: 4px solid #e65100; padding: 24px; border-radius: 16px;">
                             <p class="detail-content" id="detailXuefengComment" style="font-size: 15px; line-height: 1.9; color: #5d4037;">--</p>
                         </div>
@@ -862,16 +870,16 @@
         <div class="preheat-content">
             <button class="preheat-close" onclick="closePreheatModal()">✕</button>
             <div class="preheat-icon">🎓</div>
-            <h2 class="preheat-title">深度分析报告已上线</h2>
-            <p class="preheat-desc">15个热门专业的深度分析报告现已开放，为您提供权威、深度的专业选择指导。</p>
+            <h2 class="preheat-title" data-i18n="preheat_title">深度分析报告已上线</h2>
+            <p class="preheat-desc" data-i18n="preheat_desc">15个热门专业的深度分析报告现已开放，为您提供权威、深度的专业选择指导。</p>
             <ul class="preheat-features">
-                <li>📊 权威就业数据（教育部/人社部数据支持）</li>
-                <li>🎯 个性化职业发展路径分析</li>
-                <li>👔 HR视角的市场需求解读</li>
-                <li>💡 张雪峰风格的硬核报考建议</li>
-                <li>📈 行业趋势深度分析</li>
+                <li data-i18n="preheat_feature_1">📊 权威就业数据（教育部/人社部数据支持）</li>
+                <li data-i18n="preheat_feature_2">🎯 个性化职业发展路径分析</li>
+                <li data-i18n="preheat_feature_3">👔 HR视角的市场需求解读</li>
+                <li data-i18n="preheat_feature_4">💡 张雪峰风格的硬核报考建议</li>
+                <li data-i18n="preheat_feature_5">📈 行业趋势深度分析</li>
             </ul>
-            <button class="btn btn-primary" onclick="goToReports()" style="margin-top: 16px; width: 100%; padding: 14px; font-size: 16px;">
+            <button class="btn btn-primary" onclick="goToReports()" style="margin-top: 16px; width: 100%; padding: 14px; font-size: 16px;" data-i18n="preheat_cta">
                 立即查看深度报告
             </button>
         </div>

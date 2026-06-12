@@ -8,6 +8,7 @@ import '../reports.js';
 import '../error-report.js';
 import { sanitizeHTML } from '../sanitize-html.js';
 import { highlightMatch, trackSearch } from '../search-utils.js';
+import { t, createLangSwitcher, onLanguageChange } from '../i18n.js';
 
 let currentReports = [];
 let currentProfile = null;
@@ -22,6 +23,29 @@ const FONT_SIZES = { small: 15, medium: 18, large: 22 };
 
 (async function () {
   window.auth.initSupabase();
+
+  const langContainer = document.getElementById('langSwitcherContainer');
+  if (langContainer) {
+    langContainer.appendChild(createLangSwitcher());
+  }
+
+  // 语言切换时刷新报告卡片与 UI 文本
+  onLanguageChange(() => {
+    if (currentReports.length) {
+      populateCategoryFilter(currentReports);
+      applyReportFilters();
+    }
+    // 更新底部余额栏
+    const balanceEl = document.getElementById('reportBalance');
+    if (balanceEl && currentProfile) {
+      balanceEl.textContent = currentProfile.points_balance || 0;
+    }
+    // 更新空状态提示
+    const grid = document.getElementById('reportsGrid');
+    if (grid && !currentReports.length) {
+      grid.innerHTML = `<p style="text-align:center;padding:60px;color:var(--on-surface-variant);font-size:16px;">${t('report_no_data', '暂无报告数据')}</p>`;
+    }
+  });
 
   const isLoggedIn = await window.auth.checkAuthAndRedirect();
   if (!isLoggedIn) return;
@@ -60,7 +84,7 @@ const FONT_SIZES = { small: 15, medium: 18, large: 22 };
 
   document.getElementById('logoutBtn').addEventListener('click', async (e) => {
     e.preventDefault();
-    try { await window.auth.logout(); } catch (error) { window.auth.showToast('退出失败', 'error'); }
+    try { await window.auth.logout(); } catch (error) { window.auth.showToast(t('logout_fail', '退出失败'), 'error'); }
   });
 
   document.getElementById('categoryFilter').addEventListener('change', (e) => {
@@ -123,7 +147,7 @@ async function loadReports(search = null) {
     applyReportFilters();
   } catch (error) {
     console.error('Load reports error:', error);
-    window.auth.showToast('加载报告失败', 'error');
+    window.auth.showToast(t('report_load_error', '加载报告失败'), 'error');
   }
 }
 
@@ -136,7 +160,7 @@ function populateCategoryFilter(reports) {
   );
 
   const currentValue = select.value;
-  select.innerHTML = '<option value="all">全部学科</option>';
+  select.innerHTML = `<option value="all">${t('filter_all', '全部学科')}</option>`;
   categories.forEach((cat) => {
     const option = document.createElement('option');
     option.value = cat;
@@ -173,14 +197,14 @@ function renderReports(reports) {
 
   if (!reports || reports.length === 0) {
     const emptyMsg = currentSearchTerm
-      ? `未找到匹配"${currentSearchTerm}"的报告，请尝试其他关键词`
-      : '暂无报告数据';
+      ? `${t('report_search_empty', '未找到匹配')}"${currentSearchTerm}"${t('report_search_empty_suffix', '的报告，请尝试其他关键词')}`
+      : t('report_no_data', '暂无报告数据');
     const emptyIcon = currentSearchTerm ? '🔍' : '📭';
     grid.innerHTML = `
       <div style="grid-column: 1/-1; text-align: center; padding: 60px; color: var(--on-surface-variant);">
         <div style="font-size:48px;margin-bottom:12px;">${emptyIcon}</div>
         <div>${emptyMsg}</div>
-        ${currentSearchTerm ? '<button class="btn btn-secondary" style="margin-top:16px;" id="clearSearchBtn">清除搜索</button>' : ''}
+        ${currentSearchTerm ? `<button class="btn btn-secondary" style="margin-top:16px;" id="clearSearchBtn">${t('clear_search', '清除搜索')}</button>` : ''}
       </div>`;
     if (currentSearchTerm) {
       document.getElementById('clearSearchBtn').addEventListener('click', () => {
@@ -198,16 +222,16 @@ function renderReports(reports) {
     <div class="card report-card" id="report-${report.id}">
       <div class="report-code">${highlightMatch(report.major_code || '', currentSearchTerm)}</div>
       <div class="report-title">
-        ${highlightMatch(report.major_name || '未命名报告', currentSearchTerm)}
-        ${unlockedReports.has(report.id) ? '<span class="downloaded-badge">✓ 已解锁</span>' : ''}
+        ${highlightMatch(report.major_name || t('report_unnamed', '未命名报告'), currentSearchTerm)}
+        ${unlockedReports.has(report.id) ? `<span class="downloaded-badge">✓ ${t('report_unlocked', '已解锁')}</span>` : ''}
       </div>
       <div style="color: var(--on-surface-variant); font-size: 13px; margin-bottom: 8px;">${highlightMatch(report.category || '', currentSearchTerm)}</div>
       <div style="color: var(--on-surface-variant); font-size: 13px; line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
         ${report.preview_content || ''}
       </div>
       <div class="report-meta">
-        <span>${report.download_count || 0} 次解锁</span>
-        <span>消耗 1 点</span>
+        <span>${report.download_count || 0} ${t('report_downloads', '次解锁')}</span>
+        <span>${t('report_cost', '消耗 1 点')}</span>
       </div>
     </div>`
     )
@@ -267,7 +291,7 @@ async function showReportDetail(reportId) {
     const savedFont = localStorage.getItem(FONT_SIZE_KEY) || 'medium';
     content.innerHTML = `
       <div class="report-unlocked-layout">
-        <div id="reportReaderContainer" class="report-reader-container" style="--report-font-size:${FONT_SIZES[savedFont] || 18}px;">加载中...</div>
+        <div id="reportReaderContainer" class="report-reader-container" style="--report-font-size:${FONT_SIZES[savedFont] || 18}px;">${t('report_loading', '加载中...')}</div>
         <div class="report-share-bar">
           <div class="reading-toolbar" id="readingToolbar">
             <button class="font-btn small${savedFont === 'small' ? ' active' : ''}" data-size="small" title="小号字体 (15px)">A</button>
@@ -276,11 +300,11 @@ async function showReportDetail(reportId) {
           </div>
           <button class="fullscreen-btn" id="fullscreenBtn">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
-            全屏阅读
+            ${t('fullscreen_on', '全屏阅读')}
           </button>
           <button class="share-btn" id="shareReportBtn" style="margin-left:auto;">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.59 13.51l6.83 3.98M15.41 6.51l-6.82 3.98"/></svg>
-            分享报告
+            ${t('report_share', '分享报告')}
           </button>
         </div>
       </div>`;
@@ -294,13 +318,13 @@ async function showReportDetail(reportId) {
       shareBtn.classList.add('copied');
       shareBtn.innerHTML = `
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-        已复制
+        ${t('report_copied', '已复制')}
       `;
       setTimeout(() => {
         shareBtn.classList.remove('copied');
         shareBtn.innerHTML = `
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.59 13.51l6.83 3.98M15.41 6.51l-6.82 3.98"/></svg>
-          分享报告
+          ${t('report_share', '分享报告')}
         `;
       }, 2000);
     });
@@ -310,18 +334,18 @@ async function showReportDetail(reportId) {
     content.innerHTML = `
       <div style="flex:1;display:flex;flex-direction:column;min-height:0;overflow-y:auto;">
         <div class="report-preview-content" id="previewScroll">
-          <div style="font-weight: 600; margin-bottom: 12px; color: var(--secondary); font-size: 16px;">👁️ 免费预览</div>
-          ${sanitizeHTML(report.preview_content || '暂无预览内容')}
+          <div style="font-weight: 600; margin-bottom: 12px; color: var(--secondary); font-size: 16px;">👁️ ${t('report_preview', '免费预览')}</div>
+          ${sanitizeHTML(report.preview_content || t('report_no_content', '暂无预览内容'))}
         </div>
         <div class="report-locked-area">
-          <div style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">🔒 解锁完整深度分析报告</div>
+          <div style="font-size: 18px; font-weight: 600; margin-bottom: 8px;">🔒 ${t('report_unlock_btn', '解锁完整深度分析报告')}</div>
           <div style="color: var(--on-surface-variant); margin-bottom: 16px;">
-            您的点数: <span style="color: var(--primary); font-weight: 700; font-size: 24px;">${currentProfile?.points_balance || 0}</span>
+            ${t('your_points', '您的点数')}: <span style="color: var(--primary); font-weight: 700; font-size: 24px;">${currentProfile?.points_balance || 0}</span>
           </div>
           <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
-            <button class="btn btn-primary" id="unlockBtn">消耗 1 点解锁</button>
+            <button class="btn btn-primary" id="unlockBtn">${t('report_unlock', '消耗 1 点解锁')}</button>
             ${(currentProfile?.points_balance || 0) < 1 ? `
-              <a href="/user/purchase.html" class="btn btn-secondary">充值获取点数</a>` : ''}
+              <a href="/user/purchase.html" class="btn btn-secondary">${t('report_buy_points', '充值获取点数')}</a>` : ''}
           </div>
         </div>
       </div>
@@ -341,13 +365,13 @@ async function showReportDetail(reportId) {
       shareBtn.classList.add('copied');
       shareBtn.innerHTML = `
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-        已复制
+        ${t('report_copied', '已复制')}
       `;
       setTimeout(() => {
         shareBtn.classList.remove('copied');
         shareBtn.innerHTML = `
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.59 13.51l6.83 3.98M15.41 6.51l-6.82 3.98"/></svg>
-          分享报告
+          ${t('report_share', '分享报告')}
         `;
       }, 2000);
     });
@@ -380,8 +404,8 @@ function setupReadingControls() {
       isFullscreen = !isFullscreen;
       modalContent.classList.toggle('fullscreen-reading', isFullscreen);
       fullscreenBtn.innerHTML = isFullscreen
-        ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 8 4 4 8 4"/><polyline points="20 16 20 20 16 20"/><line x1="4" y1="4" x2="9" y2="9"/><line x1="20" y1="20" x2="15" y2="15"/></svg> 退出全屏'
-        : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg> 全屏阅读';
+        ? `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 8 4 4 8 4"/><polyline points="20 16 20 20 16 20"/><line x1="4" y1="4" x2="9" y2="9"/><line x1="20" y1="20" x2="15" y2="15"/></svg> ${t('fullscreen_off', '退出全屏')}`
+        : `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg> ${t('fullscreen_on', '全屏阅读')}`;
     });
   }
 
@@ -390,7 +414,7 @@ function setupReadingControls() {
     if (e.key === 'Escape' && modalContent && modalContent.classList.contains('fullscreen-reading')) {
       modalContent.classList.remove('fullscreen-reading');
       if (fullscreenBtn) {
-        fullscreenBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg> 全屏阅读';
+        fullscreenBtn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg> ${t('fullscreen_on', '全屏阅读')}`;
       }
     }
   };
@@ -477,14 +501,14 @@ async function loadFullReport(reportId) {
       if (result.content) {
         container.innerHTML = sanitizeHTML(result.content);
       } else {
-        container.innerHTML = '<p style="text-align:center;color:var(--on-surface-variant);padding:40px;">暂无报告内容</p>';
+        container.innerHTML = `<p style="text-align:center;color:var(--on-surface-variant);padding:40px;">${t('report_no_content', '暂无报告内容')}</p>`;
       }
     }
   } catch (error) {
     console.error('Load full report error:', error);
     const container = document.getElementById('reportReaderContainer');
     if (container) {
-      container.innerHTML = `<p style="text-align:center;color:var(--error);padding:40px;">加载失败: ${error.message || '未知错误'}</p>`;
+      container.innerHTML = `<p style="text-align:center;color:var(--error);padding:40px;">${t('report_load_error', '加载失败')}: ${error.message || t('unknown_error', '未知错误')}</p>`;
     }
   }
 }
@@ -497,13 +521,13 @@ async function unlockReportWrapper(reportId) {
     if (currentProfile) {
       document.getElementById('reportBalance').textContent = currentProfile.points_balance || 0;
     }
-    window.auth.showToast('解锁成功！', 'success');
+    window.auth.showToast(t('report_unlock_success', '解锁成功！'), 'success');
     // 重新打开详情，展示完整报告
     closeModal();
     showReportDetail(reportId);
   } catch (error) {
     console.error('Unlock error:', error);
-    window.auth.showToast(error.message || '解锁失败', 'error');
+    window.auth.showToast(error.message || t('report_unlock_fail', '解锁失败'), 'error');
   }
 }
 

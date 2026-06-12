@@ -217,6 +217,13 @@
             outline-offset: -6px;
         }
 
+        /* 语言切换器 */
+        .lang-switcher{display:flex;align-items:center;gap:2px;}
+        .lang-btn{background:none;border:none;cursor:pointer;font-size:13px;font-weight:600;padding:4px 8px;border-radius:6px;color:var(--on-surface-variant);transition:all 0.2s;font-family:inherit;}
+        .lang-btn:hover{color:var(--primary);background:var(--secondary-container);}
+        .lang-btn.active{color:var(--primary);background:var(--primary-container);}
+        .lang-sep{color:var(--outline);font-size:12px;user-select:none;}
+
         .divider {
             display: flex;
             align-items: center;
@@ -272,33 +279,34 @@
     </style>
 </head>
 <body>
-    <a class="skip-link" href="#main-content">跳到主要内容</a>
+    <a class="skip-link" href="#main-content" data-i18n="skip_to_main">跳到主要内容</a>
     <div class="login-container" id="main-content">
-        <a href="index.html" class="back-link">
+        <a href="index.html" class="back-link" data-i18n="back_home">
             <span>←</span> 返回首页
         </a>
-        
+
         <div class="logo-section">
-            <h1 class="logo-title">专业星图</h1>
-            <p class="logo-subtitle">温暖、专业的大学专业选择指南</p>
+            <h1 class="logo-title" data-i18n="site_name">专业星图</h1>
+            <p class="logo-subtitle" data-i18n="site_tagline">温暖、专业的大学专业选择指南</p>
         </div>
-        
+
         <div class="login-card">
+            <div style="display:flex;justify-content:flex-end;margin-bottom:12px;" id="langSwitcherContainer"></div>
             <div id="errorMessage" class="error-message"></div>
             <div id="successMessage" class="success-message"></div>
             
             <form id="loginForm">
                 <div class="form-group">
-                    <label class="form-label" for="email">邮箱</label>
-                    <input type="email" id="email" class="form-input" placeholder="请输入邮箱地址" required autocomplete="email">
+                    <label class="form-label" for="email" data-i18n="email_label">邮箱</label>
+                    <input type="email" id="email" class="form-input" data-i18n-placeholder="email_placeholder" placeholder="请输入邮箱地址" required autocomplete="email">
                 </div>
                 
                 <div class="form-group">
-                    <label class="form-label" for="password">密码</label>
-                    <input type="password" id="password" class="form-input" placeholder="请输入密码" required>
+                    <label class="form-label" for="password" data-i18n="password_label">密码</label>
+                    <input type="password" id="password" class="form-input" data-i18n-placeholder="password_placeholder" placeholder="请输入密码" required>
                 </div>
                 
-                <button type="submit" class="btn-primary" id="loginBtn">登录</button>
+                <button type="submit" class="btn-primary" id="loginBtn" data-i18n="login_submit">登录</button>
             </form>
 
 
@@ -312,11 +320,11 @@
             -->
 
             <div class="link-section">
-                <span class="link-text">还没有账号？</span>
-                <a href="register.html" class="link" id="registerLink">立即注册</a>
+                <span class="link-text" data-i18n="no_account">还没有账号？</span>
+                <a href="register.html" class="link" id="registerLink" data-i18n="go_register">立即注册</a>
             </div>
             <div class="link-section" style="margin-top:4px;">
-                <a href="reset-password.html" class="link" style="font-size:13px;">忘记密码？</a>
+                <a href="reset-password.html" class="link" style="font-size:13px;" data-i18n="login_forgot">忘记密码？</a>
             </div>
         </div>
     </div>
@@ -332,6 +340,7 @@
         }
       })();
     </script>
+    <script type="module" src="/js/i18n.js"></script>
     <script type="module" src="/js/pages/login.js"></script>
 </body>
 </html>

@@ -12,6 +12,7 @@ import { ForceGraph } from '../force-graph.js';
 import { debounce } from '../utils.js';
 import { searchMajors, highlightMatch, getRecentSearches, addRecentSearch, clearRecentSearches, getSearchSuggestions, didYouMean, trackSearch } from '../search-utils.js';
 import { initSiteStats } from '../site-stats.js';
+import { t, createLangSwitcher, applyTranslations, onLanguageChange } from '../i18n.js';
 
 const { initWebVitals } = window.__starmap_webVitals || {};
 
@@ -115,7 +116,7 @@ async function fetchFreshMajors() {
     if (!majorsData.length) {
       const loading = document.getElementById('loading');
       if (loading) {
-        renderErrorState(loading, `加载失败: ${error.message}`, fetchMajors);
+        renderErrorState(loading, `${t('load_error', '加载失败')}: ${error.message}`, fetchMajors);
       }
     }
   }
@@ -156,7 +157,7 @@ function initializeUI() {
   if (totalCategories) totalCategories.textContent = categories.length;
 
   const viewAllBtn = document.querySelector('.view-all-btn');
-  if (viewAllBtn) viewAllBtn.textContent = `查看全部 ${majorsData.length} 个专业 →`;
+  if (viewAllBtn) viewAllBtn.textContent = `${t('view_all')} ${majorsData.length} ${t('major_count_unit')} →`;
 
   const featuredMajors = featuredMajorCodes.map((code) => majorsData.find((m) => m.code === code)).filter(Boolean);
   displayFeaturedMajors(featuredMajors);
@@ -212,7 +213,7 @@ function displayFeaturedMajors(majors) {
         </div>
       </div>
       <div class="featured-body">
-        <span class="featured-salary">${(major.salary_range || '薪资面议').replace('¥', '')}</span>
+        <span class="featured-salary">${(major.salary_range || t('salary_negotiable', '薪资面议')).replace('¥', '')}</span>
         <p class="featured-preview">${(major.overview || '').substring(0, 80)}...</p>
       </div>
     `;
@@ -224,6 +225,27 @@ function displayFeaturedMajors(majors) {
 document.addEventListener('DOMContentLoaded', () => {
   if (window.auth) window.auth.initSupabase();
   if (initWebVitals) initWebVitals();
+
+  // 语言切换器
+  const langContainer = document.getElementById('langSwitcherContainer');
+  if (langContainer) {
+    langContainer.appendChild(createLangSwitcher());
+  }
+
+  // 语言切换时更新动态文本
+  onLanguageChange(() => {
+    const viewAllBtn = document.querySelector('.view-all-btn');
+    if (viewAllBtn && majorsData.length) {
+      viewAllBtn.textContent = `${t('view_all')} ${majorsData.length} ${t('major_count_unit')} →`;
+    }
+    // 更新推荐卡片中的薪资面议文本
+    document.querySelectorAll('.featured-salary').forEach(el => {
+      if (el.textContent === '薪资面议' || el.textContent === 'Negotiable') {
+        el.textContent = t('salary_negotiable', '薪资面议');
+      }
+    });
+  });
+
   updateUserArea();
   fetchMajors();
   initSiteStats();
@@ -325,8 +347,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (results.length === 0) {
       const suggestions = didYouMean(majorsData, term, 3);
       const tip = suggestions.length > 0
-        ? `未找到"${term}"。你是不是想找：<strong>${suggestions.join('、')}</strong>？`
-        : `未找到匹配的专业，试试其他关键词（支持拼音、首字母、英文缩写如 CS/AI）`;
+        ? `${t('did_you_mean_prefix', '未找到')}"${term}"。${t('did_you_mean', '你是不是想找')}：<strong>${suggestions.join('、')}</strong>？`
+        : t('no_results_tip', '未找到匹配的专业，试试其他关键词（支持拼音、首字母、英文缩写如 CS/AI）');
       searchDropdown.innerHTML = `<div class="search-dropdown-empty">${tip}</div>`;
     } else {
       const items = results.map((m) => {
@@ -344,7 +366,7 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>`;
       }).join('');
       const footer = `<div class="search-dropdown-footer">
-        <a href="majors.html?search=${encodeURIComponent(term)}">查看全部 ${results.length} 个结果 →</a>
+        <a href="majors.html?search=${encodeURIComponent(term)}">${t('view_all_results', '查看全部')} ${results.length} ${t('result_count_unit', '个结果')} →</a>
       </div>`;
       searchDropdown.innerHTML = items + footer;
     }
@@ -378,8 +400,8 @@ document.addEventListener('DOMContentLoaded', () => {
       </div>`
     ).join('');
     const footer = `<div class="search-dropdown-footer">
-      <span>最近搜索</span>
-      <button id="clearRecentBtn">清除记录</button>
+      <span>${t('recent_searches', '最近搜索')}</span>
+      <button id="clearRecentBtn">${t('clear_recent', '清除记录')}</button>
     </div>`;
     searchDropdown.innerHTML = items + footer;
     searchDropdown.classList.add('show');

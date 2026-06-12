@@ -6,6 +6,7 @@ import '../supabase-client.js';
 import '../auth.js';
 import '../payments.js';
 import '../error-report.js';
+import { t } from '../i18n.js';
 
 (async function () {
   window.auth.initSupabase();
@@ -15,7 +16,7 @@ import '../error-report.js';
 
   const profile = await window.auth.getUserProfile();
   if (profile) {
-    const displayEmail = profile.email || '未知用户';
+    const displayEmail = profile.email || t('unknown_user', '未知用户');
     document.getElementById('pointsBalance').textContent = profile.points_balance || 0;
     document.getElementById('userPhone').textContent = profile.phone || '';
     document.getElementById('userName').textContent = displayEmail;
@@ -34,7 +35,7 @@ import '../error-report.js';
 
   document.getElementById('logoutBtn').addEventListener('click', async (e) => {
     e.preventDefault();
-    try { await window.auth.logout(); } catch (error) { window.auth.showToast('退出失败', 'error'); }
+    try { await window.auth.logout(); } catch (error) { window.auth.showToast(t('logout_fail', '退出失败'), 'error'); }
   });
 })();
 
@@ -70,14 +71,14 @@ async function loadRecentOrders() {
   try {
     const orders = await window.payments.getOrders();
     if (!orders || orders.length === 0) {
-      container.innerHTML = '<p style="color:var(--on-surface-variant);text-align:center;padding:24px;">暂无订单</p>';
+      container.innerHTML = `<p style="color:var(--on-surface-variant);text-align:center;padding:24px;">${t('no_orders', '暂无订单')}</p>`;
       return;
     }
     const recent = orders.slice(0, 3);
     container.innerHTML = recent.map((o) => `
       <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid var(--outline);">
         <div>
-          <div style="font-weight:600;color:var(--secondary);">${o.point_packages?.name || '点数充值'}</div>
+          <div style="font-weight:600;color:var(--secondary);">${o.point_packages?.name || t('points_recharge', '点数充值')}</div>
           <div style="font-size:13px;color:var(--on-surface-variant);">${formatDate(o.created_at)}</div>
         </div>
         <div style="font-weight:700;color:var(--success);">+${o.points} 点</div>
@@ -85,7 +86,7 @@ async function loadRecentOrders() {
     `).join('');
   } catch (error) {
     console.error('Load recent orders error:', error);
-    container.innerHTML = '<p style="color:var(--on-surface-variant);text-align:center;padding:24px;">加载失败</p>';
+    container.innerHTML = `<p style="color:var(--on-surface-variant);text-align:center;padding:24px;">${t('load_failed', '加载失败')}</p>`;
   }
 }
 
@@ -94,7 +95,7 @@ async function loadRecentDownloads() {
   try {
     const downloads = await window.payments.getDownloadRecords();
     if (!downloads || downloads.length === 0) {
-      container.innerHTML = '<p style="color:var(--on-surface-variant);text-align:center;padding:24px;">暂无已购报告</p>';
+      container.innerHTML = `<p style="color:var(--on-surface-variant);text-align:center;padding:24px;">${t('no_unlocked', '暂无已解锁报告')}</p>`;
       return;
     }
     const unique = [];
@@ -109,15 +110,15 @@ async function loadRecentDownloads() {
     container.innerHTML = unique.map((d) => `
       <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 0;border-bottom:1px solid var(--outline);">
         <div>
-          <a href="/user/reports.html?code=${d.reports?.major_code || ''}" style="font-weight:600;color:var(--secondary);text-decoration:none;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--secondary)'">${d.reports?.major_name || '专业报告'}</a>
+          <a href="/user/reports.html?code=${d.reports?.major_code || ''}" style="font-weight:600;color:var(--secondary);text-decoration:none;" onmouseover="this.style.color='var(--primary)'" onmouseout="this.style.color='var(--secondary)'">${d.reports?.major_name || t('major_report', '专业报告')}</a>
           <div style="font-size:13px;color:var(--on-surface-variant);">${d.reports?.major_code || ''} · ${formatDate(d.created_at)}</div>
         </div>
-        <span style="display:inline-flex;align-items:center;gap:4px;background:#E8F5E9;color:#2E7D32;padding:4px 12px;border-radius:20px;font-size:13px;white-space:nowrap;">✓ 已解锁</span>
+        <span style="display:inline-flex;align-items:center;gap:4px;background:#E8F5E9;color:#2E7D32;padding:4px 12px;border-radius:20px;font-size:13px;white-space:nowrap;">✓ ${t('report_unlocked', '已解锁')}</span>
       </div>
     `).join('');
   } catch (error) {
     console.error('Load recent downloads error:', error);
-    container.innerHTML = '<p style="color:var(--on-surface-variant);text-align:center;padding:24px;">加载失败</p>';
+    container.innerHTML = `<p style="color:var(--on-surface-variant);text-align:center;padding:24px;">${t('load_failed', '加载失败')}</p>`;
   }
 }
 

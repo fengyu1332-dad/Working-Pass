@@ -5,8 +5,13 @@
 import '../supabase-client.js';
 import '../auth.js';
 import '../error-report.js';
+import { t, createLangSwitcher } from '../i18n.js';
 
 document.addEventListener('DOMContentLoaded', () => {
+  const langContainer = document.getElementById('langSwitcherContainer');
+  if (langContainer) {
+    langContainer.appendChild(createLangSwitcher());
+  }
   const loginForm = document.getElementById('loginForm');
   const loginBtn = document.getElementById('loginBtn');
   const errorMessage = document.getElementById('errorMessage');
@@ -54,16 +59,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const password = document.getElementById('password').value;
 
     if (!email || !password) {
-      showError('请填写邮箱和密码');
+      showError(t('fill_email_password', '请填写邮箱和密码'));
       return;
     }
 
     loginBtn.disabled = true;
-    loginBtn.textContent = '登录中...';
+    loginBtn.textContent = t('logging_in', '登录中...');
 
     try {
       await window.auth.loginWithEmail(email, password);
-      showSuccess('登录成功！即将跳转...');
+      showSuccess(t('login_success', '登录成功！即将跳转...'));
       setTimeout(() => {
         const urlParams = new URLSearchParams(window.location.search);
         const code = urlParams.get('code');
@@ -76,16 +81,16 @@ document.addEventListener('DOMContentLoaded', () => {
       }, 1000);
     } catch (error) {
       console.error('Login error:', error);
-      let msg = error.message || '登录失败，请检查邮箱和密码';
+      let msg = error.message || t('login_fail', '登录失败，请检查邮箱和密码');
       if (msg.includes('Invalid login credentials') || msg.includes('Invalid Login')) {
-        msg = '邮箱或密码错误，请重试';
+        msg = t('login_bad_credentials', '邮箱或密码错误，请重试');
       } else if (msg.includes('Email not confirmed')) {
-        msg = '邮箱尚未验证，请先点击邮件中的确认链接';
+        msg = t('login_email_not_confirmed', '邮箱尚未验证，请先点击邮件中的确认链接');
       }
       showError(msg);
     } finally {
       loginBtn.disabled = false;
-      loginBtn.textContent = '登录';
+      loginBtn.textContent = t('login_submit', '登录');
     }
   });
 

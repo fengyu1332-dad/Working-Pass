@@ -393,41 +393,42 @@
 <body>
   <div class="container">
     <nav class="nav">
-      <a href="/" class="nav-logo">专业星图</a>
+      <a href="/" class="nav-logo" data-i18n="site_name">专业星图</a>
       <div class="nav-links">
-        <a href="/user/dashboard.html" class="nav-link">个人中心</a>
-        <a href="/user/purchase.html" class="nav-link">购买点数</a>
-        <a href="/user/orders.html" class="nav-link">历史记录</a>
-        <a href="#" id="logoutBtn" class="nav-link">退出</a>
+        <a href="/user/dashboard.html" class="nav-link" data-i18n="nav_dashboard">个人中心</a>
+        <a href="/user/purchase.html" class="nav-link" data-i18n="nav_purchase">购买点数</a>
+        <a href="/user/orders.html" class="nav-link" data-i18n="nav_orders">历史记录</a>
+        <a href="#" id="logoutBtn" class="nav-link" data-i18n="nav_logout">退出</a>
+        <div id="langSwitcherContainer"></div>
       </div>
     </nav>
 
-    <a href="/user/dashboard.html" class="back-link">← 返回个人中心</a>
+    <a href="/user/dashboard.html" class="back-link" data-i18n="back_dashboard">← 返回个人中心</a>
 
-    <h1 class="page-title">专业深度报告</h1>
+    <h1 class="page-title" data-i18n="reports_title">专业深度报告</h1>
 
     <div class="balance-bar">
-      💎 当前点数余额：<span id="reportBalance">--</span>
+      💎 <span data-i18n="points_balance">当前点数余额</span>：<span id="reportBalance">--</span>
     </div>
 
     <div class="search-bar">
-      <input type="text" id="searchInput" class="form-input" placeholder="搜索专业名称或代码...">
-      <button class="btn btn-primary" id="searchBtn">搜索</button>
+      <input type="text" id="searchInput" class="form-input" data-i18n-placeholder="search_report_placeholder" placeholder="搜索专业名称或代码...">
+      <button class="btn btn-primary" id="searchBtn" data-i18n="search_btn">搜索</button>
     </div>
 
     <div class="filter-toolbar">
       <div class="filter-group">
-        <label for="categoryFilter" class="filter-label">学科分类：</label>
+        <label for="categoryFilter" class="filter-label" data-i18n="filter_category_label">学科分类：</label>
         <select id="categoryFilter" class="form-input filter-select">
-          <option value="all">全部学科</option>
+          <option value="all" data-i18n="filter_all">全部学科</option>
         </select>
       </div>
       <div class="filter-group">
-        <label for="reportSort" class="filter-label">排序：</label>
+        <label for="reportSort" class="filter-label" data-i18n="sort_label">排序：</label>
         <select id="reportSort" class="form-input filter-select">
-          <option value="name">按名称</option>
-          <option value="downloads">按解锁量</option>
-          <option value="recent">按时间</option>
+          <option value="name" data-i18n="sort_name">按名称</option>
+          <option value="downloads" data-i18n="sort_downloads">按解锁量</option>
+          <option value="recent" data-i18n="sort_recent">按时间</option>
         </select>
       </div>
       <div class="filter-group">
@@ -436,7 +437,7 @@
           <span class="toggle-track">
             <span class="toggle-thumb"></span>
           </span>
-          <span>仅显示已解锁</span>
+          <span data-i18n="unlocked_only">仅显示已解锁</span>
         </label>
       </div>
     </div>

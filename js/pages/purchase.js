@@ -6,6 +6,7 @@ import '../supabase-client.js';
 import '../auth.js';
 import '../payments.js';
 import '../error-report.js';
+import { t } from '../i18n.js';
 
 let currentPackages = [];
 let purchasing = false;
@@ -21,7 +22,7 @@ let purchasing = false;
 
   document.getElementById('logoutBtn').addEventListener('click', async (e) => {
     e.preventDefault();
-    try { await window.auth.logout(); } catch (error) { window.auth.showToast('退出失败', 'error'); }
+    try { await window.auth.logout(); } catch (error) { window.auth.showToast(t('logout_fail', '退出失败'), 'error'); }
   });
 })();
 
@@ -46,9 +47,9 @@ async function loadPackages() {
     renderPackages(currentPackages);
   } catch (error) {
     console.error('Load packages error:', error);
-    showFeedback('加载套餐失败：' + (error.message || '未知错误'), 'error');
+    showFeedback(t('load_packages_fail', '加载套餐失败：') + (error.message || t('unknown_error', '未知错误')), 'error');
     document.getElementById('packagesGrid').innerHTML =
-      '<p style="text-align:center;padding:40px;color:var(--on-surface-variant);">暂无可用套餐，请联系管理员</p>';
+      `<p style="text-align:center;padding:40px;color:var(--on-surface-variant);">${t('no_packages', '暂无可用套餐，请联系管理员')}</p>`;
   }
 }
 
@@ -56,7 +57,7 @@ function renderPackages(packages) {
   const grid = document.getElementById('packagesGrid');
   if (!packages || packages.length === 0) {
     grid.innerHTML =
-      '<p style="text-align:center;padding:40px;color:var(--on-surface-variant);">暂无可用套餐</p>';
+      `<p style="text-align:center;padding:40px;color:var(--on-surface-variant);">${t('no_packages_short', '暂无可用套餐')}</p>`;
     return;
   }
 
@@ -64,12 +65,12 @@ function renderPackages(packages) {
     .map(
       (pkg) => `
     <div class="package-card ${pkg.featured ? 'featured' : ''}" id="pkg-${pkg.id}">
-      ${pkg.featured ? '<div class="package-badge">推荐</div>' : ''}
+      ${pkg.featured ? `<div class="package-badge">${t('recommended', '推荐')}</div>` : ''}
       <div class="package-points">${pkg.points}</div>
-      <div class="package-unit">点数</div>
+      <div class="package-unit">${t('points_unit', '点')}</div>
       <div class="package-price">¥${pkg.price}</div>
       ${pkg.original_price ? `<div class="package-original-price">¥${pkg.original_price}</div>` : '<div style="margin-bottom:16px;"></div>'}
-      <div class="package-desc">${pkg.description || '解锁专业深度报告'}</div>
+      <div class="package-desc">${pkg.description || t('unlock_report_desc', '解锁专业深度报告')}</div>
     </div>`
     )
     .join('');
@@ -87,7 +88,7 @@ async function purchasePackage(pkg) {
   const card = document.getElementById(`pkg-${pkg.id}`);
   card.classList.add('busy');
   const originalText = card.querySelector('.package-desc').textContent;
-  card.querySelector('.package-desc').textContent = '创建订单...';
+  card.querySelector('.package-desc').textContent = t('creating_order', '创建订单...');
 
   try {
     const result = await window.payments.createAlipayOrder(pkg.id);
@@ -100,7 +101,7 @@ async function purchasePackage(pkg) {
   } catch (error) {
     console.error('Purchase error:', error);
     card.querySelector('.package-desc').textContent = originalText;
-    showFeedback(error.message || '创建订单失败，请重试', 'error');
+    showFeedback(error.message || t('create_order_fail', '创建订单失败，请重试'), 'error');
     card.classList.remove('busy');
     purchasing = false;
   }

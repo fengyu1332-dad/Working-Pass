@@ -132,16 +132,16 @@
 <body>
   <div class="container">
     <nav class="nav">
-      <a href="/" class="nav-logo">专业星图</a>
+      <a href="/" class="nav-logo" data-i18n="site_name">专业星图</a>
       <div class="nav-links">
-        <a href="/user/reports.html" class="nav-link">浏览报告</a>
-        <a href="/user/purchase.html" class="nav-link">购买点数</a>
-        <a href="/user/orders.html" class="nav-link">历史记录</a>
-        <a href="#" id="logoutBtn" class="nav-link">退出</a>
+        <a href="/user/reports.html" class="nav-link" data-i18n="browse_reports_nav">浏览报告</a>
+        <a href="/user/purchase.html" class="nav-link" data-i18n="nav_purchase">购买点数</a>
+        <a href="/user/orders.html" class="nav-link" data-i18n="nav_orders">历史记录</a>
+        <a href="#" id="logoutBtn" class="nav-link" data-i18n="nav_logout">退出</a>
       </div>
     </nav>
 
-    <h1 class="page-title">个人中心</h1>
+    <h1 class="page-title" data-i18n="dashboard_title">个人中心</h1>
 
     <div class="card user-info">
       <div class="user-avatar" id="userAvatar">U</div>
@@ -154,7 +154,7 @@
     <div class="dashboard-grid">
       <div class="card stat-card">
         <div class="stat-value" id="pointsBalance">0</div>
-        <div class="stat-label">💎 点数余额</div>
+        <div class="stat-label" data-i18n="points_balance">💎 点数余额</div>
       </div>
 
       <div class="card stat-card">
@@ -228,6 +228,7 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script type="module" src="/js/i18n.js"></script>
   <script type="module" src="/js/pages/dashboard.js"></script>
 </body>
 </html>

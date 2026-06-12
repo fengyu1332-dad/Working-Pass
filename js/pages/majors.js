@@ -10,6 +10,7 @@ import '../reports.js';
 import '../error-report.js';
 import '../web-vitals.js';
 import { searchMajors, highlightMatch, addRecentSearch, didYouMean, trackSearch } from '../search-utils.js';
+import { t, createLangSwitcher, onLanguageChange } from '../i18n.js';
 
 const { initWebVitals } = window.__starmap_webVitals || {};
 
@@ -117,7 +118,7 @@ function showLoadingState() {
 }
 
 function finishDataLoad() {
-  document.getElementById('resultsCount').textContent = `${majorsData.length} 个专业`;
+  document.getElementById('resultsCount').textContent = `${majorsData.length} ${t('major_count_unit', '个专业')}`;
   applyFiltersAndSort();
 }
 
@@ -130,7 +131,7 @@ function renderCategoryEntries(counts) {
   // 提示文字
   const hint = document.createElement('p');
   hint.className = 'category-entry-hint';
-  hint.textContent = '选择一个学科门类开始浏览 — 仅加载该门类专业，更快更精准';
+  hint.textContent = t('category_hint', '选择一个学科门类开始浏览 — 仅加载该门类专业，更快更精准');
   grid.appendChild(hint);
 
   sorted.forEach((cat) => {
@@ -142,7 +143,7 @@ function renderCategoryEntries(counts) {
     card.innerHTML = `
       <span class="category-entry-icon">${icon}</span>
       <h3 class="category-entry-name">${name}</h3>
-      <span class="category-entry-count">${counts[cat]} 个专业</span>
+      <span class="category-entry-count">${counts[cat]} ${t('major_count_unit', '个专业')}</span>
     `;
     card.addEventListener('click', () => selectCategory(cat));
     grid.appendChild(card);
@@ -176,7 +177,7 @@ function initSidebar(counts) {
   allBtn.dataset.category = 'all';
   allBtn.setAttribute('role', 'radio');
   allBtn.setAttribute('aria-checked', 'false');
-  allBtn.innerHTML = `<span class="category-icon">📖</span><span>全部学科（${Object.values(counts).reduce((a, b) => a + b, 0)}个）</span>`;
+  allBtn.innerHTML = `<span class="category-icon">📖</span><span>${t('filter_all', '全部学科')}（${Object.values(counts).reduce((a, b) => a + b, 0)}${t('major_count_short', '个')}）</span>`;
   container.appendChild(allBtn);
 }
 
@@ -411,7 +412,7 @@ function applyFiltersAndSort(resetPage = true) {
     filtered.sort((a, b) => dir * ((a.difficulty || '').length - (b.difficulty || '').length));
   }
 
-  document.getElementById('resultsCount').textContent = `${filtered.length} 个专业`;
+  document.getElementById('resultsCount').textContent = `${filtered.length} ${t('major_count_unit', '个专业')}`;
   displayMajors(filtered);
   syncFiltersToHash();
 }
@@ -428,13 +429,13 @@ function displayMajors(majors) {
   list.innerHTML = '';
 
   if (majors.length === 0) {
-    let emptyMsg = '<p style="text-align:center;padding:40px 60px;color:#8B7E74;font-size:16px;">暂无匹配的专业</p>';
+    let emptyMsg = `<p style="text-align:center;padding:40px 60px;color:#8B7E74;font-size:16px;">${t('no_matching_majors', '暂无匹配的专业')}</p>`;
     if (currentFilters.search) {
       const suggestions = didYouMean(majorsData, currentFilters.search, 3);
       if (suggestions.length > 0) {
         emptyMsg = `<div style="text-align:center;padding:40px 60px;color:#8B7E74;font-size:16px;">
-          <p style="margin-bottom:8px;">未找到"<strong>${currentFilters.search}</strong>"相关专业</p>
-          <p>你是不是想找：${suggestions.map(s => `<button class="suggestion-link" onclick="document.getElementById('searchInput').value='${s.replace(/'/g, "\\'")}';document.getElementById('searchInput').dispatchEvent(new Event('input'))" style="background:none;border:none;color:#E67E22;cursor:pointer;font-size:16px;text-decoration:underline;">${s}</button>`).join('、')}</p>
+          <p style="margin-bottom:8px;">${t('no_results_prefix', '未找到')}"<strong>${currentFilters.search}</strong>"${t('no_results_suffix', '相关专业')}</p>
+          <p>${t('did_you_mean', '你是不是想找')}：${suggestions.map(s => `<button class="suggestion-link" onclick="document.getElementById('searchInput').value='${s.replace(/'/g, "\\'")}';document.getElementById('searchInput').dispatchEvent(new Event('input'))" style="background:none;border:none;color:#E67E22;cursor:pointer;font-size:16px;text-decoration:underline;">${s}</button>`).join('、')}</p>
         </div>`;
       }
     }
@@ -471,12 +472,12 @@ function renderPagination(totalItems, totalPages) {
     container.innerHTML = '';
     return;
   }
-  let html = `<span class="pagination-info">共 ${totalItems} 个专业，${totalPages} 页</span>`;
-  html += `<button class="pagination-prev" ${currentPage === 1 ? 'disabled' : ''}>上一页</button>`;
+  let html = `<span class="pagination-info">${t('pagination_info', '共')} ${totalItems} ${t('major_count_unit_short', '个专业')}，${totalPages} ${t('pagination_pages', '页')}</span>`;
+  html += `<button class="pagination-prev" ${currentPage === 1 ? 'disabled' : ''}>${t('pagination_prev', '上一页')}</button>`;
   for (let i = 1; i <= totalPages; i++) {
     html += `<button class="pagination-btn ${i === currentPage ? 'active' : ''}" data-page="${i}">${i}</button>`;
   }
-  html += `<button class="pagination-next" ${currentPage === totalPages ? 'disabled' : ''}>下一页</button>`;
+  html += `<button class="pagination-next" ${currentPage === totalPages ? 'disabled' : ''}>${t('pagination_next', '下一页')}</button>`;
   container.innerHTML = html;
 
   container.querySelectorAll('.pagination-btn').forEach((btn) => {
@@ -567,7 +568,7 @@ function createGridCard(major, searchTerm = '') {
         <p class="difficulty-stars">${major.difficulty || ''}</p>
       </div>
     </div>
-    <span class="salary-tag">${(major.salary_range || '薪资面议').replace('¥', '')}</span>
+    <span class="salary-tag">${(major.salary_range || t('salary_negotiable', '薪资面议')).replace('¥', '')}</span>
     <p class="employment-desc">${highlightMatch((major.overview || '').substring(0, 60), searchTerm)}...</p>
   `;
   card.addEventListener('click', () => openModal(major));
@@ -588,7 +589,7 @@ function createListItem(major, searchTerm = '') {
       </div>
     </div>
     <div class="list-item-right">
-      <span class="list-salary">${(major.salary_range || '薪资面议').replace('¥', '')}</span>
+      <span class="list-salary">${(major.salary_range || t('salary_negotiable', '薪资面议')).replace('¥', '')}</span>
       <p class="list-difficulty">${major.difficulty || ''}</p>
     </div>
   `;
@@ -600,6 +601,23 @@ function createListItem(major, searchTerm = '') {
 document.addEventListener('DOMContentLoaded', async () => {
   window.auth.initSupabase();
   if (initWebVitals) initWebVitals();
+
+  const langContainer = document.getElementById('langSwitcherContainer');
+  if (langContainer) {
+    langContainer.appendChild(createLangSwitcher());
+  }
+
+  // 语言切换时刷新动态文本
+  onLanguageChange(() => {
+    if (currentLoadedCategory) {
+      applyFiltersAndSort(false);
+    } else if (Object.keys(categoryCounts).length) {
+      const totalAll = Object.values(categoryCounts).reduce((a, b) => a + b, 0);
+      document.getElementById('resultsCount').textContent = `${totalAll} ${t('major_count_unit', '个专业')} · ${t('select_category_prompt', '请选择学科门类')}`;
+      renderCategoryEntries(categoryCounts);
+    }
+  });
+
   updateUserArea();
 
   window.addEventListener('hashchange', () => {
@@ -616,7 +634,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // 初始显示入口卡片
     const totalAll = Object.values(categoryCounts).reduce((a, b) => a + b, 0);
-    document.getElementById('resultsCount').textContent = `${totalAll} 个专业 · 请选择学科门类`;
+    document.getElementById('resultsCount').textContent = `${totalAll} ${t('major_count_unit', '个专业')} · ${t('select_category_prompt', '请选择学科门类')}`;
 
     // 检查 URL 参数
     const urlParams = new URLSearchParams(window.location.search);
@@ -647,7 +665,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     console.error('Error initializing page:', error);
     const grid = document.getElementById('categoryEntries');
     if (grid) {
-      grid.innerHTML = `<p style="text-align:center;padding:60px;color:#8B7E74;font-size:16px;">加载失败: ${error.message}<br><button onclick="location.reload()" style="margin-top:16px;padding:8px 24px;background:var(--primary);color:white;border:none;border-radius:12px;cursor:pointer;">重试</button></p>`;
+      grid.innerHTML = `<p style="text-align:center;padding:60px;color:#8B7E74;font-size:16px;">${t('load_error', '加载失败')}: ${error.message}<br><button onclick="location.reload()" style="margin-top:16px;padding:8px 24px;background:var(--primary);color:white;border:none;border-radius:12px;cursor:pointer;">${t('retry', '重试')}</button></p>`;
     }
   }
 

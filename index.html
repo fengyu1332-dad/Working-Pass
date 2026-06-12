@@ -980,52 +980,60 @@
 
         .skip-link { position: absolute; top: -100px; left: 16px; z-index: 10000; padding: 12px 24px; background: var(--primary); color: #fff; font-weight: 600; font-size: 15px; border-radius: 8px; text-decoration: none; transition: top 0.2s; }
         .skip-link:focus { top: 16px; outline: 3px solid #fff; outline-offset: -6px; }
+
+        /* 语言切换器 */
+        .lang-switcher{display:flex;align-items:center;gap:2px;margin-left:12px;}
+        .lang-btn{background:none;border:none;cursor:pointer;font-size:13px;font-weight:600;padding:4px 8px;border-radius:6px;color:var(--on-surface-variant);transition:all 0.2s;font-family:inherit;}
+        .lang-btn:hover{color:var(--primary);background:var(--secondary-container);}
+        .lang-btn.active{color:var(--primary);background:var(--primary-container);}
+        .lang-sep{color:var(--outline);font-size:12px;user-select:none;}
     </style>
 </head>
 <body>
-    <a class="skip-link" href="#main-content">跳到主要内容</a>
+    <a class="skip-link" href="#main-content" data-i18n="skip_to_main">跳到主要内容</a>
     <div class="container" id="main-content">
         <nav class="nav-bar">
-            <a href="index.html" class="nav-logo">专业星图</a>
+            <a href="index.html" class="nav-logo" data-i18n="site_name">专业星图</a>
             <div id="navUserArea" class="nav-links">
                 <!-- User area will be populated by JavaScript -->
+                <div id="langSwitcherContainer"></div>
             </div>
         </nav>
         
         <div class="force-graph-wrap" id="forceGraphContainer">
             <div class="graph-loading" id="graphLoading">
                 <div class="graph-loading-spinner"></div>
-                <p class="graph-loading-text">正在加载专业关系图谱...</p>
-                <p class="graph-loading-sub">网络请求中，请耐心等待</p>
+                <p class="graph-loading-text" data-i18n="graph_loading">正在加载专业关系图谱...</p>
+                <p class="graph-loading-sub" data-i18n="graph_loading_sub">网络请求中，请耐心等待</p>
             </div>
             <div class="graph-overlay">
-                <span class="graph-tag">📚 <span class="num" id="totalMajors">--</span> 个专业</span>
-                <span class="graph-tag">🎓 <span class="num" id="totalCategories">--</span> 个学科门类</span>
+                <span class="graph-tag">📚 <span class="num" id="totalMajors">--</span> <span data-i18n="major_count_unit">个专业</span></span>
+                <span class="graph-tag">🎓 <span class="num" id="totalCategories">--</span> <span data-i18n="category_count_unit">个学科门类</span></span>
             </div>
             <div class="graph-legend">
-                <span><span class="legend-dot cat"></span> 学科门类</span>
-                <span><span class="legend-dot major"></span> 专业</span>
+                <span><span class="legend-dot cat"></span> <span data-i18n="legend_category">学科门类</span></span>
+                <span><span class="legend-dot major"></span> <span data-i18n="legend_major">专业</span></span>
             </div>
-            <div class="graph-hint">🖱️ 悬停探索 · 点击门类高亮专业 · 点击专业查看详情</div>
+            <div class="graph-hint" data-i18n="graph_hint">🖱️ 悬停探索 · 点击门类高亮专业 · 点击专业查看详情</div>
         </div>
         
         <section class="search-section">
             <div class="search-box">
                 <span class="search-icon">🔍</span>
                 <div class="search-wrapper">
-                    <input type="text" class="search-input" id="searchInput" placeholder="搜专业 / 拼音 / 首字母 / 缩写（如 CS、AI）...">
-                    <button class="search-clear" id="searchClear" style="display:none;" aria-label="清除搜索">✕</button>
+                    <input type="text" class="search-input" id="searchInput" data-i18n-placeholder="search_placeholder" placeholder="搜专业 / 拼音 / 首字母 / 缩写（如 CS、AI）...">
+                    <button class="search-clear" id="searchClear" style="display:none;" data-i18n-title="clear_search" aria-label="清除搜索">✕</button>
                     <div class="search-dropdown" id="searchDropdown"></div>
                 </div>
-                <button class="search-btn" id="searchBtn">搜索</button>
+                <button class="search-btn" id="searchBtn" data-i18n="search_btn">搜索</button>
             </div>
         </section>
         
         <section class="featured-section">
             <div class="section-header">
                 <div>
-                    <h2 class="section-title">🔥 精选专业推荐</h2>
-                    <p class="section-subtitle">老师推荐 · 热门专业 · 高薪方向</p>
+                    <h2 class="section-title" data-i18n="featured_title">🔥 精选专业推荐</h2>
+                    <p class="section-subtitle" data-i18n="featured_subtitle">老师推荐 · 热门专业 · 高薪方向</p>
                 </div>
                 <a href="majors.html" class="view-all-btn" id="viewAllBtn">查看全部专业 →</a>
             </div>
@@ -1048,21 +1056,21 @@
         <section class="site-stats-bar" id="siteStats">
             <div class="site-stat-item">
                 <span class="site-stat-icon">👁️</span>
-                <span class="site-stat-label">累计访问</span>
+                <span class="site-stat-label" data-i18n="site_visits">累计访问</span>
                 <span class="site-stat-value" id="siteVisitCount">--</span>
-                <span class="site-stat-unit">次</span>
+                <span class="site-stat-unit" data-i18n="visits_unit">次</span>
             </div>
             <div class="site-stat-divider"></div>
             <div class="site-stat-item">
                 <span class="site-stat-icon">⏱️</span>
-                <span class="site-stat-label">用户累计停留</span>
+                <span class="site-stat-label" data-i18n="site_time">用户累计停留</span>
                 <span class="site-stat-value" id="siteTotalTime">--</span>
             </div>
         </section>
 
         <footer>
-            <p>专业星图 · 温暖的专业指南</p>
-            <p style="margin-top:8px;font-size:13px;">数据来源：专业星图数据库 · 请结合自身情况选择</p>
+            <p data-i18n="footer_tagline">专业星图 · 温暖的专业指南</p>
+            <p style="margin-top:8px;font-size:13px;" data-i18n="data_source">数据来源：专业星图数据库 · 请结合自身情况选择</p>
         </footer>
     </div>
     
@@ -1077,98 +1085,98 @@
                     </div>
                 </div>
                 <div class="modal-header-actions">
-                    <button class="modal-cta-btn" onclick="goToReports()">🔥 获取专业深度分析报告</button>
+                    <button class="modal-cta-btn" onclick="goToReports()" data-i18n="modal_cta">🔥 获取专业深度分析报告</button>
                     <button class="modal-close" id="closeModal">✕</button>
                 </div>
             </div>
             <div class="modal-body">
                 <div class="tab-buttons">
-                    <button class="tab-btn active" data-tab="overview">专业概况</button>
-                    <button class="tab-btn" data-tab="courses">课程安排</button>
-                    <button class="tab-btn" data-tab="careers">就业前景</button>
-                    <button class="tab-btn" data-tab="review">⭐ 雪峰点评</button>
+                    <button class="tab-btn active" data-tab="overview" data-i18n="tab_overview">专业概况</button>
+                    <button class="tab-btn" data-tab="courses" data-i18n="tab_courses">课程安排</button>
+                    <button class="tab-btn" data-tab="careers" data-i18n="tab_careers">就业前景</button>
+                    <button class="tab-btn" data-tab="review" data-i18n="tab_review">⭐ 雪峰点评</button>
                 </div>
-                
+
                 <div id="overviewTab" class="tab-content active">
                     <div class="info-grid">
                         <div class="info-card">
-                            <p class="info-card-label">学科门类</p>
+                            <p class="info-card-label" data-i18n="major_category">学科门类</p>
                             <p class="info-card-value" id="infoCategory">--</p>
                         </div>
                         <div class="info-card">
-                            <p class="info-card-label">专业代码</p>
+                            <p class="info-card-label" data-i18n="major_code">专业代码</p>
                             <p class="info-card-value" id="infoCode">--</p>
                         </div>
                         <div class="info-card">
-                            <p class="info-card-label">学位</p>
+                            <p class="info-card-label" data-i18n="major_degree">学位</p>
                             <p class="info-card-value" id="infoDegree">--</p>
                         </div>
                         <div class="info-card">
-                            <p class="info-card-label">学制</p>
+                            <p class="info-card-label" data-i18n="major_duration">学制</p>
                             <p class="info-card-value" id="infoDuration">--</p>
                         </div>
                         <div class="info-card">
-                            <p class="info-card-label">学习难度</p>
+                            <p class="info-card-label" data-i18n="major_difficulty">学习难度</p>
                             <p class="info-card-value" id="infoDifficulty">--</p>
                         </div>
                         <div class="info-card">
-                            <p class="info-card-label">薪资范围</p>
+                            <p class="info-card-label" data-i18n="major_salary">薪资范围</p>
                             <p class="info-card-value" id="infoSalary">--</p>
                         </div>
                     </div>
-                    
+
                     <div class="detail-section">
-                        <h3 class="detail-title">📋 专业概述</h3>
+                        <h3 class="detail-title">📋 <span data-i18n="major_overview">专业概述</span></h3>
                         <p class="detail-content" id="detailOverview">--</p>
                     </div>
-                    
+
                     <div class="detail-section">
-                        <h3 class="detail-title">📚 你将学到</h3>
+                        <h3 class="detail-title">📚 <span data-i18n="major_courses">你将学到</span></h3>
                         <p class="detail-content" id="detailWhatYouLearn">--</p>
                     </div>
-                    
+
                     <div class="detail-section">
-                        <h3 class="detail-title">👤 适合人群</h3>
+                        <h3 class="detail-title">👤 <span data-i18n="major_suitable">适合人群</span></h3>
                         <p class="detail-content" id="detailSuitable">--</p>
                     </div>
                 </div>
-                
+
                 <div id="coursesTab" class="tab-content">
                     <div class="detail-section">
-                        <h3 class="detail-title">📅 四年课程安排</h3>
+                        <h3 class="detail-title">📅 <span data-i18n="yearly_courses">四年课程安排</span></h3>
                         <div id="detailYearlyCourses"></div>
                     </div>
-                    
+
                     <div class="detail-section">
-                        <h3 class="detail-title">🏛️ 名校推荐</h3>
+                        <h3 class="detail-title">🏛️ <span data-i18n="major_universities">名校推荐</span></h3>
                         <div id="detailUniversities"></div>
                     </div>
                 </div>
-                
+
                 <div id="careersTab" class="tab-content">
                     <div class="detail-section">
-                        <h3 class="detail-title">🚀 前景展望</h3>
+                        <h3 class="detail-title">🚀 <span data-i18n="career_outlook">前景展望</span></h3>
                         <p class="detail-content" id="detailCareerOutlook">--</p>
                     </div>
 
                     <div class="detail-section" id="careerDirectionsSection" style="display:none;">
-                        <h3 class="detail-title">🎯 就业方向</h3>
+                        <h3 class="detail-title">🎯 <span data-i18n="major_directions">就业方向</span></h3>
                         <div id="detailCareerDirections" style="display:flex;flex-wrap:wrap;gap:8px;"></div>
                     </div>
 
                     <div class="detail-section">
-                        <h3 class="detail-title">💰 薪资范畴</h3>
+                        <h3 class="detail-title">💰 <span data-i18n="detail_salary_range">薪资范畴</span></h3>
                         <p class="detail-content" id="detailSalaryRange">--</p>
                     </div>
                 </div>
-                
+
                 <div id="reviewTab" class="tab-content">
                     <div class="detail-section">
-                        <h3 class="detail-title">🔥 雪峰点评</h3>
-                        <p style="font-size: 12px; color: #9e9e9e; margin-bottom: 12px;">⚠️ 本栏目观点为模拟评论，仅供参考。</p>
+                        <h3 class="detail-title" data-i18n="major_comment">🔥 雪峰点评</h3>
+                        <p style="font-size: 12px; color: #9e9e9e; margin-bottom: 12px;" data-i18n="xuefeng_disclaimer">⚠️ 本栏目观点为模拟评论，仅供参考。</p>
                         <div class="summary-box" id="detailXuefengComment" style="font-size: 15px; line-height: 1.9; color: #5d4037;">--</div>
                     </div>
-                    
+
                 </div>
             </div>
         </div>
@@ -1178,18 +1186,18 @@
         <div class="preheat-content">
             <button class="preheat-close" onclick="closePreheatModal()">✕</button>
             <div class="preheat-icon">🎓</div>
-            <h2 class="preheat-title">深度分析报告已上线</h2>
-            <p class="preheat-desc">
+            <h2 class="preheat-title" data-i18n="preheat_title">深度分析报告已上线</h2>
+            <p class="preheat-desc" data-i18n="preheat_desc">
                 15个热门专业的深度分析报告现已开放，为您提供权威、深度的专业选择指导。
             </p>
             <ul class="preheat-features">
-                <li>📊 权威就业数据（教育部/人社部数据支持）</li>
-                <li>🎯 个性化职业发展路径分析</li>
-                <li>👔 HR视角的市场需求解读</li>
-                <li>💡 张雪峰风格的硬核报考建议</li>
-                <li>📈 行业趋势深度分析</li>
+                <li data-i18n="preheat_feature_1">📊 权威就业数据（教育部/人社部数据支持）</li>
+                <li data-i18n="preheat_feature_2">🎯 个性化职业发展路径分析</li>
+                <li data-i18n="preheat_feature_3">👔 HR视角的市场需求解读</li>
+                <li data-i18n="preheat_feature_4">💡 张雪峰风格的硬核报考建议</li>
+                <li data-i18n="preheat_feature_5">📈 行业趋势深度分析</li>
             </ul>
-            <button class="btn btn-primary" onclick="goToReports()" style="margin-top: 16px; width: 100%; padding: 14px; font-size: 16px;">
+            <button class="btn btn-primary" onclick="goToReports()" style="margin-top: 16px; width: 100%; padding: 14px; font-size: 16px;" data-i18n="preheat_cta">
                 立即查看深度报告
             </button>
         </div>
