@@ -177,6 +177,15 @@
       line-height: 2.0;
       font-size: var(--report-font-size, 18px);
       min-height: 0;
+      position: relative;
+      user-select: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+    }
+    .report-reader-container.watermarked {
+      background-color: #fafafa;
+      background-repeat: repeat;
     }
     /* 阅读器内排版优化 */
     .report-reader-container h1 { font-size: 1.8em; margin: 0.3em 0 0.6em; color: var(--on-surface); border-bottom: 2px solid var(--primary); padding-bottom: 0.3em; }
@@ -321,6 +330,10 @@
       line-height: 2.0;
       font-size: 17px;
       flex: 1;
+      user-select: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
     }
     .report-preview-content p { margin: 0 0 0.8em; }
     .report-preview-content h2 { font-size: 1.4em; margin: 1em 0 0.4em; }

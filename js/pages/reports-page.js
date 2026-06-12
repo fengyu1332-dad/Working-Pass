@@ -394,17 +394,78 @@ function setupReadingControls() {
       }
     }
   };
-  document.addEventListener('keydown', escHandler);
-  // 关弹窗时清理
+
+  // ---- 防窃取保护 ----
+  const blockKeys = ['c', 'C', 's', 'S', 'p', 'P', 'u', 'U', 'a', 'A'];
+  const protectHandler = (e) => {
+    // 阻止右键菜单
+    if (e.type === 'contextmenu') { e.preventDefault(); return; }
+    // 阻止拖拽
+    if (e.type === 'dragstart') { e.preventDefault(); return; }
+    // 阻止 Ctrl/⌘ + 复制/保存/打印/全选/查看源码
+    if (e.type === 'keydown') {
+      if (e.key === 'F12' || (e.ctrlKey && e.key === 'F12')) { e.preventDefault(); return; }
+      if ((e.ctrlKey || e.metaKey) && blockKeys.includes(e.key)) {
+        // 允许 toolbar 内按钮的快捷键
+        if (e.target.closest && e.target.closest('.reading-toolbar, .report-share-bar, .nav, #logoutBtn')) return;
+        e.preventDefault();
+      }
+    }
+  };
+
+  container.addEventListener('contextmenu', protectHandler);
+  container.addEventListener('dragstart', protectHandler);
+  document.addEventListener('keydown', protectHandler);
+
+  // 对预览区也加保护
+  const previewEl = document.getElementById('previewScroll');
+  if (previewEl) {
+    previewEl.addEventListener('contextmenu', protectHandler);
+    previewEl.addEventListener('dragstart', protectHandler);
+  }
+
+  // 水印
+  applyWatermark(container);
+
+  // 关弹窗时清理所有监听器
   const modal = document.getElementById('reportModal');
   if (modal) {
     const obs = new MutationObserver(() => {
       if (!modal.classList.contains('active')) {
         document.removeEventListener('keydown', escHandler);
+        document.removeEventListener('keydown', protectHandler);
         obs.disconnect();
       }
     });
     obs.observe(modal, { attributes: true, attributeFilter: ['class'] });
+  }
+}
+
+function applyWatermark(container) {
+  if (!container || !currentProfile) return;
+  try {
+    const canvas = document.createElement('canvas');
+    const w = 320;
+    const h = 200;
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext('2d');
+    ctx.save();
+    ctx.rotate(-22 * Math.PI / 180);
+    ctx.font = '15px "Microsoft YaHei", "PingFang SC", sans-serif';
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.06)';
+    const uid = currentProfile.email || currentProfile.username || currentProfile.id || '专业星图';
+    for (let row = -1; row < 5; row++) {
+      for (let col = -1; col < 6; col++) {
+        ctx.fillText(uid, col * 130, row * 70);
+      }
+    }
+    ctx.restore();
+    const dataUrl = canvas.toDataURL('image/png');
+    container.style.backgroundImage = `url(${dataUrl})`;
+    container.classList.add('watermarked');
+  } catch {
+    // 水印生成失败不影响正常使用
   }
 }
 
