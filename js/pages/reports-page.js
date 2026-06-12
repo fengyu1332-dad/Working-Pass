@@ -17,6 +17,8 @@ let currentReportSort = 'name';
 let currentSearchTerm = '';
 let unlockedOnly = false;
 let searchTimer = null;
+const FONT_SIZE_KEY = 'starmap_report_font_size';
+const FONT_SIZES = { small: 15, medium: 18, large: 22 };
 
 (async function () {
   window.auth.initSupabase();
@@ -262,10 +264,20 @@ async function showReportDetail(reportId) {
   const isUnlocked = unlockedReports.has(reportId);
 
   if (isUnlocked) {
+    const savedFont = localStorage.getItem(FONT_SIZE_KEY) || 'medium';
     content.innerHTML = `
       <div class="report-unlocked-layout">
-        <div id="reportReaderContainer" class="report-reader-container">加载中...</div>
+        <div id="reportReaderContainer" class="report-reader-container" style="--report-font-size:${FONT_SIZES[savedFont] || 18}px;">加载中...</div>
         <div class="report-share-bar">
+          <div class="reading-toolbar" id="readingToolbar">
+            <button class="font-btn small${savedFont === 'small' ? ' active' : ''}" data-size="small" title="小号字体 (15px)">A</button>
+            <button class="font-btn${savedFont === 'medium' ? ' active' : ''}" data-size="medium" title="中号字体 (18px)">A</button>
+            <button class="font-btn large${savedFont === 'large' ? ' active' : ''}" data-size="large" title="大号字体 (22px)">A</button>
+          </div>
+          <button class="fullscreen-btn" id="fullscreenBtn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+            全屏阅读
+          </button>
           <button class="share-btn" id="shareReportBtn" style="margin-left:auto;">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.59 13.51l6.83 3.98M15.41 6.51l-6.82 3.98"/></svg>
             分享报告
@@ -273,6 +285,8 @@ async function showReportDetail(reportId) {
         </div>
       </div>`;
     modal.classList.add('active');
+
+    setupReadingControls();
 
     const shareBtn = document.getElementById('shareReportBtn');
     shareBtn.addEventListener('click', async () => {
@@ -337,6 +351,60 @@ async function showReportDetail(reportId) {
         `;
       }, 2000);
     });
+  }
+}
+
+function setupReadingControls() {
+  const toolbar = document.getElementById('readingToolbar');
+  const container = document.getElementById('reportReaderContainer');
+  const fullscreenBtn = document.getElementById('fullscreenBtn');
+  const modalContent = document.querySelector('.report-modal-content');
+  if (!toolbar || !container) return;
+
+  // 字体缩放按钮
+  toolbar.querySelectorAll('.font-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const size = btn.dataset.size;
+      const px = FONT_SIZES[size] || 18;
+      container.style.setProperty('--report-font-size', px + 'px');
+      toolbar.querySelectorAll('.font-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      localStorage.setItem(FONT_SIZE_KEY, size);
+    });
+  });
+
+  // 全屏阅读切换
+  if (fullscreenBtn && modalContent) {
+    let isFullscreen = false;
+    fullscreenBtn.addEventListener('click', () => {
+      isFullscreen = !isFullscreen;
+      modalContent.classList.toggle('fullscreen-reading', isFullscreen);
+      fullscreenBtn.innerHTML = isFullscreen
+        ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 8 4 4 8 4"/><polyline points="20 16 20 20 16 20"/><line x1="4" y1="4" x2="9" y2="9"/><line x1="20" y1="20" x2="15" y2="15"/></svg> 退出全屏'
+        : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg> 全屏阅读';
+    });
+  }
+
+  // ESC 退出全屏
+  const escHandler = (e) => {
+    if (e.key === 'Escape' && modalContent && modalContent.classList.contains('fullscreen-reading')) {
+      modalContent.classList.remove('fullscreen-reading');
+      if (fullscreenBtn) {
+        fullscreenBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg> 全屏阅读';
+      }
+    }
+  };
+  document.addEventListener('keydown', escHandler);
+  // 关弹窗时清理
+  const modal = document.getElementById('reportModal');
+  if (modal) {
+    const obs = new MutationObserver(() => {
+      if (!modal.classList.contains('active')) {
+        document.removeEventListener('keydown', escHandler);
+        obs.disconnect();
+      }
+    });
+    obs.observe(modal, { attributes: true, attributeFilter: ['class'] });
   }
 }
 
