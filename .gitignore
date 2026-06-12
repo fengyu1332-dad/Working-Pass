@@ -99,6 +99,7 @@ scripts/fix-duplicates-report.json
 scripts/fix-duplicates.sql
 scripts/fix-log.json
 scripts/fix-clinical.sql
+scripts/fix-clinical-v2.sql
 scripts/convert-key.js
 
 # Debug artifacts
