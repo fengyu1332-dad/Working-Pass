@@ -11,6 +11,7 @@ import '../web-vitals.js';
 import { ForceGraph } from '../force-graph.js';
 import { debounce } from '../utils.js';
 import { searchMajors, highlightMatch, getRecentSearches, addRecentSearch, clearRecentSearches, getSearchSuggestions, didYouMean, trackSearch } from '../search-utils.js';
+import { initSiteStats } from '../site-stats.js';
 
 const { initWebVitals } = window.__starmap_webVitals || {};
 
@@ -225,6 +226,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if (initWebVitals) initWebVitals();
   updateUserArea();
   fetchMajors();
+  initSiteStats();
 
   const searchBtn = document.getElementById('searchBtn');
   const searchInput = document.getElementById('searchInput');

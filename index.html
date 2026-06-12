@@ -605,6 +605,59 @@
             50% { opacity: 0.4; }
         }
 
+        /* 站点统计栏 */
+        .site-stats-bar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 40px;
+            padding: 20px 32px;
+            margin: 40px auto 0;
+            max-width: 520px;
+            background: linear-gradient(135deg, var(--surface-container), var(--primary-container));
+            border-radius: 16px;
+        }
+        .site-stat-item {
+            display: flex;
+            align-items: baseline;
+            gap: 6px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .site-stat-icon { font-size: 20px; }
+        .site-stat-label {
+            font-size: 13px;
+            color: var(--on-surface-variant);
+        }
+        .site-stat-value {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--primary);
+            min-width: 60px;
+            text-align: center;
+        }
+        .site-stat-unit {
+            font-size: 13px;
+            color: var(--on-surface-variant);
+        }
+        .site-stat-divider {
+            width: 1px;
+            height: 36px;
+            background: var(--outline);
+            flex-shrink: 0;
+        }
+        @media (max-width: 480px) {
+            .site-stats-bar {
+                flex-direction: column;
+                gap: 16px;
+                padding: 16px 20px;
+            }
+            .site-stat-divider {
+                width: 80%;
+                height: 1px;
+            }
+        }
+
         footer {
             text-align: center;
             padding: 56px 20px;
@@ -992,6 +1045,21 @@
             </div>
         </section>
         
+        <section class="site-stats-bar" id="siteStats">
+            <div class="site-stat-item">
+                <span class="site-stat-icon">👁️</span>
+                <span class="site-stat-label">累计访问</span>
+                <span class="site-stat-value" id="siteVisitCount">--</span>
+                <span class="site-stat-unit">次</span>
+            </div>
+            <div class="site-stat-divider"></div>
+            <div class="site-stat-item">
+                <span class="site-stat-icon">⏱️</span>
+                <span class="site-stat-label">用户累计停留</span>
+                <span class="site-stat-value" id="siteTotalTime">--</span>
+            </div>
+        </section>
+
         <footer>
             <p>专业星图 · 温暖的专业指南</p>
             <p style="margin-top:8px;font-size:13px;">数据来源：专业星图数据库 · 请结合自身情况选择</p>
