@@ -16,11 +16,11 @@ export async function initSiteStats() {
   const statsEl = document.getElementById('siteStats');
   if (!statsEl) return;
 
-  // 读取当前统计并显示
+  // 读取当前统计并显示（TABLE返回数组，取第一行）
   try {
     const { data, error } = await sb.rpc('get_site_stats');
-    if (!error && data) {
-      updateDisplay(data.visit_count || 0, data.total_seconds || 0);
+    if (!error && data && data.length > 0) {
+      updateDisplay(data[0].visit_count || 0, data[0].total_seconds || 0);
     }
   } catch { /* RPC 还没部署到数据库 */ }
 
