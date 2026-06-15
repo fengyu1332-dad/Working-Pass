@@ -249,6 +249,7 @@ document.addEventListener('DOMContentLoaded', () => {
   updateUserArea();
   fetchMajors();
   initSiteStats();
+  if (typeof window.initCompareBar === 'function') window.initCompareBar();
 
   const searchBtn = document.getElementById('searchBtn');
   const searchInput = document.getElementById('searchInput');

@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>我的收藏 - 专业星图</title>
+  <link rel="stylesheet" href="/css/common.css">
+  <style>
+    .favorites-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .favorites-header h1 {
+      font-family: "Literata", serif;
+      font-size: 28px;
+      color: var(--secondary);
+    }
+    .favorites-count {
+      font-size: 15px;
+      color: var(--on-surface-variant);
+    }
+    .category-filter-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+    .category-filter-chip {
+      padding: 8px 18px;
+      border-radius: 20px;
+      border: 1.5px solid var(--outline);
+      background: transparent;
+      color: var(--on-surface-variant);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.2s;
+    }
+    .category-filter-chip:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+    .category-filter-chip.active {
+      background: var(--primary-container);
+      border-color: var(--primary);
+      color: var(--secondary);
+      font-weight: 600;
+    }
+    .fav-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+    .fav-card {
+      background: var(--surface-container);
+      border-radius: 16px;
+      padding: 20px 24px;
+      box-shadow: 0 2px 12px var(--shadow);
+      cursor: pointer;
+      transition: all 0.25s;
+      border: 2px solid transparent;
+      position: relative;
+    }
+    .fav-card:hover {
+      border-color: var(--primary);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px rgba(230, 126, 34, 0.1);
+    }
+    .fav-card .fav-card-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+    .fav-card .fav-icon {
+      font-size: 32px;
+      flex-shrink: 0;
+    }
+    .fav-card .fav-name {
+      font-family: "Literata", serif;
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--secondary);
+      margin-bottom: 2px;
+    }
+    .fav-card .fav-category {
+      font-size: 12px;
+      color: var(--on-surface-variant);
+    }
+    .fav-card .fav-meta {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .fav-card .fav-meta-tag {
+      font-size: 11px;
+      padding: 3px 10px;
+      border-radius: 10px;
+      background: var(--secondary-container);
+      color: var(--secondary);
+    }
+    .fav-card .fav-remove-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      border: 1px solid var(--outline);
+      background: transparent;
+      color: var(--on-surface-variant);
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      opacity: 0;
+    }
+    .fav-card:hover .fav-remove-btn {
+      opacity: 1;
+    }
+    .fav-card .fav-remove-btn:hover {
+      background: #fef2f2;
+      border-color: #ef4444;
+      color: #ef4444;
+    }
+    .fav-empty {
+      text-align: center;
+      padding: 80px 20px;
+      color: var(--on-surface-variant);
+    }
+    .fav-empty .empty-icon {
+      font-size: 64px;
+      margin-bottom: 16px;
+    }
+    .fav-empty h2 {
+      font-family: "Literata", serif;
+      font-size: 22px;
+      color: var(--secondary);
+      margin-bottom: 8px;
+    }
+    .fav-empty p {
+      font-size: 15px;
+      margin-bottom: 24px;
+    }
+    .fav-empty .btn-primary {
+      display: inline-block;
+      padding: 14px 28px;
+      background: var(--primary);
+      color: #fff;
+      border-radius: 14px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+    .fav-empty .btn-primary:hover {
+      background: #D35400;
+      transform: translateY(-2px);
+    }
+    @media (max-width: 768px) {
+      .fav-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <nav class="nav">
+      <a href="/" class="nav-logo" data-i18n="site_name">专业星图</a>
+      <div class="nav-links">
+        <a href="/majors.html" class="nav-link" data-i18n="browse_majors_nav">浏览专业</a>
+        <a href="/user/dashboard.html" class="nav-link" data-i18n="dashboard_title">个人中心</a>
+        <a href="#" id="logoutBtn" class="nav-link" data-i18n="nav_logout">退出</a>
+      </div>
+    </nav>
+
+    <div class="favorites-header">
+      <div>
+        <h1 data-i18n="fav_title">💖 我的收藏</h1>
+        <p class="favorites-count" id="favCount"></p>
+      </div>
+    </div>
+
+    <div class="category-filter-bar" id="categoryFilterBar"></div>
+
+    <div class="fav-grid" id="favGrid"></div>
+
+    <div class="fav-empty" id="favEmpty" style="display:none;">
+      <div class="empty-icon">💖</div>
+      <h2 data-i18n="fav_empty">还没有收藏任何专业</h2>
+      <p data-i18n="fav_empty_hint">浏览专业时点击 ♡ 即可收藏</p>
+      <a href="/majors.html" class="btn-primary" data-i18n="fav_browse">去浏览专业</a>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script type="module" src="/js/i18n.js"></script>
+  <script type="module" src="/js/pages/favorites.js"></script>
+</body>
+</html>

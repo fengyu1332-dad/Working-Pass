@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="专业星图 - 大学专业对比工具，并排比较多个专业的薪资、难度、就业方向和院校推荐">
+  <title>专业对比 - 专业星图</title>
+  <link href="https://fonts.googleapis.com/css2?family=Literata:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/common.css">
+  <link rel="stylesheet" href="/css/compare.css">
+  <style>
+    :root {
+      --surface: #FFF8F5;
+      --surface-container: #FFFFFF;
+      --primary: #E67E22;
+      --primary-container: #FAD7B2;
+      --secondary: #705A49;
+      --secondary-container: #EBE0D6;
+      --on-surface: #2C2621;
+      --on-primary: #FFFFFF;
+      --on-surface-variant: #8B7E74;
+      --outline: #DED0C6;
+      --shadow: rgba(112, 90, 73, 0.05);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: "Inter", -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
+      background: var(--surface);
+      min-height: 100vh;
+      color: var(--on-surface);
+      line-height: 1.8;
+    }
+    .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+
+    .top-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 16px;
+      margin-bottom: 8px;
+    }
+    .nav-logo {
+      font-family: "Literata", serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--secondary);
+      text-decoration: none;
+    }
+    .nav-links { display: flex; gap: 16px; align-items: center; }
+    .nav-link {
+      color: var(--on-surface-variant);
+      text-decoration: none;
+      font-size: 15px;
+      transition: color 0.3s;
+    }
+    .nav-link:hover { color: var(--primary); }
+
+    .compare-header h1 { margin-bottom: 4px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <nav class="top-nav">
+      <a href="/" class="nav-logo" data-i18n="site_name">专业星图</a>
+      <div class="nav-links">
+        <a href="/" class="nav-link" data-i18n="nav_home">首页</a>
+        <a href="/majors.html" class="nav-link" data-i18n="nav_majors">专业浏览</a>
+        <span id="navUserArea"></span>
+      </div>
+    </nav>
+
+    <div class="compare-header">
+      <h1 data-i18n="compare_title">📊 专业对比</h1>
+      <p class="subtitle" data-i18n="compare_subtitle">并排比较，一目了然</p>
+    </div>
+
+    <div class="compare-toolbar" id="compareToolbar" style="display:none;">
+      <button class="btn btn-clear-compare" id="btnClearCompare" data-i18n="compare_clear">清空对比</button>
+      <button class="btn btn-share" id="btnShareCompare" data-i18n="compare_share">📋 复制对比链接</button>
+    </div>
+
+    <div id="compareContent">
+      <div class="compare-empty">
+        <div class="empty-icon">📊</div>
+        <h2 data-i18n="compare_empty_title">选择专业，开始并排对比</h2>
+        <p data-i18n="compare_empty_desc">从专业列表中选择 2-4 个专业，即可开始并排对比</p>
+        <a href="/majors.html" class="btn-primary" data-i18n="compare_browse_btn">浏览全部专业 →</a>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/js/pages/compare.js"></script>
+</body>
+</html>

@@ -1,0 +1,276 @@
+/* ============================================================
+   右侧悬浮对比小窗（在 common.js 中动态创建）
+   双形态：折叠态=圆形图标按钮 / 展开态=垂直卡片
+   ============================================================ */
+@keyframes compare-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(230, 126, 34, 0.4); }
+  50% { box-shadow: 0 0 0 10px rgba(230, 126, 34, 0); }
+}
+@keyframes compare-float-in {
+  from { transform: translateY(-50%) scale(0.8); opacity: 0; }
+  to { transform: translateY(-50%) scale(1); opacity: 1; }
+}
+
+/* ---- 主容器 ---- */
+.compare-float {
+  position: fixed;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 999;
+  width: 220px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(112, 90, 73, 0.12);
+  border: 1px solid var(--primary-container);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  animation: compare-float-in 0.35s ease;
+}
+
+/* ---- 折叠态：药丸形按钮 ---- */
+.compare-float.collapsed {
+  width: auto;
+  height: auto;
+  border-radius: 28px;
+  cursor: pointer;
+  padding: 0;
+}
+.compare-float.collapsed:hover {
+  box-shadow: 0 8px 28px rgba(230, 126, 34, 0.2);
+  border-color: var(--primary);
+  transform: translateY(-50%) scale(1.05);
+}
+.compare-float.collapsed .compare-float-header,
+.compare-float.collapsed .compare-float-body,
+.compare-float.collapsed .compare-float-footer {
+  display: none;
+}
+
+/* 折叠态 — 药丸内容 */
+.compare-float-collapsed-icon {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--secondary);
+  white-space: nowrap;
+  line-height: 1.3;
+  cursor: pointer;
+}
+.compare-float.collapsed .compare-float-collapsed-icon {
+  display: flex;
+}
+.compare-float-collapsed-icon .collapsed-icon-emoji {
+  font-size: 18px;
+  line-height: 1;
+}
+
+/* 角标 */
+.compare-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: var(--primary);
+  color: #fff;
+  border-radius: 50%;
+  min-width: 20px;
+  height: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 5px;
+  box-shadow: 0 2px 6px rgba(230, 126, 34, 0.35);
+  transition: all 0.25s ease;
+  line-height: 1;
+}
+.compare-badge:empty {
+  display: none;
+}
+
+/* ---- 展开态内部结构 ---- */
+.compare-float-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px 8px;
+}
+.compare-float-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--secondary);
+  font-family: "Literata", serif;
+}
+.compare-float-collapse {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: var(--on-surface-variant);
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  line-height: 1;
+}
+.compare-float-collapse:hover {
+  background: var(--secondary-container);
+  color: var(--secondary);
+}
+
+/* 专业列表 */
+.compare-float-body {
+  padding: 4px 12px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.compare-float-slot {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 10px;
+  border-radius: 10px;
+  font-size: 13px;
+  transition: all 0.2s ease;
+}
+.compare-float-slot.filled {
+  background: var(--primary-container);
+  border: 1px solid var(--primary);
+  color: var(--secondary);
+  font-weight: 500;
+  cursor: pointer;
+  position: relative;
+  padding-right: 28px;
+}
+.compare-float-slot.filled:hover {
+  background: #F5D0A8;
+}
+.compare-float-slot.filled .float-slot-icon {
+  font-size: 15px;
+  flex-shrink: 0;
+}
+.compare-float-slot.filled .float-slot-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.compare-float-slot.filled .float-slot-remove {
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  opacity: 0.45;
+  transition: opacity 0.2s;
+}
+.compare-float-slot.filled:hover .float-slot-remove {
+  opacity: 1;
+  background: rgba(0,0,0,0.07);
+}
+
+/* 空槽 — 添加提示 */
+.compare-float-slot.slot-empty {
+  border: 1.5px dashed var(--outline);
+  color: var(--on-surface-variant);
+  cursor: pointer;
+  justify-content: center;
+  padding: 7px 10px;
+  font-size: 12px;
+}
+.compare-float-slot.slot-empty:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: var(--primary-container);
+}
+
+/* 底部操作 */
+.compare-float-footer {
+  padding: 8px 12px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.compare-float .btn-float-go {
+  width: 100%;
+  padding: 10px 0;
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.3s;
+  letter-spacing: 0.3px;
+}
+.compare-float .btn-float-go:disabled {
+  background: var(--outline);
+  color: #fff;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+.compare-float .btn-float-go:not(:disabled) {
+  animation: compare-pulse 2s infinite;
+}
+.compare-float .btn-float-go:not(:disabled):hover {
+  background: #D35400;
+}
+.compare-float .btn-float-clear {
+  width: 100%;
+  padding: 6px 0;
+  background: transparent;
+  color: var(--on-surface-variant);
+  border: 1px solid var(--outline);
+  border-radius: 10px;
+  font-size: 12px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s;
+}
+.compare-float .btn-float-clear:hover {
+  background: var(--secondary-container);
+  border-color: var(--secondary);
+}
+
+/* 底部提示文字（1个专业时） */
+.compare-float-hint {
+  text-align: center;
+  font-size: 11px;
+  color: var(--on-surface-variant);
+  padding: 0 12px 6px;
+}
+
+/* ---- 移动端 ---- */
+@media (max-width: 768px) {
+  .compare-float {
+    right: 12px;
+    top: auto;
+    bottom: 80px;
+    transform: none;
+    width: 220px;
+  }
+  .compare-float.collapsed {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+  }
+}

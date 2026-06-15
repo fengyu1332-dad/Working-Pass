@@ -10,6 +10,7 @@ import '../reports.js';
 import '../error-report.js';
 import '../web-vitals.js';
 import { searchMajors, highlightMatch, addRecentSearch, didYouMean, trackSearch } from '../search-utils.js';
+import { escapeHtml } from '../utils.js';
 import { t, createLangSwitcher, onLanguageChange } from '../i18n.js';
 
 const { initWebVitals } = window.__starmap_webVitals || {};
@@ -555,10 +556,21 @@ function syncFilterUI() {
   if (sortSelect) sortSelect.value = currentSort;
 }
 
+function updateFavButtonUI(btn, code) {
+  if (!btn) return;
+  const isFav = window.__userFavorites && window.__userFavorites.has(code);
+  btn.textContent = isFav ? '❤' : '♡';
+  btn.classList.toggle('favorited', isFav);
+}
+
 function createGridCard(major, searchTerm = '') {
   const card = document.createElement('div');
   card.className = 'major-card';
   card.dataset.code = major.code;
+  const inList = window.isInCompareList && window.isInCompareList(major.code);
+  const isFull = (window.__compareList || []).length >= 4;
+  const btnText = inList ? '✅ 已加入' : (isFull ? '对比已满' : t('compare_add_btn', '加入对比'));
+  const btnDisabled = isFull && !inList;
   card.innerHTML = `
     <div class="card-header">
       <div class="card-cat-icon">${major.category_icon || '📚'}</div>
@@ -570,8 +582,31 @@ function createGridCard(major, searchTerm = '') {
     </div>
     <span class="salary-tag">${(major.salary_range || t('salary_negotiable', '薪资面议')).replace('¥', '')}</span>
     <p class="employment-desc">${highlightMatch((major.overview || '').substring(0, 60), searchTerm)}...</p>
+    <div class="card-actions">
+      <button class="card-compare-btn" data-code="${escapeHtml(major.code)}" data-i18n="compare_add_btn" ${btnDisabled ? 'disabled' : ''}>${btnText}</button>
+      <button class="card-fav-btn" data-code="${escapeHtml(major.code)}">♡</button>
+    </div>
   `;
-  card.addEventListener('click', () => openModal(major));
+  if (inList) card.classList.add('in-compare');
+  card.addEventListener('click', (e) => {
+    if (e.target.closest('.card-compare-btn, .card-fav-btn')) return;
+    openModal(major);
+  });
+  card.querySelector('.card-compare-btn').addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (btnDisabled) return;
+    if (typeof window.addToCompare === 'function') {
+      window.addToCompare(major);
+    }
+  });
+  const favBtn = card.querySelector('.card-fav-btn');
+  updateFavButtonUI(favBtn, major.code);
+  favBtn.addEventListener('click', async (e) => {
+    e.stopPropagation();
+    if (!window.toggleFavorite) return;
+    const result = await window.toggleFavorite(major.code);
+    if (result !== null) updateFavButtonUI(favBtn, major.code);
+  });
   return card;
 }
 
@@ -579,6 +614,10 @@ function createListItem(major, searchTerm = '') {
   const item = document.createElement('div');
   item.className = 'major-list-item';
   item.dataset.code = major.code;
+  const inList = window.isInCompareList && window.isInCompareList(major.code);
+  const isFull = (window.__compareList || []).length >= 4;
+  const btnText = inList ? '✅ 已加入' : (isFull ? '对比已满' : t('compare_add_btn', '加入对比'));
+  const btnDisabled = isFull && !inList;
   item.innerHTML = `
     <div class="list-item-left">
       <div class="list-icon">${major.category_icon || '📚'}</div>
@@ -591,11 +630,60 @@ function createListItem(major, searchTerm = '') {
     <div class="list-item-right">
       <span class="list-salary">${(major.salary_range || t('salary_negotiable', '薪资面议')).replace('¥', '')}</span>
       <p class="list-difficulty">${major.difficulty || ''}</p>
+      <button class="list-compare-btn" data-code="${escapeHtml(major.code)}" ${btnDisabled ? 'disabled' : ''}>${btnText}</button>
+      <button class="list-fav-btn" data-code="${escapeHtml(major.code)}">♡</button>
     </div>
   `;
-  item.addEventListener('click', () => openModal(major));
+  if (inList) item.classList.add('in-compare');
+  item.addEventListener('click', (e) => {
+    if (e.target.closest('.list-compare-btn, .list-fav-btn')) return;
+    openModal(major);
+  });
+  item.querySelector('.list-compare-btn').addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (btnDisabled) return;
+    if (typeof window.addToCompare === 'function') {
+      window.addToCompare(major);
+    }
+  });
+  const listFavBtn = item.querySelector('.list-fav-btn');
+  updateFavButtonUI(listFavBtn, major.code);
+  listFavBtn.addEventListener('click', async (e) => {
+    e.stopPropagation();
+    if (!window.toggleFavorite) return;
+    const result = await window.toggleFavorite(major.code);
+    if (result !== null) updateFavButtonUI(listFavBtn, major.code);
+  });
   return item;
 }
+
+// 监听对比列表变化，刷新所有卡片按钮状态
+function refreshAllCompareButtons() {
+  const list = window.__compareList || [];
+  const codes = new Set(list.map((m) => m.code));
+  const isFull = list.length >= 4;
+  document.querySelectorAll('.major-card, .major-list-item').forEach((el) => {
+    const code = el.dataset.code;
+    const inList = codes.has(code);
+    const btn = el.querySelector('.card-compare-btn, .list-compare-btn');
+    if (btn) {
+      if (inList) {
+        btn.textContent = '✅ 已加入';
+        btn.disabled = false;
+        el.classList.add('in-compare');
+      } else if (isFull) {
+        btn.textContent = '对比已满';
+        btn.disabled = true;
+        el.classList.remove('in-compare');
+      } else {
+        btn.textContent = t('compare_add_btn', '加入对比');
+        btn.disabled = false;
+        el.classList.remove('in-compare');
+      }
+    }
+  });
+}
+window.addEventListener('compareListChanged', refreshAllCompareButtons);
 
 // ====== 入口 ======
 document.addEventListener('DOMContentLoaded', async () => {
@@ -619,6 +707,8 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
   updateUserArea();
+  if (typeof window.loadUserFavorites === 'function') window.loadUserFavorites();
+  if (typeof window.initCompareBar === 'function') window.initCompareBar();
 
   window.addEventListener('hashchange', () => {
     if (currentLoadedCategory) {

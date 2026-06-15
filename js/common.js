@@ -4,7 +4,8 @@
 // ============================================================
 
 import { escapeHtml, getJsonArray, formatXuefengComment, debounce, renderErrorState } from './utils.js';
-import { t, onLanguageChange } from './i18n.js';
+import { t, onLanguageChange, createLangSwitcher } from './i18n.js';
+import '../css/compare-float.css';
 
 // 语言切换时重新渲染用户区域
 onLanguageChange(() => {
@@ -24,9 +25,11 @@ async function updateUserArea() {
     user = await window.auth.getCurrentUser();
   }
 
+  // 保留 langSwitcher 容器（如果存在）
+  const langSwitcherHTML = document.getElementById('langSwitcherContainer') ? '<div id="langSwitcherContainer"></div>' : '';
+
   if (user) {
     const identifier = user.phone || user.email || '用户';
-    // 邮箱取 @ 前部分，手机号保持原样，均限长14字
     let displayName = identifier;
     if (identifier.includes('@')) {
       displayName = identifier.split('@')[0];
@@ -34,6 +37,8 @@ async function updateUserArea() {
     if (displayName.length > 14) displayName = displayName.slice(0, 14);
 
     userArea.innerHTML = `
+            <a href="majors.html" class="nav-link">${t('nav_majors', '专业浏览')}</a>
+            <a href="assessment.html" class="nav-link" style="font-weight:600;">${t('nav_assessment', '适配测评')}</a>
             <div class="user-info">
                 <a href="/user/dashboard.html" class="user-avatar-link" title="${t('nav_dashboard', '个人中心')}">
                   <div class="user-avatar">👤</div>
@@ -41,6 +46,7 @@ async function updateUserArea() {
                 <a href="/user/dashboard.html" class="user-name-link" title="${t('nav_dashboard', '个人中心')}">${escapeHtml(displayName)}</a>
                 <button class="btn-sm btn-primary-sm" id="logoutBtn">${t('nav_logout', '退出')}</button>
             </div>
+            ${langSwitcherHTML}
         `;
 
     const logoutBtn = document.getElementById('logoutBtn');
@@ -54,9 +60,18 @@ async function updateUserArea() {
     }
   } else {
     userArea.innerHTML = `
+            <a href="majors.html" class="nav-link">${t('nav_majors', '专业浏览')}</a>
+            <a href="assessment.html" class="nav-link" style="font-weight:600;">${t('nav_assessment', '适配测评')}</a>
             <a href="login.html" class="nav-link">${t('nav_login', '登录')}</a>
             <a href="register.html" class="btn-sm btn-primary-sm" style="text-decoration: none;">${t('nav_register', '注册')}</a>
+            ${langSwitcherHTML}
         `;
+  }
+
+  // 重新创建 langSwitcher
+  const newLangContainer = document.getElementById('langSwitcherContainer');
+  if (newLangContainer) {
+    newLangContainer.appendChild(createLangSwitcher());
   }
 }
 
@@ -160,6 +175,52 @@ function openModal(major) {
     modal.classList.add('show');
     const closeBtn = document.getElementById('closeModal');
     if (closeBtn) closeBtn.focus();
+
+    // 更新「加入对比」按钮
+    const compareBtn = document.getElementById('modalCompareBtn');
+    if (compareBtn) {
+      const list = window.__compareList || [];
+      const inList = list.some((m) => m.code === major.code);
+      const isFull = list.length >= 4;
+      compareBtn.style.display = '';
+      compareBtn.disabled = isFull && !inList;
+      compareBtn.classList.toggle('in-list', inList);
+      if (inList) {
+        compareBtn.textContent = '✅ 已加入对比';
+      } else if (isFull) {
+        compareBtn.textContent = '对比已满 (4/4)';
+      } else {
+        compareBtn.textContent = t('compare_add_btn', '加入对比');
+      }
+      compareBtn.onclick = () => {
+        if (isFull && !inList) return;
+        if (addToCompare(major)) {
+          compareBtn.textContent = '✅ 已加入对比';
+          compareBtn.classList.add('in-list');
+        }
+      };
+    }
+
+    // 更新收藏按钮
+    const favBtn = document.getElementById('modalFavBtn');
+    if (favBtn) {
+      favBtn.style.display = '';
+      const isFav = window.isFavorited ? window.isFavorited(major.code) : false;
+      favBtn.textContent = isFav ? '❤ 已收藏' : '♡ 收藏';
+      favBtn.classList.toggle('favorited', isFav);
+      favBtn.onclick = async () => {
+        if (window.toggleFavorite) {
+          const result = await window.toggleFavorite(major.code);
+          if (result === true) {
+            favBtn.textContent = '❤ 已收藏';
+            favBtn.classList.add('favorited');
+          } else if (result === false) {
+            favBtn.textContent = '♡ 收藏';
+            favBtn.classList.remove('favorited');
+          }
+        }
+      };
+    }
   }
 }
 
@@ -614,6 +675,278 @@ if (typeof window !== 'undefined') {
   window.closePreheatModal = closePreheatModal;
   window.goToReports = goToReports;
 }
+
+// ============================================================
+// 专业对比 - 浮动栏 + 全局状态
+// ============================================================
+window.__compareList = window.__compareList || [];
+
+function initCompareBar() {
+  if (document.getElementById('compareFloat')) return;
+
+  const float = document.createElement('div');
+  float.id = 'compareFloat';
+  float.className = 'compare-float collapsed';
+  float.innerHTML = `
+    <div class="compare-float-collapsed-icon" title="${t('compare_title', '横向对比')}">
+      <span class="collapsed-icon-emoji">📊</span>横向对比
+    </div>
+    <span class="compare-badge" id="compareBadge"></span>
+    <div class="compare-float-header">
+      <span class="compare-float-title">${t('compare_title', '横向对比')}</span>
+      <button class="compare-float-collapse" id="btnCompareCollapse" title="${t('compare_collapse', '收起')}">−</button>
+    </div>
+    <div class="compare-float-body" id="compareFloatBody"></div>
+    <div class="compare-float-hint" id="compareFloatHint"></div>
+    <div class="compare-float-footer">
+      <button class="btn-float-go" id="btnCompareGo" disabled>${t('compare_start_btn', '开始对比')}</button>
+      <button class="btn-float-clear" id="btnCompareClear">${t('compare_clear', '清空')}</button>
+    </div>
+  `;
+  document.body.appendChild(float);
+
+  // 折叠态点击药丸按钮 → 展开
+  float.querySelector('.compare-float-collapsed-icon').addEventListener('click', (e) => {
+    e.stopPropagation();
+    expandCompareFloat();
+  });
+
+  // header 折叠按钮 → 收起
+  document.getElementById('btnCompareCollapse').addEventListener('click', (e) => {
+    e.stopPropagation();
+    collapseCompareFloat();
+  });
+
+  // 前往对比页
+  document.getElementById('btnCompareGo').addEventListener('click', () => {
+    const codes = (window.__compareList || []).map((m) => m.code).join(',');
+    if (codes) window.location.href = `/compare.html?codes=${codes}`;
+  });
+
+  // 清空
+  document.getElementById('btnCompareClear').addEventListener('click', () => {
+    clearCompareList();
+  });
+
+  updateCompareBar();
+}
+
+function expandCompareFloat() {
+  const float = document.getElementById('compareFloat');
+  if (!float) return;
+  float.classList.remove('collapsed');
+}
+
+function collapseCompareFloat() {
+  const float = document.getElementById('compareFloat');
+  if (!float) return;
+  float.classList.add('collapsed');
+}
+
+function addToCompare(major) {
+  if (!window.__compareList) window.__compareList = [];
+
+  if (window.__compareList.length >= 4) {
+    if (window.auth && window.auth.showToast) {
+      window.auth.showToast(t('compare_max_hint', '最多对比 4 个专业'), 'warning');
+    }
+    return false;
+  }
+  if (window.__compareList.find((m) => m.code === major.code)) {
+    if (window.auth && window.auth.showToast) {
+      window.auth.showToast(t('compare_already_in', '该专业已在对比列表中'), 'warning');
+    }
+    return false;
+  }
+  window.__compareList.push({
+    code: major.code,
+    name: major.name,
+    category_icon: major.category_icon || '📚',
+  });
+  updateCompareBar();
+  if (window.auth && window.auth.showToast) {
+    window.auth.showToast(
+      `已加入对比 (${window.__compareList.length}/4)`,
+      'success',
+    );
+  }
+  return true;
+}
+
+function removeCompare(code) {
+  window.__compareList = window.__compareList.filter((m) => m.code !== code);
+  updateCompareBar();
+}
+
+function clearCompareList() {
+  window.__compareList = [];
+  updateCompareBar();
+}
+
+function updateCompareBar() {
+  const float = document.getElementById('compareFloat');
+  if (!float) return;
+
+  const list = window.__compareList || [];
+  const body = document.getElementById('compareFloatBody');
+  const hint = document.getElementById('compareFloatHint');
+  const goBtn = document.getElementById('btnCompareGo');
+  const clearBtn = document.getElementById('btnCompareClear');
+  const badge = document.getElementById('compareBadge');
+
+  // 角标数字
+  if (badge) {
+    badge.textContent = list.length > 0 ? list.length : '';
+  }
+
+  // body: 垂直排列专业条
+  if (body) {
+    let html = '';
+    for (const m of list) {
+      const displayName = m.name.length > 10 ? m.name.substring(0, 10) + '…' : m.name;
+      html += `<div class="compare-float-slot filled" data-code="${escapeHtml(m.code)}">
+        <span class="float-slot-icon">${escapeHtml(m.category_icon)}</span>
+        <span class="float-slot-name">${escapeHtml(displayName)}</span>
+        <span class="float-slot-remove" data-code="${escapeHtml(m.code)}">✕</span>
+      </div>`;
+    }
+    // 空槽
+    const emptyNeeded = Math.max(0, 4 - list.length);
+    for (let i = 0; i < emptyNeeded; i++) {
+      html += `<div class="compare-float-slot slot-empty">${t('compare_add_empty', '+ 添加专业')}</div>`;
+    }
+    body.innerHTML = html;
+
+    // 绑定移除
+    body.querySelectorAll('.compare-float-slot.filled').forEach((el) => {
+      el.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const code = el.dataset.code;
+        if (code) removeCompare(code);
+      });
+    });
+
+    // 空槽 → 跳转
+    body.querySelectorAll('.compare-float-slot.slot-empty').forEach((el) => {
+      el.addEventListener('click', (e) => {
+        e.stopPropagation();
+        window.location.href = '/majors.html';
+      });
+    });
+  }
+
+  // 提示文字
+  if (hint) {
+    if (list.length === 1) {
+      hint.textContent = t('compare_need_one_more', '再选 1 个即可对比');
+      hint.style.display = 'block';
+    } else {
+      hint.style.display = 'none';
+    }
+  }
+
+  // 按钮
+  if (goBtn) {
+    goBtn.disabled = list.length < 2;
+    goBtn.textContent = list.length >= 2
+      ? `${t('compare_start_btn', '开始对比')} (${list.length})`
+      : t('compare_start_btn', '开始对比');
+  }
+  if (clearBtn) {
+    clearBtn.style.display = list.length > 0 ? '' : 'none';
+  }
+
+  // 空列表折叠，有专业则展开
+  if (list.length === 0) {
+    collapseCompareFloat();
+  } else {
+    expandCompareFloat();
+  }
+
+  // 通知其他组件
+  window.dispatchEvent(new CustomEvent('compareListChanged', {
+    detail: { codes: list.map((m) => m.code), count: list.length },
+  }));
+}
+
+// ---- 专业收藏 ----
+window.__userFavorites = new Set();
+let _favoritesLoaded = false;
+
+async function loadUserFavorites() {
+  if (_favoritesLoaded) return window.__userFavorites;
+  try {
+    if (window.auth && window.auth.getCurrentUser) {
+      const user = await window.auth.getCurrentUser();
+      if (user && window.supabaseClient) {
+        const { url, key } = window.supabaseClient;
+        const res = await fetch(`${url}/rest/v1/user_favorites?select=major_code&user_id=eq.${user.id}`, {
+          headers: { apikey: key, Authorization: `Bearer ${key}` },
+        });
+        if (res.ok) {
+          const rows = await res.json();
+          window.__userFavorites = new Set(rows.map(r => r.major_code));
+        }
+      }
+    }
+  } catch (e) { /* not logged in or network error */ }
+  _favoritesLoaded = true;
+  return window.__userFavorites;
+}
+
+async function toggleFavorite(majorCode) {
+  const userId = await getCurrentUserIdForFav();
+  if (!userId) {
+    window.showToast(t('fav_login_required', '请先登录后再收藏'), 'error');
+    return null;
+  }
+  const { url, key } = window.supabaseClient;
+  const isFav = window.__userFavorites.has(majorCode);
+
+  try {
+    if (isFav) {
+      await fetch(`${url}/rest/v1/user_favorites?user_id=eq.${userId}&major_code=eq.${encodeURIComponent(majorCode)}`, {
+        method: 'DELETE', headers: { apikey: key, Authorization: `Bearer ${key}` },
+      });
+      window.__userFavorites.delete(majorCode);
+    } else {
+      await fetch(`${url}/rest/v1/user_favorites`, {
+        method: 'POST',
+        headers: { apikey: key, Authorization: `Bearer ${key}`, 'Content-Type': 'application/json', Prefer: 'return=minimal' },
+        body: JSON.stringify({ user_id: userId, major_code: majorCode }),
+      });
+      window.__userFavorites.add(majorCode);
+    }
+    return !isFav;
+  } catch (e) {
+    console.error('Toggle favorite failed:', e);
+    return null;
+  }
+}
+
+async function getCurrentUserIdForFav() {
+  try {
+    if (window.auth && window.auth.getCurrentUser) {
+      const user = await window.auth.getCurrentUser();
+      return user ? user.id : null;
+    }
+  } catch (e) { /* */ }
+  return null;
+}
+
+window.isFavorited = (code) => window.__userFavorites.has(code);
+window.toggleFavorite = toggleFavorite;
+window.loadUserFavorites = loadUserFavorites;
+
+// ---- 全局导出 ----
+window.initCompareBar = initCompareBar;
+window.addToCompare = addToCompare;
+window.removeCompare = removeCompare;
+window.clearCompareList = clearCompareList;
+window.updateCompareBar = updateCompareBar;
+window.isInCompareList = function(code) {
+  return (window.__compareList || []).some((m) => m.code === code);
+};
 
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {

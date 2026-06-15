@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="专业适配测评——8道题科学匹配你的大学专业方向。基于学科兴趣、职业偏好、自我评估，从883个专业中推荐最适合你的选择。">
+    <meta property="og:title" content="专业星图 - 专业适配测评">
+    <meta property="og:description" content="8道题科学匹配你的大学专业方向，从883个专业中推荐最适合你的选择。">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="zh_CN">
+    <meta property="og:url" content="https://working-pass.vercel.app/assessment">
+    <meta property="og:image" content="https://working-pass.vercel.app/og-image.svg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="专业星图 - 专业适配测评">
+    <meta name="twitter:description" content="8道题科学匹配你的大学专业方向，从883个专业中推荐最适合你的选择。">
+    <meta name="twitter:image" content="https://working-pass.vercel.app/og-image.svg">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://d3js.org https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://djteatwxjlnbjylynvjh.supabase.co https://*.supabase.co https://openapi.alipay.com https://openapi-sandbox.dl.alipaydev.com; frame-src https://openapi.alipay.com https://openapi-sandbox.dl.alipaydev.com; img-src 'self' data: https:;">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "专业星图 - 专业适配测评",
+      "description": "8道题科学匹配你的大学专业方向",
+      "url": "https://working-pass.vercel.app/assessment",
+      "inLanguage": "zh-CN"
+    }
+    </script>
+    <title>专业星图 - 专业适配测评</title>
+    <link rel="canonical" href="https://working-pass.vercel.app/assessment">
+    <link href="https://fonts.googleapis.com/css2?family=Literata:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/assessment.css">
+    <style>
+        :root {
+            --surface: #FFF8F5;
+            --surface-container: #FFFFFF;
+            --primary: #E67E22;
+            --primary-container: #FAD7B2;
+            --secondary: #705A49;
+            --secondary-container: #EBE0D6;
+            --on-surface: #2C2621;
+            --on-primary: #FFFFFF;
+            --on-surface-variant: #8B7E74;
+            --outline: #DED0C6;
+            --shadow: rgba(112, 90, 73, 0.05);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: "Inter", -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
+            background: var(--surface);
+            min-height: 100vh;
+            color: var(--on-surface);
+            line-height: 1.8;
+        }
+
+        .top-nav {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-logo {
+            font-family: "Literata", serif;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--secondary);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--on-surface-variant);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s;
+        }
+        .nav-link:hover { color: var(--primary); }
+
+        .user-info { display: flex; align-items: center; gap: 12px; }
+        .user-avatar {
+            width: 40px; height: 40px; border-radius: 50%;
+            background: var(--primary-container);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px;
+        }
+        .user-avatar-link { text-decoration: none; transition: transform 0.3s; }
+        .user-avatar-link:hover { transform: scale(1.1); }
+        .user-name-link {
+            font-size: 14px; font-weight: 500;
+            color: var(--secondary); text-decoration: none;
+            transition: color 0.3s;
+        }
+        .user-name-link:hover { color: var(--primary); }
+        .btn-sm { padding: 8px 16px; font-size: 14px; border-radius: 12px; }
+        .btn-primary-sm {
+            background: var(--primary); color: white; border: none;
+            cursor: pointer; transition: all 0.3s;
+        }
+        .btn-primary-sm:hover { background: #D35400; transform: translateY(-1px); }
+
+        .lang-switcher { display: flex; align-items: center; gap: 2px; margin-left: 12px; }
+        .lang-btn {
+            background: none; border: none; cursor: pointer;
+            font-size: 13px; font-weight: 600; padding: 4px 8px;
+            border-radius: 6px; color: var(--on-surface-variant);
+            transition: all 0.2s; font-family: inherit;
+        }
+        .lang-btn:hover { color: var(--primary); background: var(--secondary-container); }
+        .lang-btn.active { color: var(--primary); background: var(--primary-container); }
+        .lang-sep { color: var(--outline); font-size: 12px; user-select: none; }
+    </style>
+</head>
+<body>
+    <a class="skip-link" href="#main-content" style="position:absolute;top:-100px;left:16px;z-index:10000;padding:12px 24px;background:var(--primary);color:#fff;font-weight:600;font-size:15px;border-radius:8px;text-decoration:none;transition:top .2s;" data-i18n="skip_to_main">跳到主要内容</a>
+    <div class="top-nav">
+        <a href="index.html" class="nav-logo" data-i18n="site_name">专业星图</a>
+        <div id="navUserArea" class="nav-links">
+            <a href="majors.html" class="nav-link" data-i18n="nav_majors">专业浏览</a>
+            <a href="assessment.html" class="nav-link" style="color:var(--primary);font-weight:600;" data-i18n="nav_assessment">适配测评</a>
+            <div id="langSwitcherContainer"></div>
+        </div>
+    </div>
+
+    <main id="main-content">
+        <!-- 步骤进度条 -->
+        <div class="progress-bar-wrap" id="progressBarWrap">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="progress-steps">
+                <span class="progress-step" data-step="1">1. 学科兴趣</span>
+                <span class="progress-step" data-step="2">2. 职业偏好</span>
+                <span class="progress-step" data-step="3">3. 自我评估</span>
+            </div>
+        </div>
+
+        <!-- 问卷区 -->
+        <section class="quiz-section" id="quizSection">
+            <div class="quiz-card" id="quizCard">
+                <!-- Dynamically populated by JS -->
+            </div>
+            <div class="quiz-actions" id="quizActions">
+                <button class="btn btn-outline" id="btnPrev" style="display:none;">← 上一步</button>
+                <button class="btn btn-primary" id="btnNext">下一步 →</button>
+                <button class="btn btn-primary" id="btnSubmit" style="display:none;">查看结果 🎯</button>
+            </div>
+        </section>
+
+        <!-- 结果区（初始隐藏） -->
+        <section class="results-section" id="resultsSection" style="display:none;">
+            <div class="results-header">
+                <h2 class="results-title">🎯 你的最佳匹配专业</h2>
+                <p class="results-subtitle" id="resultsSubtitle"></p>
+                <div class="results-summary" id="resultsSummary"></div>
+            </div>
+            <div class="results-charts">
+                <div class="chart-card">
+                    <h3 class="chart-title" data-i18n="chart_radar_title">📊 你的能力画像</h3>
+                    <div class="chart-container" id="radarChart"></div>
+                </div>
+                <div class="chart-card">
+                    <h3 class="chart-title" data-i18n="chart_bar_title">📈 专业匹配度</h3>
+                    <div class="chart-container" id="barChart"></div>
+                </div>
+            </div>
+            <div class="results-list" id="resultsList">
+                <!-- Dynamically populated -->
+            </div>
+            <div class="results-footer" id="resultsFooterArea">
+                <!-- Dynamically populated by JS (save/login + retake + browse) -->
+            </div>
+        </section>
+
+        <!-- 加载状态 -->
+        <div class="loading-state" id="loadingState" style="display:none;">
+            <div class="loading-spinner"></div>
+            <p>正在加载专业数据...</p>
+        </div>
+
+        <!-- 错误状态 -->
+        <div class="error-state" id="errorState" style="display:none;">
+            <p>😢 数据加载失败</p>
+            <button class="btn btn-outline" onclick="location.reload()">重试</button>
+        </div>
+    </main>
+
+    <!-- 专业详情弹窗（与 index.html/majors.html 共用） -->
+    <div id="modal-overlay" class="modal-overlay" style="position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);display:none;align-items:center;justify-content:center;z-index:9998;padding:20px;">
+        <div id="modal-card" class="modal-card" style="background:var(--surface-container);border-radius:16px;padding:24px;max-width:520px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 4px 48px var(--shadow);"></div>
+    </div>
+
+    <!-- 对比悬浮窗由 common.js 注入 -->
+    <div id="toastContainer" class="toast-container" style="position:fixed;top:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:12px;"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+    <script type="module" src="/js/pages/assessment.js"></script>
+</body>
+</html>

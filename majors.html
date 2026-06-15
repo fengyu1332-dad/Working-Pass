@@ -399,6 +399,87 @@
         .employment-desc { margin-top: 10px; font-size: 0.9em; color: var(--on-surface-variant); }
         .list-category { font-size: 13px; color: var(--on-surface-variant); margin-top: 4px; }
 
+        .card-compare-btn, .list-compare-btn {
+          display: inline-block;
+          margin-top: 10px;
+          padding: 6px 14px;
+          border: 1.5px solid var(--outline);
+          border-radius: 10px;
+          background: transparent;
+          color: var(--on-surface-variant);
+          font-size: 12px;
+          cursor: pointer;
+          font-family: inherit;
+          transition: all 0.2s;
+        }
+        .card-compare-btn:hover, .list-compare-btn:hover {
+          background: var(--primary-container);
+          border-color: var(--primary);
+          color: var(--primary);
+        }
+        .card-compare-btn:disabled, .list-compare-btn:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+          background: var(--outline-variant);
+          border-color: var(--outline);
+        }
+        .card-compare-btn:disabled:hover, .list-compare-btn:disabled:hover {
+          background: var(--outline-variant);
+          border-color: var(--outline);
+          color: var(--on-surface-variant);
+        }
+        .list-compare-btn { margin-top: 8px; display: block; margin-left: auto; }
+
+        /* 已加入对比的卡片高亮 */
+        .major-card.in-compare {
+          border-top: 3px solid var(--primary);
+          border-top-left-radius: 20px;
+          border-top-right-radius: 20px;
+        }
+        .major-list-item.in-compare {
+          border-left: 4px solid var(--primary);
+          border-top-left-radius: 16px;
+          border-bottom-left-radius: 16px;
+        }
+        .in-compare .card-compare-btn,
+        .in-compare .list-compare-btn {
+          background: var(--success-container);
+          color: var(--success);
+          border-color: var(--success);
+          font-weight: 600;
+        }
+
+        /* 卡片操作区 — 对比+收藏并排 */
+        .card-actions { display: flex; gap: 8px; margin-top: 10px; align-items: center; }
+        .card-actions .card-compare-btn, .card-actions .list-compare-btn { margin-top: 0; }
+        .card-fav-btn, .list-fav-btn {
+          width: 36px; height: 36px;
+          padding: 0;
+          border: 1.5px solid var(--outline);
+          border-radius: 10px;
+          background: transparent;
+          font-size: 16px;
+          cursor: pointer;
+          font-family: inherit;
+          transition: all 0.2s;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          line-height: 1;
+          flex-shrink: 0;
+        }
+        .card-fav-btn:hover, .list-fav-btn:hover {
+          border-color: #ef4444;
+          background: #fef2f2;
+          transform: scale(1.1);
+        }
+        .card-fav-btn.favorited, .list-fav-btn.favorited {
+          border-color: #ef4444;
+          background: #fef2f2;
+          color: #ef4444;
+        }
+        .list-fav-btn { margin-left: auto; }
+
         .loading-section { text-align: center; padding: 60px 20px; }
         .loading-spinner { width: 48px; height: 48px; border: 4px solid var(--outline); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px; }
         @keyframes spin { to { transform: rotate(360deg); } }
@@ -508,6 +589,31 @@
 
         .summary-box { background: var(--secondary-container); padding: 20px; border-radius: 16px; margin-top: 20px; color: var(--on-surface); font-size: 14px; line-height: 1.8; }
 
+        .modal-compare-btn {
+            background: var(--secondary-container); color: var(--secondary);
+            border: 1.5px solid var(--outline);
+            padding: 10px 20px; border-radius: 9999px;
+            font-size: 14px; font-weight: 500; cursor: pointer;
+            transition: all 0.3s; white-space: nowrap; font-family: inherit;
+        }
+        .modal-compare-btn:hover {
+            background: var(--primary-container);
+            border-color: var(--primary); color: var(--primary);
+        }
+        .modal-fav-btn {
+            background: var(--surface-container); color: var(--on-surface-variant);
+            border: 1.5px solid var(--outline);
+            padding: 10px 18px; border-radius: 9999px;
+            font-size: 14px; font-weight: 500; cursor: pointer;
+            transition: all 0.3s; white-space: nowrap; font-family: inherit;
+        }
+        .modal-fav-btn:hover {
+            background: #FFF0F0; border-color: #E57373; color: #C62828;
+        }
+        .modal-fav-btn.favorited {
+            background: #FFF0F0; color: #C62828;
+            border-color: #E57373; font-weight: 600;
+        }
         .modal-header-actions {
             display: flex; align-items: center; gap: 12px; flex-shrink: 0;
         }
@@ -647,6 +753,8 @@
     <div class="top-nav">
         <a href="index.html" class="nav-logo" data-i18n="site_name">专业星图</a>
         <div id="navUserArea" class="nav-links">
+            <a href="majors.html" class="nav-link" data-i18n="nav_majors">专业浏览</a>
+            <a href="assessment.html" class="nav-link" style="font-weight:600;" data-i18n="nav_assessment">适配测评</a>
             <!-- User area populated by JS -->
             <div id="langSwitcherContainer"></div>
         </div>
@@ -769,6 +877,8 @@
                     </div>
                 </div>
                 <div class="modal-header-actions">
+                    <button class="modal-compare-btn" id="modalCompareBtn" style="display:none;" data-i18n="compare_add_btn">加入对比</button>
+                    <button class="modal-fav-btn" id="modalFavBtn" style="display:none;">♡ 收藏</button>
                     <button class="modal-cta-btn" onclick="goToReports()" data-i18n="modal_cta">🔥 获取专业深度分析报告</button>
                     <button class="modal-close" id="closeModal">✕</button>
                 </div>

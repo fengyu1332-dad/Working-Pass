@@ -1,0 +1,376 @@
+/* ============================================================
+   专业星图 - 专业对比页样式
+   ============================================================ */
+
+.compare-header {
+  text-align: center;
+  padding: 32px 20px 24px;
+}
+.compare-header h1 {
+  font-family: "Literata", serif;
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--secondary);
+  margin-bottom: 8px;
+}
+.compare-header .subtitle {
+  color: var(--on-surface-variant);
+  font-size: 15px;
+}
+
+/* 工具栏 */
+.compare-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+.compare-toolbar .btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+  font-family: inherit;
+}
+.btn-share {
+  background: var(--secondary-container);
+  color: var(--secondary);
+}
+.btn-share:hover {
+  background: var(--primary-container);
+  color: var(--primary);
+}
+.btn-clear-compare {
+  background: transparent;
+  color: var(--on-surface-variant);
+  border: 1px solid var(--outline) !important;
+}
+.btn-clear-compare:hover {
+  background: var(--secondary-container);
+  color: var(--on-surface);
+}
+
+/* 对比表格容器 — 卡片包裹 */
+.compare-table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin-bottom: 48px;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px var(--shadow);
+  background: var(--surface-container);
+}
+
+/* 桌面端：多列表格 */
+.compare-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--surface-container);
+  font-size: 14px;
+  line-height: 1.7;
+}
+.compare-table thead th {
+  background: var(--primary-container);
+  color: var(--secondary);
+  padding: 16px 20px;
+  text-align: center;
+  font-weight: 700;
+  font-size: 15px;
+  white-space: nowrap;
+  min-width: 180px;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+.compare-table thead th:first-child {
+  text-align: left;
+  min-width: 120px;
+  background: var(--secondary-container);
+  color: var(--secondary);
+  position: sticky;
+  left: 0;
+  z-index: 3;
+  border-radius: 16px 0 0 0;
+}
+.compare-table thead th:last-child {
+  border-radius: 0 16px 0 0;
+}
+.compare-table thead th .remove-compare {
+  display: inline-block;
+  margin-left: 10px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  background: rgba(112, 90, 73, 0.1);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  transition: all 0.2s;
+  color: var(--secondary);
+}
+.compare-table thead th .remove-compare:hover {
+  background: rgba(230, 126, 34, 0.2);
+  color: var(--primary);
+}
+.compare-fav-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px; height: 30px;
+  padding: 0;
+  margin-left: 6px;
+  border: 1.5px solid var(--outline);
+  border-radius: 8px;
+  background: transparent;
+  font-size: 14px;
+  cursor: pointer;
+  font-family: inherit;
+  vertical-align: middle;
+  transition: all 0.2s;
+}
+.compare-fav-btn:hover {
+  border-color: #ef4444;
+  background: #fef2f2;
+  transform: scale(1.1);
+}
+.compare-fav-btn.favorited {
+  border-color: #ef4444;
+  background: #fef2f2;
+  color: #ef4444;
+}
+
+/* 分组标题行 */
+.compare-table .section-header td {
+  background: var(--secondary-container) !important;
+  color: var(--secondary);
+  font-weight: 700;
+  font-size: 14px;
+  padding: 12px 20px;
+  letter-spacing: 0.3px;
+}
+.compare-table .section-header td:first-child {
+  font-size: 14px;
+  letter-spacing: 0.5px;
+}
+
+/* 数据行 — 间隔条纹 */
+.compare-table tbody td {
+  padding: 14px 20px;
+  vertical-align: top;
+  border-bottom: 1px solid var(--outline);
+  color: var(--on-surface);
+}
+.compare-table tbody td:first-child {
+  font-weight: 600;
+  color: var(--secondary);
+  background: rgba(245, 238, 233, 0.6);
+  white-space: nowrap;
+  position: sticky;
+  left: 0;
+  z-index: 1;
+}
+.compare-table tbody tr:nth-child(odd) td {
+  background: var(--surface-container);
+}
+.compare-table tbody tr:nth-child(odd) td:first-child {
+  background: rgba(245, 238, 233, 0.4);
+}
+.compare-table tbody tr:nth-child(even) td {
+  background: var(--surface);
+}
+.compare-table tbody tr:nth-child(even) td:first-child {
+  background: rgba(245, 238, 233, 0.6);
+}
+/* 分组标题行不受条纹影响 */
+.compare-table tbody tr.section-header td {
+  background: var(--secondary-container) !important;
+}
+
+/* 高亮行 — 浅橙底 */
+.compare-table tr.highlight td {
+  background: #FFF8F0 !important;
+}
+.compare-table tr.highlight td:first-child {
+  background: #FFF3E0 !important;
+  color: var(--primary);
+  font-weight: 700;
+}
+
+/* 薪资标签 */
+.salary-tag {
+  display: inline-block;
+  background: var(--primary);
+  color: #fff;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+/* 就业方向标签 */
+.direction-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.direction-tag {
+  background: var(--secondary-container);
+  padding: 4px 10px;
+  border-radius: 14px;
+  font-size: 12px;
+  color: var(--secondary);
+  border: 1px solid var(--outline);
+}
+
+/* 院校标签 */
+.uni-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.uni-tag {
+  background: var(--secondary-container);
+  padding: 4px 10px;
+  border-radius: 14px;
+  font-size: 12px;
+  color: var(--secondary);
+}
+
+/* 空状态 */
+.compare-empty {
+  text-align: center;
+  padding: 80px 20px;
+  color: var(--on-surface-variant);
+}
+.compare-empty .empty-icon {
+  font-size: 64px;
+  margin-bottom: 16px;
+}
+.compare-empty h2 {
+  font-family: "Literata", serif;
+  font-size: 24px;
+  color: var(--secondary);
+  margin-bottom: 8px;
+}
+.compare-empty p {
+  font-size: 15px;
+  margin-bottom: 24px;
+}
+.compare-empty .btn-primary {
+  display: inline-block;
+  padding: 14px 28px;
+  background: var(--primary);
+  color: #fff;
+  border-radius: 14px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s;
+}
+.compare-empty .btn-primary:hover {
+  background: #D35400;
+  transform: translateY(-2px);
+}
+.empty-hot-tags {
+  margin-top: 32px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+.hot-tags-label {
+  font-size: 14px;
+  color: var(--on-surface-variant);
+  font-weight: 500;
+}
+.hot-tag-link {
+  display: inline-block;
+  padding: 8px 16px;
+  background: var(--secondary-container);
+  color: var(--secondary);
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+.hot-tag-link:hover {
+  background: var(--primary-container);
+  color: var(--primary);
+}
+
+/* 移动端：卡片栈 */
+@media (max-width: 768px) {
+  .compare-table-wrap {
+    overflow-x: visible;
+    box-shadow: none;
+  }
+  .compare-table,
+  .compare-table thead,
+  .compare-table tbody,
+  .compare-table tr,
+  .compare-table th,
+  .compare-table td {
+    display: block;
+  }
+  .compare-table thead {
+    display: none;
+  }
+
+  /* 每个对比维度为一个卡片组 */
+  .compare-card-group {
+    margin-bottom: 20px;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 2px 12px var(--shadow);
+    background: var(--surface-container);
+  }
+  .compare-card-group .group-title {
+    background: var(--primary-container);
+    padding: 12px 16px;
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--secondary);
+  }
+  .compare-card-item {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--outline);
+  }
+  .compare-card-item:last-child {
+    border-bottom: none;
+  }
+  /* 每个专业的数据用浅色背景块包裹，视觉分隔 */
+  .compare-card-item .major-block {
+    background: var(--secondary-container);
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+  }
+  .compare-card-item .major-block:last-child {
+    margin-bottom: 0;
+  }
+  .compare-card-item .major-name {
+    font-weight: 600;
+    color: var(--primary);
+    font-size: 14px;
+    margin-bottom: 6px;
+  }
+  .compare-card-item .field-label {
+    font-size: 12px;
+    color: var(--on-surface-variant);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    margin-bottom: 2px;
+  }
+  .compare-card-item .field-value {
+    font-size: 14px;
+    color: var(--on-surface);
+  }
+}
+

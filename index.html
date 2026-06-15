@@ -412,7 +412,118 @@
             transition: all 0.3s;
         }
         .search-btn:hover { background: #D35400; transform: translateY(-2px); }
-        
+
+        /* 决策工具箱 */
+        .decision-tools-section {
+            margin: 48px 0 40px;
+            text-align: center;
+        }
+        .decision-tools-title {
+            font-family: "Literata", serif;
+            font-size: 26px;
+            font-weight: 700;
+            color: var(--secondary);
+            margin-bottom: 8px;
+        }
+        .decision-tools-subtitle {
+            font-size: 15px;
+            color: var(--on-surface-variant);
+            margin-bottom: 28px;
+        }
+        .decision-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .decision-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 32px 20px 24px;
+            background: var(--surface-container);
+            border-radius: 20px;
+            box-shadow: 0 2px 16px var(--shadow);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+        .decision-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 32px rgba(112, 90, 73, 0.1);
+            border-color: var(--outline);
+        }
+        .decision-card-featured {
+            border-color: var(--primary);
+            background: linear-gradient(180deg, #FFF8F0 0%, var(--surface-container) 30%);
+        }
+        .decision-card-featured:hover {
+            border-color: var(--primary);
+            box-shadow: 0 8px 32px rgba(230, 126, 34, 0.15);
+        }
+        .decision-card-icon {
+            font-size: 40px;
+            margin-bottom: 12px;
+            display: block;
+        }
+        .decision-card-name {
+            font-family: "Literata", serif;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--secondary);
+            margin-bottom: 6px;
+        }
+        .decision-card-desc {
+            font-size: 13px;
+            color: var(--on-surface-variant);
+            margin-bottom: 18px;
+        }
+        .decision-card-btn {
+            display: inline-block;
+            padding: 10px 22px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+        .btn-outline-sm {
+            background: transparent;
+            border: 2px solid var(--outline);
+            color: var(--on-surface-variant);
+            text-decoration: none;
+        }
+        .btn-outline-sm:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: var(--primary-container);
+        }
+        .btn-primary-sm-decision {
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            text-decoration: none;
+            animation: decision-pulse 2.5s infinite;
+        }
+        .btn-primary-sm-decision:hover {
+            background: #D35400;
+            color: #fff;
+        }
+        @keyframes decision-pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(230, 126, 34, 0.4); }
+            50% { box-shadow: 0 0 0 8px rgba(230, 126, 34, 0); }
+        }
+        @media (max-width: 768px) {
+            .decision-cards {
+                grid-template-columns: 1fr;
+                max-width: 400px;
+            }
+            .decision-tools-title { font-size: 22px; }
+        }
+
         .featured-section { margin-bottom: 32px; }
         .section-header {
             display: flex;
@@ -843,6 +954,58 @@
             gap: 12px;
             flex-shrink: 0;
         }
+        .modal-compare-btn {
+            background: var(--secondary-container);
+            color: var(--secondary);
+            border: 1.5px solid var(--outline);
+            padding: 10px 20px;
+            border-radius: 9999px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+            font-family: inherit;
+        }
+        .modal-compare-btn:hover {
+            background: var(--primary-container);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+        .modal-compare-btn:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+        .modal-compare-btn.in-list {
+            background: var(--success-container);
+            color: var(--success);
+            border-color: var(--success);
+            font-weight: 600;
+        }
+        .modal-fav-btn {
+            background: var(--surface-container);
+            color: var(--on-surface-variant);
+            border: 1.5px solid var(--outline);
+            padding: 10px 18px;
+            border-radius: 9999px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+            font-family: inherit;
+        }
+        .modal-fav-btn:hover {
+            background: #FFF0F0;
+            border-color: #E57373;
+            color: #C62828;
+        }
+        .modal-fav-btn.favorited {
+            background: #FFF0F0;
+            color: #C62828;
+            border-color: #E57373;
+            font-weight: 600;
+        }
         .modal-cta-btn {
             background: linear-gradient(135deg, #E67E22 0%, #D35400 100%);
             color: white;
@@ -995,6 +1158,8 @@
         <nav class="nav-bar">
             <a href="index.html" class="nav-logo" data-i18n="site_name">专业星图</a>
             <div id="navUserArea" class="nav-links">
+                <a href="majors.html" class="nav-link" data-i18n="nav_majors">专业浏览</a>
+                <a href="assessment.html" class="nav-link" style="font-weight:600;" data-i18n="nav_assessment">适配测评</a>
                 <!-- User area will be populated by JavaScript -->
                 <div id="langSwitcherContainer"></div>
             </div>
@@ -1028,7 +1193,32 @@
                 <button class="search-btn" id="searchBtn" data-i18n="search_btn">搜索</button>
             </div>
         </section>
-        
+
+        <section class="decision-tools-section">
+            <h2 class="decision-tools-title" data-i18n="decision_title">🧭 三步找到最适合你的专业</h2>
+            <p class="decision-tools-subtitle" data-i18n="decision_subtitle">用科学方法，从883个专业中做出明智选择</p>
+            <div class="decision-cards">
+                <a href="majors.html" class="decision-card">
+                    <span class="decision-card-icon">🔍</span>
+                    <span class="decision-card-name" data-i18n="decision_browse_name">专业浏览</span>
+                    <span class="decision-card-desc" data-i18n="decision_browse_desc">883个专业，按门类筛选</span>
+                    <span class="decision-card-btn btn-outline-sm" data-i18n="decision_browse_btn">去看看 →</span>
+                </a>
+                <a href="compare.html" class="decision-card">
+                    <span class="decision-card-icon">📊</span>
+                    <span class="decision-card-name" data-i18n="decision_compare_name">横向对比</span>
+                    <span class="decision-card-desc" data-i18n="decision_compare_desc">并排比较，一目了然</span>
+                    <span class="decision-card-btn btn-outline-sm" data-i18n="decision_compare_btn">去对比 →</span>
+                </a>
+                <a href="assessment.html" class="decision-card decision-card-featured">
+                    <span class="decision-card-icon">🧭</span>
+                    <span class="decision-card-name" data-i18n="decision_assessment_name">适配测评</span>
+                    <span class="decision-card-desc" data-i18n="decision_assessment_desc">8道题，科学匹配专业</span>
+                    <span class="decision-card-btn btn-primary-sm-decision" data-i18n="decision_assessment_btn">开始测评 →</span>
+                </a>
+            </div>
+        </section>
+
         <section class="featured-section">
             <div class="section-header">
                 <div>
@@ -1085,6 +1275,8 @@
                     </div>
                 </div>
                 <div class="modal-header-actions">
+                    <button class="modal-compare-btn" id="modalCompareBtn" style="display:none;" data-i18n="compare_add_btn">加入对比</button>
+                    <button class="modal-fav-btn" id="modalFavBtn" style="display:none;">♡ 收藏</button>
                     <button class="modal-cta-btn" onclick="goToReports()" data-i18n="modal_cta">🔥 获取专业深度分析报告</button>
                     <button class="modal-close" id="closeModal">✕</button>
                 </div>
