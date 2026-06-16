@@ -257,6 +257,109 @@ export function downloadShareCard(dataURL) {
 /**
  * 复制分享卡片到剪贴板（支持 PNG）
  */
+// ---- 对比分享卡片 ----
+function drawCompareHeader(ctx) {
+  ctx.fillStyle = COLORS.secondary;
+  ctx.font = 'bold 24px "Literata", "Georgia", serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('专业星图 · 专业对比', W / 2, 60);
+
+  // divider
+  ctx.strokeStyle = COLORS.border;
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(PADDING, 80);
+  ctx.lineTo(W - PADDING, 80);
+  ctx.stroke();
+}
+
+function drawCompareCards(ctx, majors) {
+  const n = majors.length;
+  const cardW = (W - PADDING * 2 - (n - 1) * 12) / n;
+  const cardH = 160;
+  const y = 100;
+
+  majors.forEach((m, i) => {
+    const x = PADDING + i * (cardW + 12);
+
+    // card bg
+    roundRect(ctx, x, y, cardW, cardH, 12);
+    ctx.fillStyle = COLORS.cardBg;
+    ctx.fill();
+    ctx.strokeStyle = COLORS.border;
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // top accent bar
+    roundRect(ctx, x, y, cardW, 4, 2);
+    ctx.fillStyle = COLORS.primary;
+    ctx.fill();
+
+    // category badge
+    const catIcon = (m.category_icon || '').replace(/[^一-龥]/g, '') || '◆';
+    ctx.fillStyle = COLORS.accent;
+    ctx.font = '11px "PingFang SC", "Microsoft YaHei", sans-serif';
+    ctx.textAlign = 'left';
+    ctx.fillText(catIcon + ' ' + (m.category || '').substring(0, 6), x + 10, y + 24);
+
+    // major name
+    ctx.fillStyle = COLORS.secondary;
+    ctx.font = 'bold 15px "Literata", "Georgia", serif';
+    const name = m.name.length > 6 ? m.name.substring(0, 6) + '…' : m.name;
+    ctx.fillText(name, x + 10, y + 50);
+
+    // stats
+    const statsY = y + 80;
+    ctx.fillStyle = COLORS.textMuted;
+    ctx.font = '12px "PingFang SC", "Microsoft YaHei", sans-serif';
+    ctx.fillText('薪资 ' + (m.salary_range || 'N/A'), x + 10, statsY);
+    ctx.fillText('难度 ' + (m.difficulty || 'N/A'), x + 10, statsY + 22);
+    ctx.fillText('学制 ' + (m.duration || 'N/A') + '年', x + 10, statsY + 44);
+    ctx.fillText('学位 ' + (m.degree || 'N/A'), x + 10, statsY + 66);
+  });
+}
+
+function drawCompareFooter(ctx) {
+  const y = 310;
+  ctx.strokeStyle = COLORS.border;
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(PADDING, y);
+  ctx.lineTo(W - PADDING, y);
+  ctx.stroke();
+
+  ctx.fillStyle = COLORS.textMuted;
+  ctx.font = '13px "PingFang SC", "Microsoft YaHei", sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('来自 专业星图 — 温暖、专业的大学专业选择指南', W / 2, y + 30);
+
+  ctx.fillStyle = COLORS.primary;
+  ctx.font = '14px "PingFang SC", "Microsoft YaHei", sans-serif';
+  ctx.fillText('working-pass.vercel.app', W / 2, y + 54);
+}
+
+/**
+ * 生成专业对比分享卡片
+ * @param {Array} majors - 对比的专业数组 (2-4 items)
+ * @returns {Promise<string>} dataURL (PNG)
+ */
+export async function generateCompareShareCard(majors) {
+  const canvas = document.createElement('canvas');
+  canvas.width = W;
+  canvas.height = 400;
+  const ctx = canvas.getContext('2d');
+
+  // bg
+  ctx.fillStyle = COLORS.bg;
+  ctx.fillRect(0, 0, W, 400);
+
+  drawCompareHeader(ctx);
+  drawCompareCards(ctx, majors.slice(0, 4));
+  drawCompareFooter(ctx);
+
+  return canvas.toDataURL('image/png');
+}
+
 export async function copyShareCardToClipboard(dataURL) {
   const res = await fetch(dataURL);
   const blob = await res.blob();

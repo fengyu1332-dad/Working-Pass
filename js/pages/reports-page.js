@@ -227,7 +227,7 @@ function renderReports(reports) {
       </div>
       <div style="color: var(--on-surface-variant); font-size: 13px; margin-bottom: 8px;">${highlightMatch(report.category || '', currentSearchTerm)}</div>
       <div style="color: var(--on-surface-variant); font-size: 13px; line-height: 1.6; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
-        ${report.preview_content || ''}
+        ${highlightMatch(report.preview_content || '', currentSearchTerm)}
       </div>
       <div class="report-meta">
         <span>${report.download_count || 0} ${t('report_downloads', '次解锁')}</span>

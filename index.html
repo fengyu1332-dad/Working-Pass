@@ -30,6 +30,18 @@
       "inLanguage": "zh-CN"
     }
     </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {"@type": "ListItem", "position": 1, "name": "专业星图", "item": "https://working-pass.vercel.app/"},
+        {"@type": "ListItem", "position": 2, "name": "专业浏览", "item": "https://working-pass.vercel.app/majors"},
+        {"@type": "ListItem", "position": 3, "name": "适配测评", "item": "https://working-pass.vercel.app/assessment"},
+        {"@type": "ListItem", "position": 4, "name": "专业对比", "item": "https://working-pass.vercel.app/compare"}
+      ]
+    }
+    </script>
     <title>专业星图 - 温暖、专业的大学专业选择指南</title>
     <link rel="canonical" href="https://working-pass.vercel.app/">
     <link href="https://fonts.googleapis.com/css2?family=Literata:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -512,7 +524,7 @@
             background: #D35400;
             color: #fff;
         }
-        @keyframes decision-pulse {
+        @keyframes ctaPulse{0%,100%{box-shadow:0 2px 12px rgba(230,126,34,0.35)}50%{box-shadow:0 4px 24px rgba(230,126,34,0.55)}}@keyframes decision-pulse {
             0%, 100% { box-shadow: 0 0 0 0 rgba(230, 126, 34, 0.4); }
             50% { box-shadow: 0 0 0 8px rgba(230, 126, 34, 0); }
         }
@@ -522,6 +534,79 @@
                 max-width: 400px;
             }
             .decision-tools-title { font-size: 22px; }
+        }
+
+        .hot-reports-section { margin-bottom: 32px; }
+        .hot-reports-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+        .hot-report-card {
+            background: var(--surface-container);
+            border-radius: 16px;
+            padding: 20px;
+            cursor: pointer;
+            border: 2px solid var(--outline);
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        .hot-report-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 32px rgba(112, 90, 73, 0.1);
+            border-color: var(--primary);
+        }
+        .hot-report-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #E67E22, #FFA726);
+        }
+        .hot-report-category {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 8px;
+            background: var(--secondary-container);
+            color: var(--secondary);
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        .hot-report-name {
+            font-family: "Literata", serif;
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--secondary);
+            margin-bottom: 6px;
+        }
+        .hot-report-preview {
+            font-size: 13px;
+            color: var(--on-surface-variant);
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .hot-report-stats {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-top: 12px;
+            font-size: 12px;
+            color: var(--on-surface-variant);
+        }
+        @media (max-width: 768px) {
+            .hot-reports-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .hot-reports-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
 
         .featured-section { margin-bottom: 32px; }
@@ -1019,6 +1104,7 @@
             box-shadow: 0 2px 12px rgba(230, 126, 34, 0.35);
             white-space: nowrap;
             font-family: inherit;
+            animation: ctaPulse 2.5s ease-in-out infinite;
         }
         .modal-cta-btn:hover {
             transform: translateY(-2px);
@@ -1217,6 +1303,17 @@
                     <span class="decision-card-btn btn-primary-sm-decision" data-i18n="decision_assessment_btn">开始测评 →</span>
                 </a>
             </div>
+        </section>
+
+        <section class="hot-reports-section" id="hotReportsSection" style="display:none;">
+            <div class="section-header">
+                <div>
+                    <h2 class="section-title" data-i18n="hot_reports_title">📊 热门深度报告</h2>
+                    <p class="section-subtitle" data-i18n="hot_reports_subtitle">最受欢迎的专业深度分析报告</p>
+                </div>
+                <a href="user/reports.html" class="view-all-btn" data-i18n="view_all_reports">查看全部报告 →</a>
+            </div>
+            <div class="hot-reports-grid" id="hotReportsGrid"></div>
         </section>
 
         <section class="featured-section">

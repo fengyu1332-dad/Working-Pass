@@ -94,7 +94,14 @@ async function init() {
     window.updateUserArea();
   }
 
-  const codes = getCodesFromURL();
+  let codes = getCodesFromURL();
+  // Fallback to memory state (floating compare bar)
+  if (codes.length < 2) {
+    const compareList = window.__compareList || [];
+    if (compareList.length >= 2) {
+      codes = compareList.map(m => m.code);
+    }
+  }
   if (codes.length >= 2) {
     await loadMajors(codes);
     renderCompare();
@@ -313,24 +320,39 @@ function clearCompare() {
   window.location.href = '/compare.html';
 }
 
-function shareCompare() {
-  const url = window.location.href;
-  navigator.clipboard.writeText(url).then(() => {
-    if (window.auth?.showToast) {
-      window.auth.showToast(t('share_success', '对比链接已复制到剪贴板'), 'success');
+async function shareCompare() {
+  const btnShare = document.getElementById('btnShareCompare');
+  if (btnShare) {
+    btnShare.textContent = t('compare_share_generating', '生成中...');
+    btnShare.disabled = true;
+  }
+
+  try {
+    const { generateCompareShareCard, downloadShareCard, copyShareCardToClipboard } = await import('../share-card.js');
+    const dataURL = await generateCompareShareCard(majors);
+
+    try {
+      await copyShareCardToClipboard(dataURL);
+      if (window.auth?.showToast) {
+        window.auth.showToast(t('compare_share_copy_success', '对比图片已复制到剪贴板'), 'success');
+      }
+    } catch {
+      downloadShareCard(dataURL);
+      if (window.auth?.showToast) {
+        window.auth.showToast(t('compare_share_download_success', '对比图片已下载'), 'success');
+      }
     }
-  }).catch(() => {
-    // 降级
-    const input = document.createElement('input');
-    input.value = url;
-    document.body.appendChild(input);
-    input.select();
-    document.execCommand('copy');
-    document.body.removeChild(input);
+  } catch (err) {
+    console.error('Compare share card generation failed:', err);
     if (window.auth?.showToast) {
-      window.auth.showToast(t('share_success', '对比链接已复制到剪贴板'), 'success');
+      window.auth.showToast(t('compare_share_fail', '生成对比图片失败，请重试'), 'error');
     }
-  });
+  } finally {
+    if (btnShare) {
+      btnShare.textContent = t('compare_share', '📋 复制对比链接');
+      btnShare.disabled = false;
+    }
+  }
 }
 
 function removeFromCompare(code) {

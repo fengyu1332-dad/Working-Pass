@@ -11,6 +11,20 @@ import { t, createLangSwitcher, onLanguageChange } from '../i18n.js';
 import { generateShareCard, downloadShareCard, copyShareCardToClipboard } from '../share-card.js';
 import { drawRadarChart, drawMatchBarChart } from '../charts.js';
 
+let _d3LoadPromise = null;
+function loadD3IfNeeded() {
+  if (typeof d3 !== 'undefined') return Promise.resolve();
+  if (_d3LoadPromise) return _d3LoadPromise;
+  _d3LoadPromise = new Promise((resolve) => {
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/d3@7';
+    script.onload = () => resolve();
+    script.onerror = () => { console.warn('D3 load failed'); resolve(); };
+    document.head.appendChild(script);
+  });
+  return _d3LoadPromise;
+}
+
 // ---- 状态 ----
 let majorsData = [];
 let currentStep = 1;
@@ -656,7 +670,7 @@ function computeResults() {
 }
 
 // ---- 结果渲染 ----
-function renderResults(results) {
+async function renderResults(results) {
   const section = $('#resultsSection');
   const quizSection = $('#quizSection');
   const progressWrap = $('#progressBarWrap');
@@ -684,7 +698,8 @@ function renderResults(results) {
 
   bindResultEvents(results);
 
-  // 绘制图表
+  // 绘制图表（D3 延迟加载）
+  await loadD3IfNeeded();
   const radarContainer = document.getElementById('radarChart');
   if (radarContainer) {
     drawRadarChart(radarContainer, answers.abilities || {});
@@ -1027,9 +1042,61 @@ async function saveResults() {
 
     showToast(t('save_success', '结果已保存！下次访问可直接查看'), 'success');
     updateSaveButtonState(true);
+    showEmailFollowUpPrompt();
   } catch (err) {
     console.error('Save assessment results failed:', err);
     showToast(t('save_fail', '保存失败，请重试'), 'error');
+  }
+}
+
+const EMAIL_PROMPT_KEY = 'starmap_email_prompt';
+
+function showEmailFollowUpPrompt() {
+  try {
+    if (localStorage.getItem(EMAIL_PROMPT_KEY)) return;
+  } catch { return; }
+
+  const footer = document.getElementById('resultsFooterArea');
+  if (!footer) return;
+
+  const existing = document.getElementById('emailFollowUpPrompt');
+  if (existing) return;
+
+  const prompt = document.createElement('div');
+  prompt.id = 'emailFollowUpPrompt';
+  prompt.style.cssText = 'margin-top:16px;padding:14px 18px;background:#FFF3E0;border-radius:12px;border:1px solid #FAD7B2;text-align:center;';
+  prompt.innerHTML = `
+    <div style="font-weight:700;font-size:15px;color:#705A49;margin-bottom:6px;">${t('email_prompt_title', '📬 订阅专业动态？')}</div>
+    <div style="font-size:13px;color:#8B7E74;margin-bottom:12px;">${t('email_prompt_desc', '我们会偶尔发送与你匹配专业相关的就业趋势和深度报告更新')}</div>
+    <button class="email-yes-btn" style="padding:8px 20px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;background:var(--primary);color:#fff;border:none;margin-right:8px;">${t('email_prompt_yes', '👍 好的')}</button>
+    <button class="email-no-btn" style="padding:8px 20px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;background:transparent;border:1px solid #ccc;color:#666;">${t('email_prompt_no', '暂时不用')}</button>
+  `;
+  footer.appendChild(prompt);
+
+  prompt.querySelector('.email-yes-btn').addEventListener('click', () => subscribeEmail(true, prompt));
+  prompt.querySelector('.email-no-btn').addEventListener('click', () => subscribeEmail(false, prompt));
+}
+
+async function subscribeEmail(agree, promptEl) {
+  try { localStorage.setItem(EMAIL_PROMPT_KEY, '1'); } catch {}
+
+  if (agree) {
+    try {
+      const sb = window.supabaseClient?.getSupabase ? window.supabaseClient.getSupabase() : null;
+      if (sb) {
+        const userId = await getCurrentUserId();
+        if (userId) {
+          await sb.from('assessment_results').update({ email_follow_up: true }).eq('user_id', userId);
+        }
+      }
+      showToast(t('email_prompt_subscribed', '已订阅！有新动态会邮件通知你'), 'success');
+    } catch { /* silent */ }
+  }
+
+  if (promptEl) {
+    promptEl.style.transition = 'opacity 0.3s';
+    promptEl.style.opacity = '0';
+    setTimeout(() => { if (promptEl.parentNode) promptEl.remove(); }, 300);
   }
 }
 

@@ -30,6 +30,18 @@ export async function getReports(category = null, search = null) {
   return data;
 }
 
+export async function getTopReports(limit = 6) {
+  const sb = requireSB();
+  const { data, error } = await sb
+    .from('reports')
+    .select(REPORT_COLUMNS)
+    .eq('status', 'published')
+    .order('download_count', { ascending: false })
+    .limit(limit);
+  if (error) throw error;
+  return data;
+}
+
 export async function getReportByMajorCode(majorCode) {
   const sb = requireSB();
 

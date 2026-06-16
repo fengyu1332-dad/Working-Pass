@@ -247,6 +247,29 @@ function showNewUserWelcome() {
   }, 15000);
 }
 
+
+async function loadHotReports() {
+  try {
+    const reports = await window.reports.getTopReports(6);
+    if (!reports || reports.length === 0) return;
+    const grid = document.getElementById('hotReportsGrid');
+    const section = document.getElementById('hotReportsSection');
+    if (!grid || !section) return;
+    grid.innerHTML = reports.map(r => {
+      const preview = (r.preview_content || '').replace(/<[^>]*>/g, '').substring(0, 80);
+      return '<div class="hot-report-card" onclick="location.href=\x27user/reports.html?code=' + encodeURIComponent(r.major_code) + '\x27">'
+        + '<span class="hot-report-category">' + (r.category || '') + '</span>'
+        + '<div class="hot-report-name">' + (r.major_name || '') + '</div>'
+        + '<div class="hot-report-preview">' + preview + '</div>'
+        + '<div class="hot-report-stats">📥 ' + (r.download_count || 0) + ' ' + t('report_downloads', '次解锁') + '</div>'
+        + '</div>';
+    }).join('');
+    section.style.display = '';
+  } catch (e) {
+    console.warn('Hot reports load failed:', e);
+  }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   if (window.auth) window.auth.initSupabase();
 
