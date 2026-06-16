@@ -53,7 +53,7 @@ test.describe('登录页', () => {
 
     const registerLink = page.locator('a[href="register.html"]');
     await expect(registerLink).toBeVisible();
-    await expect(registerLink).toHaveText('立即注册');
+    await expect(registerLink).toHaveText('去注册');
   });
 });
 

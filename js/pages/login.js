@@ -67,7 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loginBtn.textContent = t('logging_in', '登录中...');
 
     try {
-      await window.auth.loginWithEmail(email, password);
+      const { data } = await window.auth.loginWithEmail(email, password);
       showSuccess(t('login_success', '登录成功！即将跳转...'));
       setTimeout(() => {
         const urlParams = new URLSearchParams(window.location.search);

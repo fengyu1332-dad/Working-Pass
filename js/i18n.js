@@ -158,6 +158,8 @@ const ZH = {
   login_fail: '登录失败，请检查邮箱和密码',
   login_bad_credentials: '邮箱或密码错误，请重试',
   login_email_not_confirmed: '邮箱尚未验证，请先点击邮件中的确认链接',
+  or_text: '或',
+  login_google: '使用 Google 账号登录',
   google_redirect: '跳转至 Google...',
   google_register_fail: 'Google 注册失败，请重试',
   google_register_btn: '使用 Google 账号注册',
@@ -418,7 +420,19 @@ const ZH = {
   dash_go_assessment: '去测评',
   dash_view_result: '查看完整结果',
   dash_retake: '重新测评',
-  dash_assessment_date: '测评时间',
+  // 新用户引导
+  onboarding_skip: '跳过',
+  onboarding_next: '下一步',
+  onboarding_done: '开始探索',
+  onboarding_welcome_title: '欢迎来到专业星图',
+  onboarding_welcome_desc: '我们收录了883个大学专业的详细数据，帮你用科学方法找到最适合的专业方向',
+  onboarding_search_title: '搜索与浏览',
+  onboarding_search_desc: '通过搜索框快速找到心仪专业，支持拼音、首字母和缩写。也可以按学科门类逐类浏览',
+  onboarding_tools_title: '三步决策工具',
+  onboarding_tools_desc: '浏览专业了解概况 → 横向对比2-4个专业 → 完成8题适配测评，科学匹配最适合你的专业',
+  onboarding_report_title: '深度分析报告',
+  onboarding_report_desc: '每个专业都有13章深度分析报告，覆盖课程、就业、薪资、考研等全方位信息。新用户注册即送3点积分解锁报告',
+  welcome_new_user: '欢迎加入专业星图！新用户赠送3点积分，完成测评发现最适合你的专业',
 };
 
 const EN = {
@@ -574,6 +588,8 @@ const EN = {
   login_fail: 'Login failed, please check your email and password',
   login_bad_credentials: 'Invalid email or password, please try again',
   login_email_not_confirmed: 'Email not confirmed. Please click the confirmation link in your email first',
+  or_text: 'Or',
+  login_google: 'Sign in with Google',
   google_redirect: 'Redirecting to Google...',
   google_register_fail: 'Google registration failed, please try again',
   google_register_btn: 'Sign up with Google',
@@ -834,7 +850,19 @@ const EN = {
   dash_go_assessment: 'Take Assessment',
   dash_view_result: 'View Full Results',
   dash_retake: 'Retake',
-  dash_assessment_date: 'Assessment Date',
+  // Onboarding
+  onboarding_skip: 'Skip',
+  onboarding_next: 'Next',
+  onboarding_done: 'Get Started',
+  onboarding_welcome_title: 'Welcome to StarMap',
+  onboarding_welcome_desc: 'We have detailed data on 883 university majors to help you find your best fit using scientific methods',
+  onboarding_search_title: 'Search & Browse',
+  onboarding_search_desc: 'Quickly find majors via the search bar — supports pinyin, initials, and abbreviations. Or browse by academic category',
+  onboarding_tools_title: '3-Step Decision Tools',
+  onboarding_tools_desc: 'Browse majors → Compare 2-4 side by side → Take an 8-question assessment for science-based matching',
+  onboarding_report_title: 'In-Depth Reports',
+  onboarding_report_desc: 'Every major has a 13-chapter deep analysis covering courses, careers, salary, grad school, and more. New users get 3 free points to unlock reports',
+  welcome_new_user: 'Welcome to StarMap! You got 3 free points — take the assessment to discover your best major match',
 };
 
 const translations = { 'zh-CN': ZH, 'en': EN };

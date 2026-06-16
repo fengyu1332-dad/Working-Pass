@@ -13,6 +13,7 @@ import { debounce } from '../utils.js';
 import { searchMajors, highlightMatch, getRecentSearches, addRecentSearch, clearRecentSearches, getSearchSuggestions, didYouMean, trackSearch } from '../search-utils.js';
 import { initSiteStats } from '../site-stats.js';
 import { t, createLangSwitcher, applyTranslations, onLanguageChange } from '../i18n.js';
+import { startOnboarding } from '../onboarding.js';
 
 const { initWebVitals } = window.__starmap_webVitals || {};
 
@@ -222,8 +223,40 @@ function displayFeaturedMajors(majors) {
   });
 }
 
+
+function showNewUserWelcome() {
+  if (sessionStorage.getItem('starmap_new_user') !== '1') return;
+  sessionStorage.removeItem('starmap_new_user');
+
+  const banner = document.createElement('div');
+  banner.className = 'welcome-banner';
+  banner.innerHTML = '<span>🎉 ' + t('welcome_new_user', '欢迎加入专业星图！新用户赠送3点积分，完成测评发现最适合你的专业') + '</span><a href="assessment.html" class="welcome-banner-cta">' + t('dash_go_assessment', '去测评') + ' →</a><button class="welcome-banner-close" aria-label="' + t('close', '关闭') + '">×</button>';
+  document.body.prepend(banner);
+
+  banner.querySelector('.welcome-banner-close').addEventListener('click', () => {
+    banner.classList.add('welcome-banner-exit');
+    setTimeout(() => banner.remove(), 300);
+  });
+
+  // Auto-dismiss after 15s
+  setTimeout(() => {
+    if (banner.parentNode) {
+      banner.classList.add('welcome-banner-exit');
+      setTimeout(() => banner.remove(), 300);
+    }
+  }, 15000);
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   if (window.auth) window.auth.initSupabase();
+
+  // Inject welcome banner styles
+  if (!document.getElementById('welcome-banner-styles')) {
+    const style = document.createElement('style');
+    style.id = 'welcome-banner-styles';
+    style.textContent = '.welcome-banner{position:fixed;top:0;left:0;right:0;z-index:9998;background:linear-gradient(135deg,#E67E22,#D35400);color:#fff;padding:14px 24px;display:flex;align-items:center;justify-content:center;gap:16px;font-size:15px;font-weight:500;animation:welcome-slide-in 0.5s ease;box-shadow:0 2px 16px rgba(230,126,34,0.3);}.welcome-banner-exit{animation:welcome-slide-out 0.3s ease forwards;}@keyframes welcome-slide-in{from{transform:translateY(-100%);}to{transform:translateY(0);}}@keyframes welcome-slide-out{to{transform:translateY(-100%);}}.welcome-banner-cta{display:inline-flex;align-items:center;gap:4px;padding:8px 18px;background:rgba(255,255,255,0.2);color:#fff;text-decoration:none;border-radius:10px;font-weight:600;font-size:14px;transition:background 0.2s;white-space:nowrap;}.welcome-banner-cta:hover{background:rgba(255,255,255,0.3);}.welcome-banner-close{background:none;border:none;color:rgba(255,255,255,0.7);font-size:22px;cursor:pointer;padding:0 4px;line-height:1;}.welcome-banner-close:hover{color:#fff;}@media(max-width:768px){.welcome-banner{flex-wrap:wrap;text-align:center;font-size:14px;padding:12px 16px;gap:10px;}}';
+    document.head.appendChild(style);
+  }
   if (initWebVitals) initWebVitals();
 
   // 语言切换器
