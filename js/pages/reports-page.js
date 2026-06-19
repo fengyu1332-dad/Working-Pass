@@ -9,6 +9,7 @@ import '../error-report.js';
 import { sanitizeHTML } from '../sanitize-html.js';
 import { highlightMatch, trackSearch } from '../search-utils.js';
 import { t, createLangSwitcher, onLanguageChange } from '../i18n.js';
+import { renderCPSWidget } from '../cps-links.js';
 
 let currentReports = [];
 let currentProfile = null;
@@ -292,6 +293,7 @@ async function showReportDetail(reportId) {
     content.innerHTML = `
       <div class="report-unlocked-layout">
         <div id="reportReaderContainer" class="report-reader-container" style="--report-font-size:${FONT_SIZES[savedFont] || 18}px;">${t('report_loading', '加载中...')}</div>
+        ${renderCPSWidget(report.category || '')}
         <div class="report-share-bar">
           <div class="reading-toolbar" id="readingToolbar">
             <button class="font-btn small${savedFont === 'small' ? ' active' : ''}" data-size="small" title="小号字体 (15px)">A</button>
@@ -349,6 +351,7 @@ async function showReportDetail(reportId) {
           </div>
         </div>
       </div>
+      ${renderCPSWidget(report.category || '')}
       <div class="preview-share-bar">
         <button class="share-btn" id="shareReportBtn" style="margin-left:auto;">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.59 13.51l6.83 3.98M15.41 6.51l-6.82 3.98"/></svg>
