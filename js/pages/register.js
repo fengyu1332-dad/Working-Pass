@@ -91,7 +91,9 @@ document.addEventListener('DOMContentLoaded', () => {
     registerBtn.textContent = t('registering', '注册中...');
 
     try {
-      await window.auth.registerWithEmail(email, password, phone);
+      const urlParams = new URLSearchParams(window.location.search);
+      const referrerId = urlParams.get('ref');
+      await window.auth.registerWithEmail(email, password, phone, referrerId);
       showSuccess(t('register_success', '注册成功！请检查邮箱并点击确认链接，然后即可登录。即将跳转到登录页...'));
 
       setTimeout(() => {

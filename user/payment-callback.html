@@ -57,124 +57,15 @@
 </head>
 <body>
   <div class="callback-container">
-    <div class="callback-icon" id="statusIcon">⏳</div>
-    <h1 class="callback-title" id="statusTitle">正在确认支付结果...</h1>
-    <p class="callback-text" id="statusText">
-      正在与支付宝确认您的支付状态，请稍候...
+    <div class="callback-icon" style="font-size:64px;">🤝</div>
+    <h1 class="callback-title" style="font-size:22px;font-weight:700;color:var(--secondary);">支付功能已升级</h1>
+    <p class="callback-text" style="color:var(--on-surface-variant);font-size:15px;margin-bottom:16px;line-height:1.7;">
+      点数获取方式已从「支付购买」升级为「邀请好友」。<br>
+      每邀请一位朋友注册，你和他各获得点数和10点奖励。
     </p>
-    <div class="callback-spinner" id="spinner"></div>
-    <div class="callback-actions" id="callbackActions" style="display:none;"></div>
+    <div class="callback-actions" style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+      <a href="/user/dashboard.html" style="display:inline-block;padding:12px 28px;border-radius:12px;font-size:15px;font-weight:600;text-decoration:none;background:var(--primary);color:#fff;">前往个人中心获取邀请链接</a>
+    </div>
   </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script type="module">
-    import '../js/supabase-client.js';
-    import '../js/auth.js';
-    import '../js/payments.js';
-
-    (async function () {
-      window.auth.initSupabase();
-
-      const isLoggedIn = await window.auth.checkAuthAndRedirect();
-      if (!isLoggedIn) return;
-
-      const urlParams = new URLSearchParams(window.location.search);
-      const outTradeNo = urlParams.get('out_trade_no');
-      const tradeNo = urlParams.get('trade_no');
-      const totalAmount = urlParams.get('total_amount');
-
-      // 也尝试从 sessionStorage 获取
-      const pendingOrderId = sessionStorage.getItem('pendingOrderId');
-      const orderId = outTradeNo || pendingOrderId;
-
-      if (!orderId) {
-        showError('未找到订单信息');
-        return;
-      }
-
-      // 轮询订单状态（最多 30 秒）
-      const maxRetries = 15;
-      let retries = 0;
-
-      async function poll() {
-        try {
-          const order = await window.payments.queryOrderStatus(orderId);
-
-          if (order.status === 'paid') {
-            sessionStorage.removeItem('pendingOrderId');
-            showSuccess(order);
-            return;
-          }
-
-          if (retries < maxRetries) {
-            retries++;
-            document.getElementById('statusText').textContent =
-              `等待支付宝确认中...（${retries}/${maxRetries}）`;
-            setTimeout(poll, 2000);
-          } else {
-            showTimeout(order);
-          }
-        } catch (error) {
-          console.error('Poll error:', error);
-          if (retries < maxRetries) {
-            retries++;
-            setTimeout(poll, 2000);
-          } else {
-            showTimeout(null);
-          }
-        }
-      }
-
-      function showSuccess(order) {
-        document.getElementById('statusIcon').textContent = '✅';
-        document.getElementById('statusTitle').textContent = '支付成功！';
-        const points = order?.points || '--';
-        const amount = order?.amount ? `¥${parseFloat(order.amount).toFixed(2)}` : '--';
-        document.getElementById('statusText').innerHTML =
-          `支付金额 <strong>${amount}</strong>，到账点数 <strong>${points}</strong><br>快去查看深度分析报告吧！`;
-        document.getElementById('spinner').style.display = 'none';
-
-        const actions = document.getElementById('callbackActions');
-        actions.style.display = 'flex';
-        actions.innerHTML = `
-          <a href="/user/reports.html" class="btn btn-primary" style="text-decoration:none;">浏览报告</a>
-          <a href="/user/dashboard.html" class="btn btn-outline" style="text-decoration:none;">个人中心</a>
-          <a href="/user/purchase.html" class="btn btn-outline" style="text-decoration:none;">继续购买</a>
-        `;
-      }
-
-      function showTimeout(order) {
-        document.getElementById('statusIcon').textContent = '⏱️';
-        document.getElementById('statusTitle').textContent = '支付处理中';
-        document.getElementById('statusText').innerHTML =
-          '支付确认超时，支付宝异步通知可能有延迟。<br><strong>请放心——支付宝确认后会自动到账，不会丢失。</strong><br>您可以在订单记录中查看最新状态。';
-        document.getElementById('spinner').style.display = 'none';
-
-        const actions = document.getElementById('callbackActions');
-        actions.style.display = 'flex';
-        actions.innerHTML = `
-          <a href="/user/orders.html" class="btn btn-primary" style="text-decoration:none;">查看订单</a>
-          <a href="/user/dashboard.html" class="btn btn-outline" style="text-decoration:none;">个人中心</a>
-          <a href="/" class="btn btn-outline" style="text-decoration:none;">返回首页</a>
-        `;
-      }
-
-      function showError(message) {
-        document.getElementById('statusIcon').textContent = '❌';
-        document.getElementById('statusTitle').textContent = '出错了';
-        document.getElementById('statusText').textContent = message;
-        document.getElementById('spinner').style.display = 'none';
-
-        const actions = document.getElementById('callbackActions');
-        actions.style.display = 'flex';
-        actions.innerHTML = `
-          <a href="/user/purchase.html" class="btn btn-primary" style="text-decoration:none;">重新购买</a>
-          <a href="/user/orders.html" class="btn btn-outline" style="text-decoration:none;">查看订单</a>
-        `;
-      }
-
-      poll();
-    })();
-  </script>
 </body>
 </html>

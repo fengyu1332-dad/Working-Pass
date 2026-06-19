@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-  <title>购买点数 - 专业星图</title>
+  <title>邀请好友 - 专业星图</title>
   <link rel="stylesheet" href="/css/common.css">
   <style>
     .packages-grid {
@@ -154,25 +154,32 @@
 
     <a href="/user/dashboard.html" class="back-link">← 返回个人中心</a>
 
-    <h1 class="page-title">购买点数</h1>
-    <p class="page-subtitle">选择合适的套餐，解锁更多专业深度报告（每份报告消耗 1 点）</p>
-
-    <div class="balance-card">
-      <div>
-        <div class="balance-label">当前点数余额</div>
-        <div class="balance-value" id="currentBalance">0</div>
+    <div style="text-align:center;max-width:600px;margin:60px auto;padding:40px 20px;">
+      <div style="font-size:72px;margin-bottom:24px;">🤝</div>
+      <h1 style="color:var(--secondary);font-size:24px;margin-bottom:16px;">点数充值已升级为邀请好友</h1>
+      <p style="color:var(--on-surface-variant);font-size:16px;line-height:1.8;margin-bottom:32px;">
+        我们已将获取点数的方式从「付费购买」改为「分享推荐」。<br>
+        每邀请一位朋友注册，你和他各获得 <strong style="color:var(--primary);">3 点</strong> 和 <strong style="color:var(--primary);">10 点</strong> 奖励。
+      </p>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+        <a href="/user/dashboard.html" class="btn btn-primary" style="text-decoration:none;padding:12px 28px;border-radius:12px;font-weight:600;">前往个人中心获取邀请链接</a>
+        <a href="/user/reports.html" class="btn btn-secondary" style="text-decoration:none;padding:12px 28px;border-radius:12px;font-weight:600;">浏览报告</a>
       </div>
-      <div style="font-size: 48px;">💎</div>
     </div>
-
-    <div class="packages-grid" id="packagesGrid">
-    </div>
-
-    <div class="purchase-feedback" id="purchaseFeedback"></div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script type="module" src="/js/i18n.js"></script>
-  <script type="module" src="/js/pages/purchase.js"></script>
+  <script>
+    // 简单的登出处理（无需加载完整模块）
+    document.getElementById('logoutBtn').addEventListener('click', (e) => {
+      e.preventDefault();
+      if (window.auth && window.auth.logout) {
+        window.auth.logout();
+      } else {
+        window.location.href = '/login.html';
+      }
+    });
+  </script>
 </body>
 </html>

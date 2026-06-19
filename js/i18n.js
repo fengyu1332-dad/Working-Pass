@@ -28,7 +28,7 @@ const ZH = {
   nav_home: '首页',
   nav_majors: '专业浏览',
   nav_dashboard: '个人中心',
-  nav_purchase: '购买点数',
+  nav_purchase: '邀请好友',
   nav_orders: '历史记录',
   nav_logout: '退出',
   nav_login: '登录',
@@ -260,10 +260,11 @@ const ZH = {
   no_unlocked: '暂无已解锁报告',
   browse_reports: '浏览全部报告 →',
 
-  // 购买
-  purchase_title: '购买点数',
-  purchase_desc: '选择适合你的点数套餐',
-  purchase_btn: '立即购买',
+  // 邀请
+  purchase_title: '邀请好友',
+  purchase_desc: '分享链接给朋友，注册互相得点数奖励',
+  purchase_btn: '获取邀请链接',
+  report_invite_points: '邀请好友获取点数',
   points_unit: '点',
   current_balance: '当前余额',
 
@@ -472,7 +473,7 @@ const EN = {
   nav_home: 'Home',
   nav_majors: 'Majors',
   nav_dashboard: 'Dashboard',
-  nav_purchase: 'Buy Points',
+  nav_purchase: 'Invite Friends',
   nav_orders: 'History',
   nav_logout: 'Logout',
   nav_login: 'Login',
@@ -704,10 +705,11 @@ const EN = {
   no_unlocked: 'No unlocked reports yet',
   browse_reports: 'Browse All Reports →',
 
-  // Purchase
-  purchase_title: 'Buy Points',
-  purchase_desc: 'Choose a points package',
-  purchase_btn: 'Buy Now',
+  // Invite
+  purchase_title: 'Invite Friends',
+  purchase_desc: 'Share your link, both get points on signup',
+  purchase_btn: 'Get Invite Link',
+  report_invite_points: 'Invite friends to earn points',
   points_unit: 'pts',
   current_balance: 'Current Balance',
 

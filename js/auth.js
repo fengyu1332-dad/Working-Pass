@@ -22,19 +22,19 @@ export async function loginWithPhone(phone, password) {
   return data;
 }
 
-export async function registerWithEmail(email, password, phone) {
+export async function registerWithEmail(email, password, phone, referrerId = null) {
   const sb = getSupabase();
   if (!sb) throw new Error('Supabase not initialized');
 
   const { data, error } = await sb.auth.signUp({
     email,
     password,
-    options: { data: { phone } },
+    options: { data: { phone, referred_by: referrerId } },
   });
   if (error) throw error;
 
   if (data.user) {
-    await createUserProfile(data.user.id, phone);
+    await createUserProfile(data.user.id, phone, referrerId);
   }
   return data;
 }
@@ -52,20 +52,70 @@ export async function registerWithPhone(phone, password) {
   return data;
 }
 
-async function createUserProfile(userId, phone) {
+async function createUserProfile(userId, phone, referrerId = null) {
   const sb = getSupabase();
   if (!sb) throw new Error('Supabase not initialized');
 
   const { data, error } = await sb
     .from('user_profiles')
-    .upsert({ id: userId, phone, points_balance: 3, role: 'user' })
+    .upsert({ id: userId, phone, points_balance: 10, role: 'user', referred_by: referrerId || null })
     .select()
     .single();
 
   if (error) {
     console.error('Error creating user profile:', error);
   }
+
+  // 如果存在推荐人，奖励推荐人 3 点
+  if (referrerId && referrerId !== userId) {
+    await awardReferralPoints(referrerId, userId);
+  }
+
   return data;
+}
+
+// 推荐奖励：推荐人获得 3 点
+async function awardReferralPoints(referrerId, newUserId) {
+  const sb = getSupabase();
+  if (!sb) return;
+
+  try {
+    // 1. 检查新用户是否已被其他人推荐过（防止重复奖励）
+    const { data: newUserProfile } = await sb
+      .from('user_profiles')
+      .select('referred_by')
+      .eq('id', newUserId)
+      .maybeSingle();
+
+    if (!newUserProfile || newUserProfile.referred_by !== referrerId) return;
+
+    // 2. 检查推荐人是否已为此用户获得过奖励（防止重放）
+    const { data: existing } = await sb
+      .from('referral_rewards')
+      .select('id')
+      .eq('referrer_id', referrerId)
+      .eq('referred_user_id', newUserId)
+      .maybeSingle();
+    if (existing) return;
+
+    // 3. 原子化奖励：插入奖励记录 + 更新推荐人点数
+    const { error: insertError } = await sb
+      .from('referral_rewards')
+      .insert({ referrer_id: referrerId, referred_user_id: newUserId, points_awarded: 3 });
+
+    if (insertError) {
+      console.error('Insert referral reward error:', insertError);
+      return;
+    }
+
+    // 4. 更新推荐人点数
+    const { error: updateError } = await sb.rpc('add_points', { p_user_id: referrerId, p_points: 3 });
+    if (updateError) {
+      console.error('Add points error:', updateError);
+    }
+  } catch (e) {
+    console.error('Award referral points error:', e);
+  }
 }
 
 export async function logout() {
@@ -129,7 +179,7 @@ export async function getUserProfile() {
       const phone = user.phone || '';
       const { data: newProfile, error: insertError } = await sb
         .from('user_profiles')
-        .upsert({ id: user.id, phone, points_balance: 3, role: 'user' })
+        .upsert({ id: user.id, phone, points_balance: 10, role: 'user' })
         .select()
         .single();
       if (insertError) {

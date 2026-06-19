@@ -345,7 +345,7 @@ async function showReportDetail(reportId) {
           <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
             <button class="btn btn-primary" id="unlockBtn">${t('report_unlock', '消耗 1 点解锁')}</button>
             ${(currentProfile?.points_balance || 0) < 1 ? `
-              <a href="/user/purchase.html" class="btn btn-secondary">${t('report_buy_points', '充值获取点数')}</a>` : ''}
+              <a href="/user/dashboard.html" class="btn btn-secondary">${t('report_invite_points', '邀请好友获取点数')}</a>` : ''}
           </div>
         </div>
       </div>
