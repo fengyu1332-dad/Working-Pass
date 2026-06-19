@@ -4,8 +4,7 @@
 // ============================================================
 
 (function () {
-  // TODO: 替换为你的 AdSense 发布商 ID（格式：ca-pub-XXXXXXXXXXXX）
-  var PUBLISHER_ID = 'ca-pub-XXXXXXXXXXXXXXXX';
+  var PUBLISHER_ID = 'ca-pub-2515407343405907';
 
   function init() {
     if (document.querySelector('script[src*="adsbygoogle"]')) return;
