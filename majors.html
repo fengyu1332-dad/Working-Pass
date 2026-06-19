@@ -18,7 +18,7 @@
     <meta name="twitter:image" content="https://working-pass.vercel.app/og-image.svg">
     <meta name="baidu-site-verification" content="codeva-ABWOu8MENo" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://d3js.org https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://djteatwxjlnbjylynvjh.supabase.co https://*.supabase.co https://openapi.alipay.com https://openapi-sandbox.dl.alipaydev.com; frame-src https://openapi.alipay.com https://openapi-sandbox.dl.alipaydev.com; img-src 'self' data: https:;">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://d3js.org https://cdn.jsdelivr.net https://pagead2.googlesyndication.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://djteatwxjlnbjylynvjh.supabase.co https://*.supabase.co https://openapi.alipay.com https://openapi-sandbox.dl.alipaydev.com; frame-src https://openapi.alipay.com https://openapi-sandbox.dl.alipaydev.com https://googleads.g.doubleclick.net; img-src 'self' data: https:;">
     <meta http-equiv="X-Content-Type-Options" content="nosniff">
     <meta name="referrer" content="strict-origin-when-cross-origin">
     <script type="application/ld+json">
@@ -835,6 +835,8 @@
                 </div>
 
                 <button class="reset-btn" id="resetFilters" data-i18n="reset_filters">🔄 重置筛选</button>
+
+                <div class="ad-container ad-sidebar" id="ad-majors-sidebar" aria-label="广告"></div>
             </aside>
 
             <main class="main-content">
@@ -1019,6 +1021,7 @@
         </div>
     </div>
 
+    <script src="/js/adsense.js"></script>
     <script src="/js/pinyin-data.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script type="module" src="/js/pages/majors.js"></script>

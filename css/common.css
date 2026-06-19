@@ -497,6 +497,29 @@ body {
   user-select: none;
 }
 
+/* Google AdSense 广告容器 */
+.ad-container {
+  max-width: 800px;
+  margin: 32px auto;
+  min-height: 90px;
+  overflow: hidden;
+  text-align: center;
+  border-radius: 12px;
+}
+.ad-container.ad-sidebar {
+  max-width: 100%;
+  margin: 20px 0;
+  min-height: 250px;
+}
+.ad-label {
+  font-size: 11px;
+  color: var(--on-surface-variant);
+  text-align: center;
+  margin-bottom: 8px;
+  opacity: 0.6;
+  letter-spacing: 0.5px;
+}
+
 @media (max-width: 768px) {
   .container {
     padding: 0 16px;

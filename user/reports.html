@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://djteatwxjlnbjylynvjh.supabase.co https://*.supabase.co; img-src 'self' data: https:;">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://pagead2.googlesyndication.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://djteatwxjlnbjylynvjh.supabase.co https://*.supabase.co; frame-src https://googleads.g.doubleclick.net; img-src 'self' data: https:;">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <title>报告浏览 - 专业星图</title>
@@ -442,6 +442,8 @@
       </div>
     </div>
 
+    <div class="ad-container" id="ad-reports-banner" aria-label="广告"></div>
+
     <div class="reports-grid" id="reportsGrid">
     </div>
   </div>
@@ -461,6 +463,7 @@
     </div>
   </div>
 
+  <script src="/js/adsense.js"></script>
   <script src="/js/pinyin-data.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script type="module" src="/js/pages/reports-page.js"></script>
